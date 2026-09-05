@@ -33,7 +33,7 @@ Repository = "https://github.com/wbendinelli/airline-delays"
 Issues = "https://github.com/wbendinelli/airline-delays/issues"
 
 [project.scripts]
-vra = "vra.cli:app"
+airline-delays = "airline_delays.cli:app"
 
 [dependency-groups]
 dev = [
@@ -55,4 +55,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/vra"]
+packages = ["src/airline_delays"]

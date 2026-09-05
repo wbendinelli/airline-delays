@@ -9,7 +9,7 @@ entry points, not library code:
   through features, panel and Table 2, offline, into the git-ignored
   `data/derived/demo/` (`just demo`).
 - `make_fixture.py` — cuts the deterministic slices committed under
-  `tests/fixtures/` (`uv run vra fixture`).
+  `tests/fixtures/` (`uv run airline-delays fixture`).
 - `verify_reconcile.py` — private: reconciles the staged data against the
   2019 vintage `vra.dta`, reads `AIRLINE_DELAYS_PRIVATE_DIR`, subject to
   the same rules as `replication/gabarito/` (`just verify`).

@@ -251,12 +251,13 @@ z
     <text style="font-size: 7px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6d675f" x="303.568128" y="222.055273" transform="rotate(-0 303.568128 222.055273)">OLS -0,179</text>
    </g>
    <g id="text_21">
-    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(138.24 23.7406)">Tabela 3 col. (2), 2SGMM (pontos coloridos) contra Tabela 6 col. (2), OLS</text>
-    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(138.24 36.624428)">(cinza); coeficientes publicados em replication/published.json. A presença de</text>
-    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(138.24 49.603881)">LCC fica negativa nos dois estimadores.</text>
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(138.24 10.673022)">Tabela 3 col. (2), 2SGMM (pontos coloridos) contra Tabela 6 col. (2), OLS</text>
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(138.24 23.55685)">(cinza); coeficientes publicados em</text>
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(138.24 36.536303)">src/airline_delays/estimation/published.json. A presença de LCC fica negativa</text>
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(138.24 50.375131)">nos dois estimadores.</text>
    </g>
    <g id="text_22">
-    <text style="font-weight: 700; font-size: 11px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #161311" x="138.24" y="13.192" transform="rotate(-0 138.24 13.192)">O 2SGMM inverte o sinal das duas concentrações</text>
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #161311" x="138.24" y="2.192" transform="rotate(-0 138.24 2.192)">O 2SGMM inverte o sinal das duas concentrações</text>
    </g>
    <g id="line2d_21">
     <defs>

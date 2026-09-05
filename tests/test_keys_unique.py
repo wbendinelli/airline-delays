@@ -10,7 +10,7 @@ inside each directory and concatenating emitted the same cell twice: 844 rows
 over 422 keys in the fact table, and, through the route-month context join, 866
 rows over 433 keys in the panel — with equal flight counts and different
 medians, because each copy's median was taken over half of its flights.
-`vra.features.build_fact` now selects each *calendar year* across the whole
+`airline_delays.fact_mod.build_fact` now selects each *calendar year* across the whole
 tree. The first class below rebuilds from a deliberately mis-partitioned tree,
 which is the only way to test the fix rather than the fixture.
 
@@ -25,18 +25,15 @@ on disk, exactly like `tests/test_analysis_staleness.py`.
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
 
+from airline_delays import fact as fact_mod
+from airline_delays import panel as panel_mod
+from airline_delays.definitions import delays
+
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
-
-from vra import delays, features  # noqa: E402
-from vra import panel as panel_mod  # noqa: E402
-
 ANALYSIS_DIR = ROOT / "data" / "analysis"
 DERIVED_DIR = ROOT / "data" / "derived"
 
@@ -50,7 +47,7 @@ def _read(path: Path):
     import pandas as pd
 
     if not path.exists():
-        pytest.skip(f"{path.relative_to(ROOT)} is not built; run `just features && just panel`")
+        pytest.skip(f"{path.relative_to(ROOT)} is not built; run `just fact && just panel`")
     return pd.read_parquet(path)
 
 
@@ -102,7 +99,7 @@ def built_from_scrambled(tmp_path_factory: pytest.TempPathFactory, scrambled_tre
             if path.name.split("=")[1].isdigit()
         )
     )
-    result = features.build_fact(
+    result = fact_mod.build_fact(
         scrambled_tree, analysis, derived, years=years, groups_path=groups_csv, verbose=False
     )
     return {
@@ -118,11 +115,11 @@ class TestAMisPartitionedTreeStillBuildsUniqueKeys:
 
     def test_the_fact_table_is_unique(self, built_from_scrambled) -> None:
         fact = built_from_scrambled["fact"]
-        assert not fact.duplicated(list(features.FACT_UNIQUE_KEY)).any()
+        assert not fact.duplicated(list(fact_mod.FACT_UNIQUE_KEY)).any()
 
     def test_the_route_month_context_is_unique(self, built_from_scrambled) -> None:
         context = built_from_scrambled["context"]
-        assert not context.duplicated(list(features.ROUTE_MONTH_KEY)).any()
+        assert not context.duplicated(list(fact_mod.ROUTE_MONTH_KEY)).any()
 
     def test_the_node_day_hour_table_is_unique(self, built_from_scrambled) -> None:
         day_hour = built_from_scrambled["day_hour"]
@@ -137,7 +134,7 @@ class TestAMisPartitionedTreeStillBuildsUniqueKeys:
         """Scrambling the partitions moves no flight into or out of any cell."""
         scrambled = built_from_scrambled["fact"]
         tidy = built["fact"]
-        keys = list(features.FACT_UNIQUE_KEY)
+        keys = list(fact_mod.FACT_UNIQUE_KEY)
         left = scrambled.groupby(keys, observed=True)["flights"].sum()
         right = tidy.groupby(keys, observed=True)["flights"].sum()
         shared = left.index.intersection(right.index)
@@ -150,11 +147,11 @@ class TestAMisPartitionedTreeStillBuildsUniqueKeys:
         table = panel_mod.assemble(
             fact, built_from_scrambled["context"], city, external_dir=external_dir
         )
-        assert not table.duplicated(list(features.ROUTE_MONTH_KEY)).any()
+        assert not table.duplicated(list(fact_mod.ROUTE_MONTH_KEY)).any()
 
     def test_rows_outside_the_built_years_are_counted(self, built_from_scrambled) -> None:
         """The empty leading partition holds no flight, and the count says so."""
-        outside = features.out_of_window_records(built_from_scrambled["result"].out_of_window)
+        outside = fact_mod.out_of_window_records(built_from_scrambled["result"].out_of_window)
         assert all(record["rows"] >= 0 for record in outside)
 
 
@@ -165,17 +162,17 @@ class TestAssertUnique:
         fact = built["fact"]
         doubled = pd.concat([fact, fact.head(1)], ignore_index=True)
         with pytest.raises(ValueError, match="not unique"):
-            features.assert_unique(doubled, features.FACT_UNIQUE_KEY, "planted")
+            fact_mod.assert_unique(doubled, fact_mod.FACT_UNIQUE_KEY, "planted")
 
     def test_a_clean_table_passes(self, built) -> None:
-        features.assert_unique(built["fact"], features.FACT_UNIQUE_KEY, "fixture fact")
+        fact_mod.assert_unique(built["fact"], fact_mod.FACT_UNIQUE_KEY, "fixture fact")
 
     def test_aggregate_refuses_a_duplicated_fact_table(self, built) -> None:
         import pandas as pd
 
         doubled = pd.concat([built["fact"], built["fact"].head(1)], ignore_index=True)
         with pytest.raises(ValueError, match="not unique"):
-            features.aggregate(doubled, "route_month")
+            fact_mod.aggregate(doubled, "route_month")
 
 
 class TestTheSymmetricOutlierRule:
@@ -218,23 +215,23 @@ class TestTheCommittedTables:
 
     def test_the_fact_table_is_unique(self) -> None:
         fact = _read(ANALYSIS_DIR / "fact_group_route_month.parquet")
-        features.assert_unique(fact, features.FACT_UNIQUE_KEY, "committed fact table")
+        fact_mod.assert_unique(fact, fact_mod.FACT_UNIQUE_KEY, "committed fact table")
 
     def test_the_panel_is_unique(self) -> None:
         table = _read(ANALYSIS_DIR / "panel_route_month.parquet")
-        features.assert_unique(table, features.ROUTE_MONTH_KEY, "committed panel")
+        fact_mod.assert_unique(table, fact_mod.ROUTE_MONTH_KEY, "committed panel")
 
     def test_the_city_tables_are_unique(self) -> None:
         city = _read(ANALYSIS_DIR / "city_month.parquet")
-        features.assert_unique(city, features.CITY_MONTH_KEY, "committed city_month")
+        fact_mod.assert_unique(city, fact_mod.CITY_MONTH_KEY, "committed city_month")
         airline_city = _read(ANALYSIS_DIR / "airline_city_month.parquet")
-        features.assert_unique(
-            airline_city, features.AIRLINE_CITY_MONTH_KEY, "committed airline_city_month"
+        fact_mod.assert_unique(
+            airline_city, fact_mod.AIRLINE_CITY_MONTH_KEY, "committed airline_city_month"
         )
 
     def test_the_route_month_context_is_unique(self) -> None:
         context = _read(DERIVED_DIR / "route_month_context.parquet")
-        features.assert_unique(context, features.ROUTE_MONTH_KEY, "committed context")
+        fact_mod.assert_unique(context, fact_mod.ROUTE_MONTH_KEY, "committed context")
 
     def test_the_panel_covers_at_most_the_declared_window(self) -> None:
         table = _read(ANALYSIS_DIR / "panel_route_month.parquet")

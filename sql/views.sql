@@ -8,7 +8,7 @@
 --
 -- or, from Python:
 --
---   con = vra.stage.connect(); con.execute(open("sql/views.sql").read())
+--   con = airline_delays.staging.connect(); con.execute(open("sql/views.sql").read())
 --
 -- Paths are relative to the repository root, so run from there.
 
@@ -40,7 +40,7 @@ SELECT * FROM v_flights WHERE universe_ml;
 CREATE OR REPLACE VIEW v_fact AS
 SELECT * FROM read_parquet('data/analysis/fact_group_route_month.parquet');
 
--- Route-month sums, the additive half of what `vra.features.aggregate` returns.
+-- Route-month sums, the additive half of what `airline_delays.fact.aggregate` returns.
 -- The proportions are deliberately absent: a share of sums is not the sum of
 -- shares, and recomputing them belongs in one place (ADR-0004).
 CREATE OR REPLACE VIEW v_route_month AS

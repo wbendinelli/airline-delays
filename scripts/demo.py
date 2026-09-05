@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """`just demo`: the smallest end-to-end reproduction, offline, in seconds.
 
-Runs the same code path as the full pipeline (`just stage`, `just features`,
+Runs the same code path as the full pipeline (`just stage`, `just fact`,
 `just panel`, `just replicate`) over the committed fixture
 ``tests/fixtures/vra_sample.parquet`` -- three routes (SBAR-SBBR, MRSP-MRRJ,
 SBCT-MRSP) cut from the 2004, 2009 and 2012 files, about 20,000 staged flight
@@ -14,7 +14,7 @@ Steps (they mirror the ``staged_tree`` and ``built`` fixtures of
 ``tests/conftest.py``, which is what the test-suite exercises):
 
 1. re-partition the fixture as ``<out>/staged/year=YYYY/part-0.parquet``, the
-   layout ``vra.features.build_fact`` reads one year at a time;
+   layout ``airline_delays.fact.build_fact`` reads one year at a time;
 2. ``build_fact`` -> ``<out>/analysis/fact_group_route_month.parquet`` and the
    two ``<out>/derived`` intermediates;
 3. ``build_panel`` -> ``<out>/analysis/panel_route_month.parquet`` (+ csv.gz);
@@ -41,8 +41,6 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT))
 
 FIXTURE = ROOT / "tests" / "fixtures" / "vra_sample.parquet"
 DEFAULT_OUT = ROOT / "data" / "derived" / "demo"
@@ -77,7 +75,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"demo: fixture not found at {args.fixture}", file=sys.stderr)
         return 2
 
-    from vra import features, panel
+    from airline_delays import fact as fact_mod
+    from airline_delays import panel
 
     say = (lambda *_: None) if args.quiet else print
     started = time.time()
@@ -93,7 +92,7 @@ def main(argv: list[str] | None = None) -> int:
         + ", ".join(f"{year}: {rows:,d} legs" for year, rows in sorted(rows_by_year.items()))
     )
 
-    result = features.build_fact(
+    result = fact_mod.build_fact(
         staged,
         analysis,
         derived,
@@ -115,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
     # The replication code reads the public panel from AIRLINE_DELAYS_PANEL when
     # set; pointing it at the demo panel keeps data/analysis/ and reports/ untouched.
     os.environ["AIRLINE_DELAYS_PANEL"] = str(panel_result.parquet)
-    from replication import run as replication_run
+    from airline_delays.estimation import run as replication_run
 
     replication_dir = out / "replication"
     output = replication_run.run(

@@ -21,19 +21,14 @@ rather than papered over. Five things are checked:
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from replication import common, table2, table3  # noqa: E402
-from replication.common import (  # noqa: E402
+from airline_delays.estimation import common, table2, table3
+from airline_delays.estimation.common import (
     PANEL_PATH_VAR,
     REQUIRED_COLUMNS,
     PublicPanelIncomplete,
@@ -41,6 +36,8 @@ from replication.common import (  # noqa: E402
     Source,
     build_sample,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
 
 FIXTURE_PANEL = ROOT / "tests" / "fixtures" / "panel_route_month_sample.parquet"
 

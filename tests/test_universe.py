@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from vra import universe
+from airline_delays.definitions import universe
 
 
 class TestReplicationUniverse:
