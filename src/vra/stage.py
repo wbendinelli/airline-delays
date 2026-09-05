@@ -520,11 +520,17 @@ def tool_versions() -> dict[str, str]:
     }
 
 
-def git_commit(root: Path) -> str:
-    """The current commit, or the placeholder the brief asks for when there is none."""
+def git_commit(root: Path, *, short: bool = False) -> str:
+    """The current commit, or the placeholder the brief asks for when there is none.
+
+    ``short=True`` runs ``git rev-parse --short HEAD`` instead -- what
+    `data/analysis/manifest.json` and `panel_manifest.json` embed (ADR-0014),
+    against the full hash this module's own staged-layer manifest carries.
+    """
+    args = ["git", "-C", str(root), "rev-parse", *(["--short"] if short else []), "HEAD"]
     try:
         out = subprocess.run(
-            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            args,
             capture_output=True,
             text=True,
             timeout=10,

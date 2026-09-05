@@ -534,15 +534,15 @@ _CLASS_PT: dict[str, str] = {
     "other": "das demais empresas",
 }
 _SLICES: dict[str, tuple[str, str]] = {
-    "fsc": ("carriers of class FSC (ADR-0003)", "empresas de classe FSC (ADR-0003)"),
+    "fsc": (
+        "the article's FSC group set (TAM, Varig, Transbrasil, Vasp), which excludes Avianca Brasil",
+        "o conjunto FSC do artigo (TAM, Varig, Transbrasil, Vasp), que exclui a Avianca Brasil",
+    ),
     "lccclass": (
         "carriers of class LCC, Webjet included",
         "empresas de classe LCC, Webjet incluída",
     ),
-    "fscb": (
-        "the article's FSC group set (TAM, Varig, Transbrasil, Vasp), which excludes Avianca Brasil",
-        "o conjunto FSC do artigo (TAM, Varig, Transbrasil, Vasp), que exclui a Avianca Brasil",
-    ),
+    "fscc": ("carriers of class FSC (ADR-0003)", "empresas de classe FSC (ADR-0003)"),
     "lccfu": (
         "the Gol and Azul groups, the article's LCC set",
         "os grupos Gol e Azul, o conjunto LCC do artigo",

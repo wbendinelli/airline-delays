@@ -79,13 +79,13 @@ class TestTheBenchmarkIdentities:
 class TestTheDeclaredVariants:
     def test_the_class_and_the_article_fsc_sets_are_both_published(self, built) -> None:
         table = built["panel"]
-        assert {"fsc_prdelarr", "fscb_prdelarr"} <= set(table.columns)
-        assert {"fsc_minsarr", "fscb_minsarr"} <= set(table.columns)
+        assert {"fsc_prdelarr", "fscc_prdelarr"} <= set(table.columns)
+        assert {"fsc_minsarr", "fscc_minsarr"} <= set(table.columns)
 
     def test_the_class_fsc_slice_is_never_smaller_than_the_article_one(self, built) -> None:
         # class FSC = the article's group set plus Avianca Brasil (ADR-0003).
         table = built["panel"]
-        assert (table["fsc_n"] >= table["fscb_n"]).all()
+        assert (table["fscc_n"] >= table["fsc_n"]).all()
 
     def test_the_lcc_class_is_never_smaller_than_the_gol_and_azul_set(self, built) -> None:
         # class LCC = Gol and Azul plus Webjet while it was independent.

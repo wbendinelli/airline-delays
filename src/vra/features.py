@@ -468,10 +468,12 @@ def write_table(frame: pd.DataFrame, path: Path) -> Path:
 
 def _write_manifest(out_dir: Path, result: BuildResult, threshold: float) -> Path:
     path = out_dir / "manifest.json"
+    repo_root = Path(__file__).resolve().parents[2]
     document = {
         "layer": "analysis",
         "grain": "one row per group x route x month, replication universe",
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "git_commit": stage_mod.git_commit(repo_root, short=True),
         "tool_versions": stage_mod.tool_versions(),
         "outlier_threshold_min": threshold,
         "legacy_missing_actual_as_zero": result.legacy_missing_actual_as_zero,

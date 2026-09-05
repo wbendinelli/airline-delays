@@ -11,6 +11,26 @@ Source: **public**. HAC: Bartlett kernel, bandwidth 4 in the `linearmodels` conv
 | Table | coefficients | signs equal | within 0.5 s.e. | median diff/s.e. | max diff/s.e. | median s.e. ratio |
 |---|---:|---:|---:|---:|---:|---:|
 
+## Table 2 - Descriptive statistics
+
+Sample: 21,936 observations, 207 routes. Correlation triangle: 28 cells compared, median absolute difference 0.011, maximum 0.642.
+
+| Variable | mean pub | mean rep | s.d. pub | s.d. rep | min pub | min rep | max pub | max rep |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Nr flights in congested hours | 1.68 | -- | 5.50 | -- | 0.00 | -- | 78.84 | -- |
+| Nr flights in uncongested hours | 7.87 | -- | 11.29 | -- | 0.00 | -- | 115.80 | -- |
+| Prop flights with bad weather | 0.18 | 0.1811 | 0.13 | 0.1276 | 0.00 | 0.0000 | 0.96 | 0.9643 |
+| Prop flights with incidents | 0.01 | 0.0130 | 0.02 | 0.0163 | 0.00 | 0.0000 | 0.30 | 0.2667 |
+| Prop flights held for late connections | 0.03 | 0.0254 | 0.04 | 0.0358 | 0.00 | 0.0000 | 0.65 | 0.5349 |
+| Max prop city delayed flights | 0.24 | -- | 0.10 | -- | 0.05 | -- | 0.70 | -- |
+| Codeshare agreement | 0.18 | -- | 0.39 | -- | 0.00 | -- | 1.00 | -- |
+| HHI city-pair | 0.48 | -- | 0.15 | -- | 0.21 | -- | 1.00 | -- |
+| HHI max endpoint cities | 0.40 | -- | 0.07 | -- | 0.23 | -- | 1.00 | -- |
+| LCC presence city-pair | 0.90 | 0.7767 | 0.30 | 0.4165 | 0.00 | 0.0000 | 1.00 | 1.0000 |
+| LCC presence max endpoint cities | 1.00 | 0.9912 | 0.04 | 0.0931 | 0.00 | 0.0000 | 1.00 | 1.0000 |
+| ODDS | -1.38 | -1.3844 | 1.03 | 1.0342 | -4.90 | -4.9767 | 4.03 | 4.0254 |
+| MINS | 7.16 | -1.3404 | 8.29 | 124.9636 | -9.80 | -4772.5928 | 131.91 | 136.5000 |
+
 ## Sensitivity (ADR-0008)
 
 Main coefficients of Table 3 columns (1) and (2) across the flight-level outlier threshold and the seasonality dummies. A threshold row is *unavailable* when the panel does not carry the regressand rebuilt at that threshold -- it is reported as missing, never approximated.

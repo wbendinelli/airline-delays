@@ -32,7 +32,7 @@ MEASURED_FLOOR: dict[str, float] = {
     "f": 0.95,
     "fl_can": 0.94,
     "fl_odel": 0.87,
-    "fscb_prdelarr": 0.64,
+    "fsc_prdelarr": 0.64,
     "prwheather": 0.91,
     "princident": 0.95,
     "pr_connc": 0.94,
@@ -167,7 +167,7 @@ class TestAgainstThePrivateBenchmark:
         # The declared difference of ADR-0003 in one number: the benchmark's FSC
         # set excludes Avianca Brasil, which this repository classes as FSC.
         by_column = rates.set_index("column")["rate_stable_vintage"]
-        assert by_column["fscb_prdelarr"] > by_column["fsc_prdelarr"]
+        assert by_column["fsc_prdelarr"] > by_column["fscc_prdelarr"]
 
     def test_taxas_is_written_without_a_single_benchmark_value(
         self, rates: pd.DataFrame, tmp_path: Path

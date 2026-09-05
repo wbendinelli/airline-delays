@@ -2,40 +2,58 @@
 
 Route-month and city-month tables built from `data/staged/` by
 `just features` and `just panel`. Unlike `data/raw/`, `data/staged/` and
-`data/derived/`, this directory is **tracked** — but only its provenance
-files are, because the tables themselves are too large for the build brief's
-"analysis tables under a few MB" rule.
+`data/derived/`, this directory is **tracked in full**: since DECISIONS.md
+ADR-0014 its `*.parquet` and `*.csv.gz` tables are committed alongside their
+provenance files, so a reviewer can run the public replication (`just
+replicate`) without rebuilding anything first.
 
 ## What is in git
 
 | File | Size | What it is |
-|---|---|---|
-| `manifest.json` | 4 KB | How the fact table was built: years, tool versions, outlier threshold, the ADR-0012 convention, and the per-year count of realised flights with no actual time. |
-| `panel_manifest.json` | < 1 KB | The same for the panel, plus the byte sizes of the two files it wrote. |
-| `taxas.csv` | 8 KB | Column-by-column agreement against the private benchmark, written by `replication/gabarito/compare.py`. Statistics only — no benchmark value is ever copied here. |
-
-## What is not, and how to get it back
-
-```bash
-uv run vra features   # ~12 s: the fact table, the city projections, the day-hour table
-uv run vra panel      # ~10 s: the public route-month panel, parquet and csv.gz
-```
-
-| File | Size | Grain |
 |---|---|---|
 | `fact_group_route_month.parquet` | ~8 MB | group x route x month, replication universe. The canonical table (ADR-0004); every other grain is an `aggregate()` projection of it. |
 | `panel_route_month.parquet` | ~10 MB | route x month, the 27 nodes of ADR-0001. The public deliverable: the article's columns plus the new feature set. |
 | `panel_route_month.csv.gz` | ~12 MB | The same panel in CSV, for readers without a parquet reader (ADR-0004). |
 | `city_month.parquet` | ~2 MB | node x month, departures and arrivals both counted, with the ADR-0007 congestion proxy. |
 | `airline_city_month.parquet` | ~4 MB | group x node x month, with the hub share, score and dummy. |
+| `manifest.json` | 4 KB | How the fact table was built: the git commit, years, tool versions, outlier threshold, the ADR-0012 convention, and the per-year count of realised flights with no actual time. |
+| `panel_manifest.json` | < 1 KB | The same for the panel: git commit, tool versions, row/column counts and the byte sizes of the two files it wrote. |
+| `taxas.csv` | 8 KB | Column-by-column agreement against the private benchmark, written by `replication/gabarito/compare.py`. Statistics only — no benchmark value is ever copied here. |
+
+All eight files sit well under the pre-commit `check-added-large-files`
+threshold (50 MB, raised for exactly this in ADR-0014); the flight-level
+table stays out of git regardless of size (ADR-0004) and goes to Zenodo
+instead.
+
+## Keeping it in sync: `just check-analysis`
+
+Because these tables are committed, a stale one is a silent bug: edit
+`registry.py` or `panel.py`, forget to rerun `just panel`, and the tracked
+file no longer matches what the current code would produce. `just
+check-analysis` (a `pytest -m analysis` run, see
+`tests/test_analysis_staleness.py`) rebuilds the panel from the committed
+`fact_group_route_month.parquet` in memory and compares its shape, column
+names and a value checksum against the committed
+`panel_route_month.parquet`; it fails loudly on a mismatch and skips (not
+fails) when the tables or `data/derived/` are not present locally.
+
+## Regenerating from scratch
+
+```bash
+uv run vra features   # ~12 s: the fact table, the city projections, the day-hour table
+uv run vra panel      # ~10 s: the public route-month panel, parquet and csv.gz
+```
 
 Both commands need `data/staged/`, which `just fetch && just stage` produces
-from ANAC's published files. At publication the five tables go to Zenodo
-alongside the flight table, which is where ADR-0004 sends data that does not
-belong in git.
+from ANAC's published files. `just features && just panel` runs the pair in
+about 22 seconds and is what regenerates every file in the table above
+except `taxas.csv` (`just gabarito`, needs `AIRLINE_DELAYS_PRIVATE_DIR`).
 
 `data/derived/` holds two intermediates these commands write and read —
 `route_month_context.parquet` (route-month counts outside the replication
 universe, plus the order statistics a fact table cannot carry) and
 `node_day_hour.parquet` (movements per node, day and scheduled hour, the input
-to the congestion proxy). They are git-ignored like the rest of that layer.
+to the congestion proxy). They stay git-ignored like the rest of that layer
+(ADR-0004): they are inputs `just check-analysis` needs to rebuild the panel,
+not a deliverable in their own right, and they are cheap to regenerate
+alongside everything else here.

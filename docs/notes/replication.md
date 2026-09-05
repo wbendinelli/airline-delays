@@ -29,7 +29,9 @@ Nenhum número desta nota é digitado à mão: todos vêm de
   (31.760 linhas, 310 rotas, 2000m1–2014m1): restrito à janela 2002m1–2013m12 do
   artigo e passado pelos filtros dos do-files, dá **22.490 rota-mês em 211
   rotas**, e a Tabela 2 sai em 9 das 13 variáveis (`fsc_oddsarr` com média
-  −1,3698 contra −1,38 publicado). O que falta — `maxprdel`, `cshare`,
+  −1,3844 contra −1,38 publicado; o ADR-0013 corrigiu esta coluna para o
+  conjunto de empresas do artigo, e a variante por classe é `fscc_oddsarr`).
+  O que falta — `maxprdel`, `cshare`,
   `dailyflcong`, `dailyflncong`, os sete instrumentos tipo Hausman, e `rthhi`/
   `maxcthhi`, que existem como coluna mas estão inteiramente nulas — impede as
   cinco tabelas de regressão, e é **reportado por escrito**, nunca substituído

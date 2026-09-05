@@ -142,9 +142,9 @@ então continuam competidores distinguíveis no HHI.
 FSC (TAM, Varig, Transbrasil, Vasp) e o ADR-0003 classifica também a Avianca
 Brasil como FSC; o "LCC" do artigo são os grupos Gol e Azul, e a classe LCC
 inclui a Webjet enquanto independente. As duas versões são calculadas e as duas
-são publicadas: `fsc_*`/`lccclass_*` pela classe, `fscb_*`/`lccfu_*` pelo
-conjunto do artigo. Nenhuma foi ajustada para a outra — e a seção 6 mostra o
-tamanho da diferença.
+são publicadas: `fscc_*`/`lccclass_*` pela classe, `fsc_*`/`lccfu_*` pelo
+conjunto do artigo (ADR-0013). Nenhuma foi ajustada para a outra — e a seção 6
+mostra o tamanho da diferença.
 
 ## 5. As famílias novas
 
@@ -197,8 +197,8 @@ no bloco gerado de `docs/declared-differences.md`.
 | `f` | 0,901 | 0,953 | 0,975 |
 | `fl_can` | 0,937 | 0,948 | 0,978 |
 | `fl_odel` | 0,854 | 0,877 | 0,924 |
-| `fsc_prdelarr` (classe FSC) | 0,527 | 0,534 | 0,651 |
-| **`fscb_prdelarr` (conjunto do artigo)** | 0,610 | **0,649** | 0,651 |
+| `fscc_prdelarr` (classe FSC) | 0,527 | 0,534 | 0,651 |
+| **`fsc_prdelarr` (conjunto do artigo)** | 0,610 | **0,649** | 0,651 |
 | `prwheather` | 0,882 | 0,919 | 0,985 |
 | `princident` | 0,923 | 0,955 | 0,991 |
 | `pr_connc` | 0,913 | 0,945 | 0,992 |
@@ -217,14 +217,15 @@ divergência de safra. Por isso `taxas.csv` traz duas taxas por coluna. E as
 divergências são pequenas: em `f` e `fl_can` a mediana **e** o p90 da diferença
 absoluta são **zero voo**; em `fl_odel` o p90 é um voo.
 
-**Segunda: o conjunto FSC.** `fscb_prdelarr` — o conjunto de grupos do artigo,
+**Segunda: o conjunto FSC.** `fsc_prdelarr` — o conjunto de grupos do artigo,
 sem a Avianca — chega a **0,649** na metade estável, contra os 0,651 da
-reconstrução. Nos minutos, `fscb_minsarr` difere do gabarito por uma mediana de
+reconstrução. Nos minutos, `fsc_minsarr` difere do gabarito por uma mediana de
 0,060 min e p90 de 2,11, contra os 0,07 e 2,2 que a reconstrução reportou para a
 mesma aproximação. Ou seja: **com o conjunto de empresas do artigo, este
 pipeline reproduz as colunas de atraso FSC com a mesma precisão de quem tinha o
-bruto privado.** A diferença em `fsc_*` é escolha de conjunto de empresas, não
-defeito de definição de atraso — e é o que valida, de lado, a flag do ADR-0012.
+bruto privado.** A diferença em `fscc_*` é escolha de conjunto de empresas, não
+defeito de definição de atraso — e é o que valida, de lado, a flag do ADR-0012
+(ADR-0013).
 
 O que continua sem explicação é o de sempre (ADR-0002): `fl_ddel` reproduz 0,56
 onde `fl_odel` reproduz 0,88, sob a mesma regra e no mesmo universo, com p90 de

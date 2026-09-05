@@ -11,10 +11,11 @@ and is not renamed.
 
 **The declared-variant block** exists wherever this repository's definition and
 the benchmark's differ and the evidence does not settle which is right. Two
-cases, both in `docs/declared-differences.md`: `fscb_*` uses the article's FSC
-*group* set, which excludes Avianca Brasil that ADR-0003 classes as FSC; and
-`*_trunc` uses the vintage's zero-truncated delay against ADR-0008's signed
-one. Nothing is tuned to close a gap; both numbers are published.
+cases, both in `docs/declared-differences.md`: `fscc_*` uses ADR-0003's FSC
+*class*, which includes Avianca Brasil that the article's own group set
+excludes (ADR-0013); and `*_trunc` uses the vintage's zero-truncated delay
+against ADR-0008's signed one. Nothing is tuned to close a gap; both numbers
+are published.
 
 **The new-feature block** is everything the article did not use: market
 structure, schedule shape, cause-code taxonomy, recovery and padding, the
@@ -103,17 +104,17 @@ SLICE_SUFFIXES: tuple[str, ...] = (
 
 PUBLISHED_SLICE_SUFFIXES: dict[str, tuple[str, ...]] = {
     "fsc_": SLICE_SUFFIXES,
-    "fscb_": ("n", "prdelarr", "prdeldep", "oddsarr", "minsarr", "minsp15arr"),
+    "fscc_": ("n", "prdelarr", "prdeldep", "oddsarr", "minsarr", "minsp15arr"),
     "lccfu_": ("n", "f", "prdelarr", "prdeldep", "oddsarr", "minsarr"),
     "lccclass_": ("n", "prdelarr", "minsarr"),
 }
 """What each slice *publishes*. Only `fsc_` gets the full set.
 
 The other three exist to expose a definitional difference, not to be a second
-panel: `fscb_` is the article's FSC group set against ADR-0003's class,
-`lccclass_` is the LCC class against the article's Gol-and-Azul set, and
-`lccfu_` is that set itself. Six columns each show the gap; forty would only
-triple the file. Everything omitted is one `groupby` away in
+panel: `fscc_` is ADR-0003's FSC class against the article's own group set
+(ADR-0013), `lccclass_` is the LCC class against the article's Gol-and-Azul
+set, and `lccfu_` is that set itself. Six columns each show the gap; forty
+would only triple the file. Everything omitted is one `groupby` away in
 `fact_group_route_month.parquet`, which keeps the finer grain.
 """
 
@@ -312,9 +313,9 @@ def assemble(
     klass = fact["class"]
     group = fact["group"]
     slices = {
-        "fsc_": klass.eq("FSC"),
+        "fsc_": group.isin(groups_mod.BENCHMARK_FSC_GROUPS),
         "lccclass_": klass.eq("LCC"),
-        "fscb_": group.isin(groups_mod.BENCHMARK_FSC_GROUPS),
+        "fscc_": klass.eq("FSC"),
         "lccfu_": group.isin(groups_mod.BENCHMARK_LCC_GROUPS),
     }
     panel = base
@@ -513,10 +514,12 @@ def _finalise(
 
 def _write_manifest(analysis_dir: Path, result: PanelResult) -> Path:
     path = analysis_dir / "panel_manifest.json"
+    repo_root = Path(__file__).resolve().parents[2]
     document = {
         "layer": "panel",
         "grain": "one row per route x month, replication universe",
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "git_commit": stage_mod.git_commit(repo_root, short=True),
         "tool_versions": stage_mod.tool_versions(),
         "legacy_missing_actual_as_zero": result.legacy_missing_actual_as_zero,
         "outlier_threshold_min": delays_mod.OUTLIER_THRESHOLD_MIN,

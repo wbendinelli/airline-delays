@@ -68,24 +68,27 @@ CHECKS: tuple[Check, ...] = (
     Check("ndays", "ndays", COUNT_TOL),
     Check("dailyfl", "dailyfl", MINUTE_TOL),
     Check(
-        "fsc_prdelarr", "fsc_prdelarr", SHARE_TOL, "FSC = class FSC, which includes Avianca Brasil"
-    ),
-    Check(
-        "fscb_prdelarr",
+        "fsc_prdelarr",
         "fsc_prdelarr",
         SHARE_TOL,
         "FSC = the article's group set, without Avianca Brasil",
     ),
+    Check(
+        "fscc_prdelarr", "fsc_prdelarr", SHARE_TOL, "FSC = class FSC, which includes Avianca Brasil"
+    ),
     Check("fsc_prdelarr1530", "fsc_prdelarr1530", SHARE_TOL),
     Check("fsc_prdelarr30m", "fsc_prdelarr30m", SHARE_TOL),
-    Check("fsc_prdeldep", "fsc_prdeldep", SHARE_TOL),
-    Check("fsc_oddsarr", "fsc_oddsarr", ODDS_TOL),
+    Check("fscc_prdeldep", "fsc_prdeldep", SHARE_TOL),
+    Check("fscc_oddsarr", "fsc_oddsarr", ODDS_TOL),
+    Check("fsc_minsarr", "fsc_minsarr", MINUTE_TOL, "same, on the article's FSC group set"),
     Check(
-        "fsc_minsarr", "fsc_minsarr", MINUTE_TOL, "denominator is every carrier's realised flights"
+        "fscc_minsarr",
+        "fsc_minsarr",
+        MINUTE_TOL,
+        "denominator is every carrier's realised flights",
     ),
-    Check("fscb_minsarr", "fsc_minsarr", MINUTE_TOL, "same, on the article's FSC group set"),
     Check("fsc_minsdep", "fsc_minsdep", MINUTE_TOL),
-    Check("fsc_minsp15arr", "fsc_minsp15arr", MINUTE_TOL),
+    Check("fscc_minsp15arr", "fsc_minsp15arr", MINUTE_TOL),
     Check("all_prdelarr", "all_prdelarr", SHARE_TOL),
     Check("all_minsarr", "all_minsarr", MINUTE_TOL),
     Check("lccfu_prdelarr", "lccfu_prdelarr", SHARE_TOL, "Gol and Azul, the article's LCC set"),

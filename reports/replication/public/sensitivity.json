@@ -22,9 +22,9 @@
    "l1h2_maxcthhi",
    "lnh1_maxcthhi"
   ],
-  "n_after_missing_regressand": 22522,
-  "n_after_singleton_cut": 22490,
-  "routes": 211,
+  "n_after_missing_regressand": 21967,
+  "n_after_singleton_cut": 21936,
+  "routes": 207,
   "months": 144,
   "singleton_cutoff": 5
  },

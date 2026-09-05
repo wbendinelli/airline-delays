@@ -11,7 +11,11 @@ repos:
         # see .editorconfig -- not something to "fix".
         exclude: '\.md$'
       - id: check-added-large-files
-        args: ["--maxkb=5000"]
+        # 50 MB (DECISIONS.md ADR-0014): data/analysis/*.parquet and *.csv.gz
+        # are tracked now and the panel/fact tables run 8-12 MB each; this
+        # still blocks a raw flight table or another oversized file by
+        # accident.
+        args: ["--maxkb=51200"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.4

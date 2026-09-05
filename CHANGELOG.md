@@ -10,6 +10,21 @@ version numbers, mark progress.
 
 ### Added
 
+- `data/analysis/*.parquet` and `*.csv.gz` are tracked in git (`DECISIONS.md`
+  ADR-0014): the fact table and panel run 8-12 MB, city and airline-city
+  projections 2-4 MB, all under the pre-commit `check-added-large-files`
+  threshold, raised from 5 MB to 50 MB (`.pre-commit-config.yaml`) to match; a
+  reviewer can now run `just replicate` without rebuilding anything first.
+  `just check-analysis` (`pytest -m analysis`, new
+  `tests/test_analysis_staleness.py`) rebuilds the panel from the committed
+  fact table in memory and fails a commit whose shape, column names or a
+  value checksum drift from `data/analysis/panel_route_month.parquet`; it
+  skips, never fails, when `data/derived/` is not present locally, which is
+  the ordinary CI job (no `data/staged/`, per `CLAUDE.md`). `manifest.json`
+  and `panel_manifest.json` now carry the short git commit that built them
+  (`vra.stage.git_commit(..., short=True)`, `.gitattributes` marks the four
+  tracked binary tables `linguist-generated`).
+
 - Feature and panel layer (`src/vra/{groups,codes,hhi,congestion,hub,features,panel}.py`,
   `sql/views.sql`): `vra features` builds the canonical fact table
   `group x route x month` over the replication universe -- 166,203 cells, 87
@@ -111,3 +126,21 @@ version numbers, mark progress.
   directory skeleton (`data/{raw,staged,derived,private,external}`, `sql/`,
   `reports/`, `docs/{notes,tutorial}/`, `replication/`, `ml/`, `scripts/`,
   `tests/`) described in `DECISIONS.md` and the architecture review.
+
+### Fixed
+
+- `fsc_*` panel columns now use the article's own FSC carrier set (TAM group,
+  Varig group until 2007-03, Transbrasil, Vasp); the class-based family
+  (ADR-0003, Avianca Brasil included) moves to `fscc_*` (`DECISIONS.md`
+  ADR-0013). Only names moved -- no carrier list, formula or tolerance
+  changed -- but the rename fixes a real mismatch: the replication engine's
+  `fsc_oddsarr`/`fsc_minsarr`/`fsc_minsp15arr` (arrival) and
+  `fsc_oddsdep`/`fsc_minsdep`/`fsc_minsp15dep` (departure) regressands
+  (`replication/common.py`) were reading the class-based set instead of the
+  article's. Against the private benchmark, `fsc_prdelarr` agreement rises
+  from 0.527 (0.534 stable-vintage) to 0.610 (0.649 stable-vintage), against
+  the 0.651 the earlier reconstruction measured, and the stable-vintage
+  shortfall list `just gabarito` reports drops from seven columns to six
+  (`data/analysis/taxas.csv`). Updated: `src/vra/{registry,panel}.py`,
+  `replication/gabarito/compare.py`, `tests/{test_panel,test_gabarito}.py`,
+  `docs/declared-differences.md`, `docs/notes/{features,replication}.md`.

@@ -1,7 +1,8 @@
 {
   "layer": "panel",
   "grain": "one row per route x month, replication universe",
-  "generated_at": "2026-09-05T05:15:46+00:00",
+  "generated_at": "2026-09-05T05:41:28+00:00",
+  "git_commit": "eb0d580",
   "tool_versions": {
     "python": "3.12.13",
     "duckdb": "1.5.5",
@@ -12,7 +13,7 @@
   "outlier_threshold_min": 313.25,
   "rows": 31760,
   "columns": 228,
-  "parquet_bytes": 10153615,
-  "csv_bytes": 11832563,
-  "seconds": 7.61
+  "parquet_bytes": 10134939,
+  "csv_bytes": 11820118,
+  "seconds": 7.53
 }

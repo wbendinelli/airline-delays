@@ -25,6 +25,15 @@ panel:
     uv run vra dictionary
     uv run vra datapackage
 
+# ADR-0014 staleness guard: rebuilds the panel from the committed fact table
+# in memory (data/analysis/fact_group_route_month.parquet plus the two
+# data/derived/ intermediates `just features` also writes) and compares it,
+# shape and checksum, against the committed data/analysis/panel_route_month.parquet.
+# Skips rather than fails when either side is missing -- run `just features`
+# first if this only ever skips locally.
+check-analysis:
+    uv run pytest -q -m analysis
+
 # Column-by-column agreement of the public panel against the private benchmark.
 # Needs AIRLINE_DELAYS_PRIVATE_DIR exported in the shell; writes
 # data/analysis/taxas.csv and the generated block of docs/declared-differences.md.

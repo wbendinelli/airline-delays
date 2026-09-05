@@ -11,17 +11,22 @@
 /data/private/*
 !/data/private/README.md
 
-# data/analysis/ is a tracked directory, but the four tables it holds are
-# 2-10 MB each -- above the "analysis tables under a few MB" rule. They are
-# rebuilt from data/staged/ by `just features && just panel` in about 25
-# seconds, and they go to Zenodo at publication (DECISIONS.md ADR-0004).
-# What stays in git is the provenance: the manifests, the agreement rates
-# against the private benchmark, and the README that says how to rebuild.
+# data/analysis/ is a tracked directory, and since DECISIONS.md ADR-0014 its
+# *.parquet and *.csv.gz tables are tracked too -- the panel and fact table
+# are 2-12 MB, the pre-commit large-file threshold below is raised to match,
+# and `just check-analysis` fails a commit where they drift from the
+# registry or the fact table. They are still rebuilt from data/staged/ by
+# `just features && just panel` in about 22 seconds, and they still go to
+# Zenodo at publication alongside the flight table (ADR-0004) -- tracking
+# them here is so a reviewer can run the public replication without
+# rebuilding, not a replacement for that.
 /data/analysis/*
 !/data/analysis/README.md
 !/data/analysis/taxas.csv
 !/data/analysis/manifest.json
 !/data/analysis/panel_manifest.json
+!/data/analysis/*.parquet
+!/data/analysis/*.csv.gz
 
 .venv/
 __pycache__/
