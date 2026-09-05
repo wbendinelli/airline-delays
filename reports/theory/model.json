@@ -1,0 +1,2050 @@
+{
+  "meta": {
+    "generated_by": "uv run python -m theory.run",
+    "source": "Bendinelli (2013), undergraduate monograph, USP/ESALQ, section 4, following Brueckner and Van Dender (2008, Journal of Urban Economics 64, 288-295) and Brueckner (2002, American Economic Review 92, 1357-1375); figures after Cohen and Coughlin (2003) and Cohen, Coughlin and Ott (2009), redrawn",
+    "sympy": "1.14.0",
+    "n_identities": 29,
+    "equations": "numbered as in the monograph, (1) to (12)"
+  },
+  "assumptions": [
+    {
+      "id": "A1",
+      "statement": "Demand is perfectly elastic at the total price p in equations (1)-(11); consumer surplus is zero and welfare is the airlines' joint profit.",
+      "status": "assumed"
+    },
+    {
+      "id": "A2",
+      "statement": "Every seat is sold; s is exogenous and identical across the two airlines.",
+      "status": "assumed"
+    },
+    {
+      "id": "A3",
+      "statement": "c' > 0 and c'' >= 0 (equation 5). Every bound on lambda is conditional on this.",
+      "status": "assumed"
+    },
+    {
+      "id": "A4",
+      "statement": "Airline 1 leads and airline 2 follows by assumption; f1 > f2 is a consequence of who leads, not of size.",
+      "status": "assumed"
+    },
+    {
+      "id": "A5",
+      "statement": "The tolls of (10)-(11) are per-flight constants evaluated at the efficient allocation; they are not assumed to alter the follower's reaction slope.",
+      "status": "assumed"
+    },
+    {
+      "id": "A6",
+      "statement": "'Pressuposição 2' (the leader under inelastic demand sits between the two endpoint readings of (12)) needs -1 < df2/df1 <= -1/2, which holds iff c''/s >= s^2 d''.",
+      "status": "holds iff c''/s >= s^2 d''; verified symbolically for d'' = 0 and numerically for linear demand"
+    },
+    {
+      "id": "A7",
+      "statement": "'Pressuposição 3' (entry of a low-cost carrier breaks the Stackelberg structure and the entrant has incentives to internalise its own congestion).",
+      "status": "verbal in the monograph; illustrated by this repository's Cournot extension"
+    },
+    {
+      "id": "A8",
+      "statement": "Existence and uniqueness of an interior equilibrium.",
+      "status": "verified numerically for the chosen parameters only"
+    }
+  ],
+  "identities": [
+    {
+      "id": "eq6_social_foc",
+      "equation": "(6)",
+      "statement": "The efficient condition is p - tau - [F c'(F) + c(F)]/s = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq7_follower_foc",
+      "equation": "(7)",
+      "statement": "The follower's condition is p - tau - [f2 c' + c]/s = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq8_reaction_slope",
+      "equation": "(8)",
+      "statement": "df2/df1 = -(f2 c'' + c')/(f2 c'' + 2 c')",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq8_lambda_of_x",
+      "equation": "(8)",
+      "statement": "lambda = (1 + x)/(2 + x) with x = f2 c''/c'",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "eq8_lambda_minus_half",
+      "equation": "(8)",
+      "statement": "lambda - 1/2 = x/(2(2 + x)) >= 0, so lambda >= 1/2",
+      "method": "symbolic: sign under the declared assumptions",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq8_one_minus_lambda",
+      "equation": "(8)",
+      "statement": "1 - lambda = 1/(2 + x) > 0, so lambda < 1",
+      "method": "symbolic: sign under the declared assumptions",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq8_lambda_half_when_linear",
+      "equation": "(8)",
+      "statement": "lambda = 1/2 exactly when c'' = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq9_leader_foc",
+      "equation": "(9)",
+      "statement": "The leader's condition is p - tau - (1/s)[f1 c'(1 + df2/df1) + c] = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "f1_over_f2",
+      "equation": "(7),(9)",
+      "statement": "At one point (7) and (9) give f1 = f2/(1 - lambda); with lambda = (1+x)/(2+x), f1 - 2 f2 = f2 x >= 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "eq10_gap",
+      "equation": "(10)",
+      "statement": "F c' - f1 c'(1 - lambda) = (f2 + lambda f1) c'",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq10_two_forms",
+      "equation": "(10)",
+      "statement": "(f2 - f1 df2/df1) c' = (f2 + lambda f1) MCD/(f1 + f2) when df2/df1 = -lambda",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq11_symmetric",
+      "equation": "(11)",
+      "statement": "At f1 = f2 = f*: T1* = (1/2)(1 + lambda*) MCD*",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "BVD",
+      "holds": true
+    },
+    {
+      "id": "eq11_linear_3_4",
+      "equation": "(11)",
+      "statement": "With c'' = 0 (lambda* = 1/2) the leader's toll is 3/4 of MCD*, halfway between the Cournot toll (1/2) and the atomistic toll (1)",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "eq11_follower_half",
+      "equation": "(11)",
+      "statement": "The follower's toll F c' - f2 c' = f1 c' is 1/2 MCD* at the symmetric optimum",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "BVD",
+      "holds": true
+    },
+    {
+      "id": "monopoly_foc_is_social",
+      "equation": "benchmark",
+      "statement": "A monopolist's condition coincides with the efficient one (full internalisation)",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "Brueckner (2002)",
+      "holds": true
+    },
+    {
+      "id": "cournot_toll_half_at_symmetry",
+      "equation": "benchmark",
+      "statement": "A Cournot duopolist's toll is the rival's flights times c', i.e. 1/2 MCD at symmetry",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "Brueckner (2002)",
+      "holds": true
+    },
+    {
+      "id": "eq12_leader_foc",
+      "equation": "(12)",
+      "statement": "With p = d(sF): d + s f1 d'(1 + df2/df1) - tau - (1/s)[f1 c'(1 + df2/df1) + c] = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq12_social_foc",
+      "equation": "(12)",
+      "statement": "The efficient condition under inelastic demand is d - tau - [F c' + c]/s = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq12_limit_minus_1",
+      "equation": "(12)",
+      "statement": "At df2/df1 = -1 the condition collapses to d - tau - c/s = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "eq12_limit_minus_half",
+      "equation": "(12)",
+      "statement": "At df2/df1 = -1/2: d + s f1 d'/2 - tau - (f1 c'/2 + c)/s = 0",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "monograph",
+      "holds": true
+    },
+    {
+      "id": "lambda_inelastic_general",
+      "equation": "(12)",
+      "statement": "Under p = d(sF), df2/df1 = -A_/B_ with B_ = A_ + c'/s - s d'; and -df2/df1 - 1/2 = f2 (c''/s - s^2 d'')/(2 B_), so the bound <= -1/2 holds iff c''/s >= s^2 d''",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "lambda_linear_demand",
+      "equation": "(12)",
+      "statement": "With d'' = 0: df2/df1 = -(k + f2 c'')/(2k + f2 c''), k = c' - s^2 d' > 0, so the elastic-case bounds hold",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "linear_F_star",
+      "equation": "linear",
+      "statement": "c = a + bF: the efficient total is D/(2b)",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "linear_cournot",
+      "equation": "linear",
+      "statement": "c = a + bF: each Cournot duopolist flies D/(3b)",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "linear_stackelberg",
+      "equation": "linear",
+      "statement": "c = a + bF: the leader flies D/(2b) and the follower D/(4b)",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "linear_atomistic",
+      "equation": "linear",
+      "statement": "c = a + bF: price-taking airlines fly D/b in total, twice the efficient total",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "linear_welfare_losses",
+      "equation": "linear",
+      "statement": "c = a + bF: the welfare loss is 1/9 of W* under Cournot, 1/4 under Stackelberg and all of it under atomistic behaviour",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "inelastic_linear_closed_forms",
+      "equation": "(12) linear",
+      "statement": "c = a + bF, d = d0 - dd Q: f1 = Dp/(2m), f2 = Dp/(4m), F* = Dp/(s^2 dd + 2b)",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    },
+    {
+      "id": "T1_equals_T2_at_stackelberg",
+      "equation": "(10)",
+      "statement": "At any Stackelberg equilibrium f2 = (1 - lambda) f1, so T1 = T2 = f1 c'",
+      "method": "symbolic: simplify(lhs - rhs) == 0",
+      "origin": "here",
+      "holds": true
+    }
+  ],
+  "reaction_slope": {
+    "expression": "(-c1 - c2*f2)/(2*c1 + c2*f2)",
+    "x": "f2 c''/c'",
+    "lambda_of_x": "(x + 1)/(x + 2)",
+    "lambda_minus_half": "x/(2*x + 4)",
+    "one_minus_lambda": "1/(x + 2)",
+    "lambda_lower": 0.5,
+    "lambda_upper_exclusive": 1.0,
+    "lambda_linear_cost": 0.5
+  },
+  "leader_follower": {
+    "f1": "-f2/(lambda - 1)",
+    "f1_minus_2_f2": "f2 x",
+    "statement": "f1 = f2/(1 - lambda) >= 2 f2; equality under linear cost"
+  },
+  "tolls": {
+    "MCD": "(f1 + f2) c'",
+    "leader_difference_form": "c1*(-f1*slope + f2)",
+    "leader_share_form": "c1*(f1*lambda + f2)",
+    "follower": "c1*f1",
+    "leader_symmetric_share": "lambda/2 + 1/2",
+    "leader_over_MCD_linear": 0.75,
+    "leader_over_MCD_linear_exact": "3/4",
+    "follower_over_MCD": 0.5,
+    "cournot_over_MCD": 0.5,
+    "atomistic_over_MCD": 1.0,
+    "monopoly_over_MCD": 0.0
+  },
+  "benchmarks": {
+    "cournot": "p - tau - (c0 + c1*f1)/s",
+    "atomistic": "-c0/s + p - tau",
+    "monopoly": "-F*c1/s - c0/s + p - tau"
+  },
+  "linear_closed_forms": {
+    "D": "-a + s*(p - tau)",
+    "F_star": "(-a + p*s - s*tau)/(2*b)",
+    "f_cournot": "(-a + p*s - s*tau)/(3*b)",
+    "f1_stackelberg": "(-a + p*s - s*tau)/(2*b)",
+    "f2_stackelberg": "(-a + p*s - s*tau)/(4*b)",
+    "F_atomistic": "(-a + p*s - s*tau)/b",
+    "loss_share_cournot": "1/9",
+    "loss_share_stackelberg": "1/4",
+    "loss_share_atomistic": "1",
+    "loss_share_cournot_float": 0.1111111111,
+    "loss_share_stackelberg_float": 0.25,
+    "loss_share_atomistic_float": 1.0
+  },
+  "inelastic": {
+    "leader_foc": "-c0/s - c1*f1*slope/s - c1*f1/s + d0 + d1*f1*s*slope + d1*f1*s - tau",
+    "social_foc": "-F*c1/s - c0/s + d0 - tau",
+    "limit_slope_minus_one": "-c0/s + d0 - tau",
+    "limit_slope_minus_half": "-c0/s - c1*f1/(2*s) + d0 + d1*f1*s/2 - tau",
+    "market_power_term_at_minus_half": "d1*f1*s/2",
+    "uninternalised_term_at_minus_half": "c1*f1/(2*s)",
+    "atomistic_toll_per_seat": "c1*(f1 + f2)/s",
+    "slope_general": "(d1*s + d2*f2*s**2 - (c1 + c2*f2)/s)/(c1/s - 2*d1*s - d2*f2*s**2 + (c1 + c2*f2)/s)",
+    "slope_A": "-d1*s - d2*f2*s**2 + (c1 + c2*f2)/s",
+    "slope_B": "c1/s - 2*d1*s - d2*f2*s**2 + (c1 + c2*f2)/s",
+    "slope_bounds_condition": "c''/s >= s^2 d''",
+    "slope_linear_demand": "(-c1 - c2*f2 + d1*s**2)/(2*c1 + c2*f2 - 2*d1*s**2)",
+    "closed_forms": {
+      "Dp": "-a + d0*s - s*tau",
+      "m": "b + dd*s**2",
+      "f1_stackelberg": "(-a + d0*s - s*tau)/(2*(b + dd*s**2))",
+      "f2_stackelberg": "(-a + d0*s - s*tau)/(4*(b + dd*s**2))",
+      "F_star": "(-a + d0*s - s*tau)/(2*b + dd*s**2)",
+      "expected_f1": "(-a + d0*s - s*tau)/(2*b + 2*dd*s**2)",
+      "expected_f2": "(-a + d0*s - s*tau)/(4*b + 4*dd*s**2)",
+      "expected_F_star": "(-a + d0*s - s*tau)/(2*b + dd*s**2)"
+    }
+  },
+  "examples": {
+    "linear": {
+      "primitives": {
+        "p": 300.0,
+        "tau": 200.0,
+        "s": 100.0
+      },
+      "cost": {
+        "family": "linear",
+        "a": 1000.0,
+        "b": 100.0
+      },
+      "demand": null,
+      "social_optimum": {
+        "F_star": 45.0,
+        "f_star": 22.5,
+        "welfare_star": 202500.0,
+        "price": 300.0
+      },
+      "tolls_at_symmetric_optimum": {
+        "F_star": 45.0,
+        "f_star": 22.5,
+        "lambda_star": 0.5,
+        "MCD_star": 4500.0,
+        "T1_star": 3375.0,
+        "T1_star_over_MCD": 0.75,
+        "T2_star": 2250.0,
+        "atomistic_toll": 4500.0,
+        "monopoly_toll": 0.0,
+        "welfare_star": 202500.0
+      },
+      "stackelberg": {
+        "name": "stackelberg",
+        "f1": 45.0,
+        "f2": 22.5,
+        "F": 67.5,
+        "price": 300.0,
+        "lam": 0.5,
+        "MCD": 6750.0,
+        "T1": 4500.0,
+        "T2": 4500.0,
+        "T1_over_MCD": 0.6666666667,
+        "T2_over_MCD": 0.6666666667,
+        "profit1": 101250.0,
+        "profit2": 50625.0,
+        "welfare": 151875.0,
+        "soc_leader": -100.0,
+        "soc_follower": -200.0,
+        "foc_residuals_ok": true,
+        "foc_residual_tolerance": 1e-08,
+        "loss": 50625.0,
+        "loss_share": 0.25
+      },
+      "cournot": {
+        "name": "cournot",
+        "f1": 30.0,
+        "f2": 30.0,
+        "F": 60.0,
+        "price": 300.0,
+        "lam": 0.5,
+        "MCD": 6000.0,
+        "T1": 3000.0,
+        "T2": 3000.0,
+        "T1_over_MCD": 0.5,
+        "T2_over_MCD": 0.5,
+        "profit1": 90000.0,
+        "profit2": 90000.0,
+        "welfare": 180000.0,
+        "soc_leader": -299.9999999,
+        "soc_follower": -200.0,
+        "foc_residuals_ok": true,
+        "foc_residual_tolerance": 1e-08,
+        "loss": 22500.0,
+        "loss_share": 0.1111111111
+      },
+      "atomistic": {
+        "F": 90.0,
+        "price": 300.0,
+        "welfare": 0.0,
+        "MCD": 9000.0,
+        "loss": 202500.0,
+        "loss_share": 1.0
+      },
+      "monopoly": {
+        "F": 45.0,
+        "price": 300.0,
+        "welfare": 202500.0,
+        "loss": 0.0,
+        "loss_share": 0.0
+      }
+    },
+    "quadratic": {
+      "primitives": {
+        "p": 300.0,
+        "tau": 200.0,
+        "s": 100.0
+      },
+      "cost": {
+        "family": "quadratic",
+        "a": 1000.0,
+        "b": 50.0,
+        "q": 1.0
+      },
+      "demand": null,
+      "social_optimum": {
+        "F_star": 40.58521346,
+        "f_star": 20.29260673,
+        "welfare_star": 216058.6216,
+        "price": 300.0
+      },
+      "tolls_at_symmetric_optimum": {
+        "F_star": 40.58521346,
+        "f_star": 20.29260673,
+        "lambda_star": 0.5669886448,
+        "MCD_star": 5323.579776,
+        "T1_star": 4170.994529,
+        "T1_star_over_MCD": 0.7834943224,
+        "T2_star": 2661.789888,
+        "atomistic_toll": 5323.579776,
+        "monopoly_toll": 0.0,
+        "welfare_star": 216058.6216
+      },
+      "stackelberg": {
+        "name": "stackelberg",
+        "f1": 39.26128031,
+        "f2": 17.71629316,
+        "F": 56.97757347,
+        "price": 300.0,
+        "lam": 0.5487591587,
+        "MCD": 9341.766431,
+        "T1": 6437.088983,
+        "T2": 6437.088983,
+        "T1_over_MCD": 0.6890655028,
+        "T2_over_MCD": 0.6890655028,
+        "profit1": 114041.3555,
+        "profit2": 51460.1172,
+        "welfare": 165501.4727,
+        "soc_leader": -174.2882383,
+        "soc_follower": -363.3428802,
+        "foc_residuals_ok": true,
+        "foc_residual_tolerance": 1e-08,
+        "loss": 50557.14886,
+        "loss_share": 0.2339973684
+      },
+      "cournot": {
+        "name": "cournot",
+        "f1": 25.45157929,
+        "f2": 25.45157929,
+        "F": 50.90315858,
+        "price": 300.0,
+        "lam": 0.5717925119,
+        "MCD": 7727.421036,
+        "T1": 3863.710518,
+        "T2": 3863.710518,
+        "T1_over_MCD": 0.5,
+        "T2_over_MCD": 0.5,
+        "profit1": 98337.53459,
+        "profit2": 98337.53459,
+        "welfare": 196675.0692,
+        "soc_leader": -557.2252686,
+        "soc_follower": -354.515793,
+        "foc_residuals_ok": true,
+        "foc_residual_tolerance": 1e-08,
+        "loss": 19383.55237,
+        "loss_share": 0.08971432025
+      },
+      "atomistic": {
+        "F": 73.10708435,
+        "price": 300.0,
+        "welfare": 0.0,
+        "MCD": 14344.64578,
+        "loss": 216058.6216,
+        "loss_share": 1.0
+      },
+      "monopoly": {
+        "F": 40.58521346,
+        "price": 300.0,
+        "welfare": 216058.6216,
+        "loss": 0.0,
+        "loss_share": 0.0
+      }
+    },
+    "inelastic_linear_demand": {
+      "primitives": {
+        "p": 300.0,
+        "tau": 200.0,
+        "s": 100.0
+      },
+      "cost": {
+        "family": "linear",
+        "a": 1000.0,
+        "b": 100.0
+      },
+      "demand": {
+        "family": "linear demand",
+        "d0": 400.0,
+        "dd": 0.015
+      },
+      "social_optimum": {
+        "F_star": 54.28571429,
+        "f_star": 27.14285714,
+        "welfare_star": 515714.2857,
+        "price": 318.5714286
+      },
+      "tolls_at_symmetric_optimum": {
+        "F_star": 54.28571429,
+        "f_star": 27.14285714,
+        "lambda_star": 0.5,
+        "MCD_star": 5428.571429,
+        "T1_star": 4071.428571,
+        "T1_star_over_MCD": 0.75,
+        "T2_star": 2714.285714,
+        "atomistic_toll": 5428.571429,
+        "monopoly_toll": 0.0,
+        "welfare_star": 515714.2857
+      },
+      "stackelberg": {
+        "name": "stackelberg",
+        "f1": 38.0,
+        "f2": 19.0,
+        "F": 57.0,
+        "price": 314.5,
+        "lam": 0.5,
+        "MCD": 5700.0,
+        "T1": 3800.0,
+        "T2": 3800.0,
+        "T1_over_MCD": 0.6666666667,
+        "T2_over_MCD": 0.6666666667,
+        "profit1": 180500.0,
+        "profit2": 90250.0,
+        "welfare": 514425.0,
+        "soc_leader": -250.0000001,
+        "soc_follower": -500.0000003,
+        "foc_residuals_ok": true,
+        "foc_residual_tolerance": 1e-08,
+        "loss": 1289.285714,
+        "loss_share": 0.0025
+      },
+      "cournot": {
+        "name": "cournot",
+        "f1": 25.33333333,
+        "f2": 25.33333333,
+        "F": 50.66666667,
+        "price": 324.0,
+        "lam": 0.5,
+        "MCD": 5066.666667,
+        "T1": 2533.333333,
+        "T2": 2533.333333,
+        "T1_over_MCD": 0.5,
+        "T2_over_MCD": 0.5,
+        "profit1": 160444.4444,
+        "profit2": 160444.4444,
+        "welfare": 513422.2222,
+        "soc_leader": -750.0000002,
+        "soc_follower": -499.9999999,
+        "foc_residuals_ok": true,
+        "foc_residual_tolerance": 1e-08,
+        "loss": 2292.063492,
+        "loss_share": 0.004444444444
+      },
+      "atomistic": {
+        "F": 76.0,
+        "price": 286.0,
+        "welfare": 433200.0,
+        "MCD": 7600.0,
+        "loss": 82514.28571,
+        "loss_share": 0.16
+      },
+      "monopoly": {
+        "F": 38.0,
+        "price": 343.0,
+        "welfare": 469300.0,
+        "loss": 46414.28571,
+        "loss_share": 0.09
+      },
+      "equation_12_terms_at_stackelberg": {
+        "market_power_term": -28.5,
+        "uninternalised_term": 19.0,
+        "atomistic_toll_per_seat": 57.0,
+        "F_star": 54.28571429,
+        "F_exceeds_optimum_by": 2.714285714
+      }
+    }
+  },
+  "comparative_statics": {
+    "cost_curvature": [
+      {
+        "q": 0.0,
+        "F_star": 90.0,
+        "lambda_star": 0.5,
+        "T1_star_over_MCD": 0.75,
+        "stackelberg_lambda": 0.5,
+        "f1_over_f2": 2.0,
+        "T1_over_MCD": 0.6666666667,
+        "loss_share": 0.25
+      },
+      {
+        "q": 0.25,
+        "F_star": 61.56922708,
+        "lambda_star": 0.5434905441,
+        "T1_star_over_MCD": 0.771745272,
+        "stackelberg_lambda": 0.5346438375,
+        "f1_over_f2": 2.148891711,
+        "T1_over_MCD": 0.6824279487,
+        "loss_share": 0.2394178495
+      },
+      {
+        "q": 0.5,
+        "F_star": 50.99407094,
+        "lambda_star": 0.5560410919,
+        "T1_star_over_MCD": 0.778020546,
+        "stackelberg_lambda": 0.5424499129,
+        "f1_over_f2": 2.185553075,
+        "T1_over_MCD": 0.6860827692,
+        "loss_share": 0.236498164
+      },
+      {
+        "q": 1.0,
+        "F_star": 40.58521346,
+        "lambda_star": 0.5669886448,
+        "T1_star_over_MCD": 0.7834943224,
+        "stackelberg_lambda": 0.5487591587,
+        "f1_over_f2": 2.216111461,
+        "T1_over_MCD": 0.6890655028,
+        "loss_share": 0.2339973684
+      },
+      {
+        "q": 2.0,
+        "F_star": 31.28288108,
+        "lambda_star": 0.5757768844,
+        "T1_star_over_MCD": 0.7878884422,
+        "stackelberg_lambda": 0.5535464397,
+        "f1_over_f2": 2.239874623,
+        "T1_over_MCD": 0.6913460808,
+        "loss_share": 0.2320176577
+      },
+      {
+        "q": 4.0,
+        "F_star": 23.5346169,
+        "lambda_star": 0.5824774238,
+        "T1_star_over_MCD": 0.7912387119,
+        "stackelberg_lambda": 0.5570540223,
+        "f1_over_f2": 2.257611651,
+        "T1_over_MCD": 0.6930266382,
+        "loss_share": 0.2305231787
+      }
+    ],
+    "demand_slope": [
+      {
+        "dd": 0.0,
+        "f1": 45.0,
+        "f2": 22.5,
+        "F": 67.5,
+        "F_star": 45.0,
+        "price": 300.0,
+        "lambda": 0.5,
+        "market_power_term": 0.0,
+        "uninternalised_term": 22.5,
+        "loss_share": 0.25
+      },
+      {
+        "dd": 0.005,
+        "f1": 63.33333333,
+        "f2": 31.66666667,
+        "F": 95.0,
+        "F_star": 76.0,
+        "price": 352.5,
+        "lambda": 0.5,
+        "market_power_term": -15.83333333,
+        "uninternalised_term": 31.66666667,
+        "loss_share": 0.0625
+      },
+      {
+        "dd": 0.015,
+        "f1": 38.0,
+        "f2": 19.0,
+        "F": 57.0,
+        "F_star": 54.28571429,
+        "price": 314.5,
+        "lambda": 0.5,
+        "market_power_term": -28.5,
+        "uninternalised_term": 19.0,
+        "loss_share": 0.0025
+      },
+      {
+        "dd": 0.03,
+        "f1": 23.75,
+        "f2": 11.875,
+        "F": 35.625,
+        "F_star": 38.0,
+        "price": 293.125,
+        "lambda": 0.5,
+        "market_power_term": -35.625,
+        "uninternalised_term": 11.875,
+        "loss_share": 0.00390625
+      }
+    ]
+  },
+  "extension_lcc": {
+    "label": "extension of this repository, not of the monograph",
+    "entrant_tau": 170.0,
+    "incumbent_tau": 200.0,
+    "cost": {
+      "family": "linear",
+      "a": 1000.0,
+      "b": 100.0
+    },
+    "triopoly": {
+      "n_firms": 3,
+      "tau": [
+        170.0,
+        200.0,
+        200.0
+      ],
+      "D": [
+        12000.0,
+        9000.0,
+        9000.0
+      ],
+      "F": 75.0,
+      "flights": [
+        45.0,
+        15.0,
+        15.0
+      ],
+      "internalised_share": [
+        0.6,
+        0.2,
+        0.2
+      ],
+      "MCD": 7500.0,
+      "welfare": 247500.0
+    },
+    "duopoly_cournot": {
+      "n_firms": 2,
+      "tau": [
+        200.0,
+        200.0
+      ],
+      "D": [
+        9000.0,
+        9000.0
+      ],
+      "F": 60.0,
+      "flights": [
+        30.0,
+        30.0
+      ],
+      "internalised_share": [
+        0.5,
+        0.5
+      ],
+      "MCD": 6000.0,
+      "welfare": 180000.0
+    },
+    "stackelberg_duopoly_F": 67.5
+  },
+  "bridge": {
+    "rows": [
+      {
+        "variable": "dailyflcong",
+        "theory_object": "flight volumes in the congested (peak) period: f1 + f2 with c' > 0",
+        "theory_object_pt": "volumes de voo no pico: f1 + f2, com c' > 0",
+        "expected_sign": "+",
+        "rationale": "more flights in congested hours raise c(F) and delays"
+      },
+      {
+        "variable": "dailyflncong",
+        "theory_object": "flight volumes off peak: the period where the model puts no congestion",
+        "theory_object_pt": "volumes fora do pico: o período sem congestionamento no modelo",
+        "expected_sign": "+",
+        "rationale": "the model predicts nothing here; the article finds the same positive sign as on peak"
+      },
+      {
+        "variable": "prwheather",
+        "theory_object": "non-strategic delay: weather and airport restrictions",
+        "theory_object_pt": "atraso não estratégico: clima e restrições de aeroporto",
+        "expected_sign": "+",
+        "rationale": "a control outside the game"
+      },
+      {
+        "variable": "princident",
+        "theory_object": "non-strategic delay: incidents",
+        "theory_object_pt": "atraso não estratégico: incidentes",
+        "expected_sign": "+",
+        "rationale": "a control outside the game"
+      },
+      {
+        "variable": "pr_connc",
+        "theory_object": "non-strategic delay: aircraft rotation (code RA)",
+        "theory_object_pt": "atraso não estratégico: rotação de aeronave (código RA)",
+        "expected_sign": "+",
+        "rationale": "a control outside the game"
+      },
+      {
+        "variable": "maxprdel",
+        "theory_object": "the airport's congestion state: delays of all carriers at the busier endpoint",
+        "theory_object_pt": "o estado de congestionamento do aeroporto: atrasos de todas as empresas na ponta mais movimentada",
+        "expected_sign": "+",
+        "rationale": "c(F) is a function of everybody's traffic"
+      },
+      {
+        "variable": "cshare",
+        "theory_object": "cooperation outside the model",
+        "theory_object_pt": "cooperação fora do modelo",
+        "expected_sign": null,
+        "rationale": "no prediction"
+      },
+      {
+        "variable": "rthhi",
+        "theory_object": "market power on the route: d' < 0 in equation (12)",
+        "theory_object_pt": "poder de mercado na rota: d' < 0 na equação (12)",
+        "expected_sign": null,
+        "rationale": "ambiguous: the monograph's Table 1 expected '-, +'; the 2016 article reads it as the competition-quality channel"
+      },
+      {
+        "variable": "maxcthhi",
+        "theory_object": "internalisation at the airport: the dominant carrier's own share of MCD, Proposition 1",
+        "theory_object_pt": "internalização no aeroporto: a parcela própria do dano marginal da dominante, Proposição 1",
+        "expected_sign": "-",
+        "rationale": "a carrier that faces its own congestion restrains flights; the toll it needs is smaller"
+      },
+      {
+        "variable": "lcc",
+        "theory_object": "a low-cost carrier on the route: 'Pressuposição 3'",
+        "theory_object_pt": "uma LCC na rota: 'Pressuposição 3'",
+        "expected_sign": "-",
+        "rationale": "the monograph's Table 1 expects both LCC dummies to reduce delays"
+      },
+      {
+        "variable": "maxalccfu",
+        "theory_object": "a low-cost carrier at either endpoint city: the non-price spillover",
+        "theory_object_pt": "uma LCC em uma das cidades-extremo: o spillover não-preço",
+        "expected_sign": "-",
+        "rationale": "same expectation, at the city rather than the route"
+      }
+    ],
+    "tables": {
+      "table3": {
+        "caption": "Estimation results.a",
+        "variables": {
+          "dailyflcong": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 0.0043,
+                "se": 0.002,
+                "stars": "**",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 0.0043,
+                "se": 0.002,
+                "stars": "*",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 0.0801,
+                "se": 0.041,
+                "stars": "*",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 0.0827,
+                "se": 0.043,
+                "stars": "*",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 0.0778,
+                "se": 0.041,
+                "stars": "*",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 0.081,
+                "se": 0.043,
+                "stars": "*",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "dailyflncong": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 0.0046,
+                "se": 0.002,
+                "stars": "**",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 0.0044,
+                "se": 0.002,
+                "stars": "**",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 0.045,
+                "se": 0.028,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 0.0571,
+                "se": 0.036,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 0.0451,
+                "se": 0.028,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 0.0589,
+                "se": 0.036,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "prwheather": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 4.7119,
+                "se": 0.092,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 4.7145,
+                "se": 0.093,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 31.7681,
+                "se": 1.247,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 31.6405,
+                "se": 1.258,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 31.1137,
+                "se": 1.254,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 30.9731,
+                "se": 1.265,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "princident": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 6.2157,
+                "se": 0.394,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 6.1807,
+                "se": 0.395,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 50.0528,
+                "se": 4.998,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 50.5325,
+                "se": 5.005,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 48.4526,
+                "se": 5.112,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 48.9637,
+                "se": 5.115,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "pr_connc": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 2.4272,
+                "se": 0.275,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 2.4781,
+                "se": 0.257,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 22.0148,
+                "se": 5.062,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 19.5129,
+                "se": 4.44,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 21.9546,
+                "se": 5.125,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 19.3264,
+                "se": 4.49,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "maxprdel": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 1.5564,
+                "se": 0.225,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 1.546,
+                "se": 0.228,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 12.5036,
+                "se": 2.893,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 12.6235,
+                "se": 2.894,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 12.3394,
+                "se": 2.928,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 12.4196,
+                "se": 2.933,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "cshare": {
+            "expected_sign": null,
+            "columns": {
+              "1": {
+                "b": 0.0207,
+                "se": 0.061,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              },
+              "2": {
+                "b": 0.0081,
+                "se": 0.061,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              },
+              "3": {
+                "b": 1.1053,
+                "se": 0.897,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              },
+              "4": {
+                "b": 1.3287,
+                "se": 0.866,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              },
+              "5": {
+                "b": 1.0843,
+                "se": 0.901,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              },
+              "6": {
+                "b": 1.3123,
+                "se": 0.87,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "rthhi": {
+            "expected_sign": null,
+            "columns": {
+              "1": {
+                "b": 0.805,
+                "se": 0.373,
+                "stars": "**",
+                "sign": "+",
+                "agrees": null
+              },
+              "2": {
+                "b": 0.8192,
+                "se": 0.41,
+                "stars": "**",
+                "sign": "+",
+                "agrees": null
+              },
+              "3": {
+                "b": 30.629,
+                "se": 8.617,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              },
+              "4": {
+                "b": 30.0753,
+                "se": 8.853,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              },
+              "5": {
+                "b": 31.9607,
+                "se": 8.778,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              },
+              "6": {
+                "b": 31.5567,
+                "se": 9.041,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "maxcthhi": {
+            "expected_sign": "-",
+            "columns": {
+              "1": {
+                "b": -1.4772,
+                "se": 0.523,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              },
+              "2": {
+                "b": -1.5144,
+                "se": 0.527,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              },
+              "3": {
+                "b": -19.4278,
+                "se": 6.583,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              },
+              "4": {
+                "b": -19.1045,
+                "se": 6.514,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              },
+              "5": {
+                "b": -20.9849,
+                "se": 6.684,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              },
+              "6": {
+                "b": -20.6986,
+                "se": 6.615,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 0,
+              "negative": 6,
+              "absent": 0
+            }
+          },
+          "lcc": {
+            "expected_sign": "-",
+            "columns": {
+              "1": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "2": {
+                "b": -0.0412,
+                "se": 0.072,
+                "stars": "",
+                "sign": "-",
+                "agrees": true
+              },
+              "3": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "4": {
+                "b": 2.4889,
+                "se": 1.464,
+                "stars": "*",
+                "sign": "+",
+                "agrees": false
+              },
+              "5": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "6": {
+                "b": 2.7123,
+                "se": 1.497,
+                "stars": "*",
+                "sign": "+",
+                "agrees": false
+              }
+            },
+            "pattern": {
+              "positive": 2,
+              "negative": 1,
+              "absent": 3
+            }
+          },
+          "maxalccfu": {
+            "expected_sign": "-",
+            "columns": {
+              "1": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "2": {
+                "b": -0.4234,
+                "se": 0.179,
+                "stars": "**",
+                "sign": "-",
+                "agrees": true
+              },
+              "3": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "4": {
+                "b": -0.4861,
+                "se": 1.683,
+                "stars": "",
+                "sign": "-",
+                "agrees": true
+              },
+              "5": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "6": {
+                "b": -0.823,
+                "se": 1.706,
+                "stars": "",
+                "sign": "-",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 0,
+              "negative": 3,
+              "absent": 3
+            }
+          }
+        }
+      },
+      "table6": {
+        "caption": "Estimation results – OLS.a",
+        "variables": {
+          "dailyflcong": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 0.0022,
+                "se": 0.002,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 0.0016,
+                "se": 0.002,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 0.0109,
+                "se": 0.033,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 0.0064,
+                "se": 0.033,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 0.0054,
+                "se": 0.032,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 0.001,
+                "se": 0.032,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "dailyflncong": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 0.0027,
+                "se": 0.001,
+                "stars": "*",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 0.0014,
+                "se": 0.001,
+                "stars": "",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": -0.0225,
+                "se": 0.013,
+                "stars": "*",
+                "sign": "-",
+                "agrees": false
+              },
+              "4": {
+                "b": -0.0334,
+                "se": 0.014,
+                "stars": "**",
+                "sign": "-",
+                "agrees": false
+              },
+              "5": {
+                "b": -0.0257,
+                "se": 0.013,
+                "stars": "*",
+                "sign": "-",
+                "agrees": false
+              },
+              "6": {
+                "b": -0.0365,
+                "se": 0.014,
+                "stars": "***",
+                "sign": "-",
+                "agrees": false
+              }
+            },
+            "pattern": {
+              "positive": 2,
+              "negative": 4,
+              "absent": 0
+            }
+          },
+          "prwheather": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 4.7278,
+                "se": 0.089,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 4.7385,
+                "se": 0.089,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 32.1218,
+                "se": 1.219,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 32.2104,
+                "se": 1.215,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 31.4908,
+                "se": 1.215,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 31.5801,
+                "se": 1.211,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "princident": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 6.3678,
+                "se": 0.392,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 6.3062,
+                "se": 0.392,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 50.1286,
+                "se": 4.495,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 49.6672,
+                "se": 4.528,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 48.5654,
+                "se": 4.544,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 48.0825,
+                "se": 4.577,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "pr_connc": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 2.2006,
+                "se": 0.239,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 2.3032,
+                "se": 0.234,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 13.6712,
+                "se": 3.805,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 14.5348,
+                "se": 3.827,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 13.1073,
+                "se": 3.813,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 13.9719,
+                "se": 3.835,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "maxprdel": {
+            "expected_sign": "+",
+            "columns": {
+              "1": {
+                "b": 1.6748,
+                "se": 0.207,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "2": {
+                "b": 1.6945,
+                "se": 0.206,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "3": {
+                "b": 16.6318,
+                "se": 2.241,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "4": {
+                "b": 16.8295,
+                "se": 2.232,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "5": {
+                "b": 16.7074,
+                "se": 2.237,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              },
+              "6": {
+                "b": 16.8936,
+                "se": 2.228,
+                "stars": "***",
+                "sign": "+",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "cshare": {
+            "expected_sign": null,
+            "columns": {
+              "1": {
+                "b": 0.0292,
+                "se": 0.055,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              },
+              "2": {
+                "b": 0.0132,
+                "se": 0.056,
+                "stars": "",
+                "sign": "+",
+                "agrees": null
+              },
+              "3": {
+                "b": 1.7922,
+                "se": 0.777,
+                "stars": "**",
+                "sign": "+",
+                "agrees": null
+              },
+              "4": {
+                "b": 1.6754,
+                "se": 0.784,
+                "stars": "**",
+                "sign": "+",
+                "agrees": null
+              },
+              "5": {
+                "b": 1.8006,
+                "se": 0.775,
+                "stars": "**",
+                "sign": "+",
+                "agrees": null
+              },
+              "6": {
+                "b": 1.6769,
+                "se": 0.781,
+                "stars": "**",
+                "sign": "+",
+                "agrees": null
+              }
+            },
+            "pattern": {
+              "positive": 6,
+              "negative": 0,
+              "absent": 0
+            }
+          },
+          "rthhi": {
+            "expected_sign": null,
+            "columns": {
+              "1": {
+                "b": -0.2086,
+                "se": 0.064,
+                "stars": "***",
+                "sign": "-",
+                "agrees": null
+              },
+              "2": {
+                "b": -0.3126,
+                "se": 0.068,
+                "stars": "***",
+                "sign": "-",
+                "agrees": null
+              },
+              "3": {
+                "b": 3.3899,
+                "se": 0.627,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              },
+              "4": {
+                "b": 2.4833,
+                "se": 0.696,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              },
+              "5": {
+                "b": 3.2958,
+                "se": 0.63,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              },
+              "6": {
+                "b": 2.3998,
+                "se": 0.698,
+                "stars": "***",
+                "sign": "+",
+                "agrees": null
+              }
+            },
+            "pattern": {
+              "positive": 4,
+              "negative": 2,
+              "absent": 0
+            }
+          },
+          "maxcthhi": {
+            "expected_sign": "-",
+            "columns": {
+              "1": {
+                "b": 0.1614,
+                "se": 0.201,
+                "stars": "",
+                "sign": "+",
+                "agrees": false
+              },
+              "2": {
+                "b": 0.1057,
+                "se": 0.196,
+                "stars": "",
+                "sign": "+",
+                "agrees": false
+              },
+              "3": {
+                "b": -2.493,
+                "se": 1.384,
+                "stars": "*",
+                "sign": "-",
+                "agrees": true
+              },
+              "4": {
+                "b": -2.9092,
+                "se": 1.378,
+                "stars": "**",
+                "sign": "-",
+                "agrees": true
+              },
+              "5": {
+                "b": -2.9449,
+                "se": 1.391,
+                "stars": "**",
+                "sign": "-",
+                "agrees": true
+              },
+              "6": {
+                "b": -3.3809,
+                "se": 1.384,
+                "stars": "**",
+                "sign": "-",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 2,
+              "negative": 4,
+              "absent": 0
+            }
+          },
+          "lcc": {
+            "expected_sign": "-",
+            "columns": {
+              "1": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "2": {
+                "b": -0.1636,
+                "se": 0.033,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              },
+              "3": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "4": {
+                "b": -1.4236,
+                "se": 0.351,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              },
+              "5": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "6": {
+                "b": -1.4081,
+                "se": 0.35,
+                "stars": "***",
+                "sign": "-",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 0,
+              "negative": 3,
+              "absent": 3
+            }
+          },
+          "maxalccfu": {
+            "expected_sign": "-",
+            "columns": {
+              "1": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "2": {
+                "b": -0.1793,
+                "se": 0.137,
+                "stars": "",
+                "sign": "-",
+                "agrees": true
+              },
+              "3": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "4": {
+                "b": -0.6575,
+                "se": 1.34,
+                "stars": "",
+                "sign": "-",
+                "agrees": true
+              },
+              "5": {
+                "b": null,
+                "se": null,
+                "stars": null,
+                "sign": null,
+                "agrees": null
+              },
+              "6": {
+                "b": -0.9704,
+                "se": 1.343,
+                "stars": "",
+                "sign": "-",
+                "agrees": true
+              }
+            },
+            "pattern": {
+              "positive": 0,
+              "negative": 3,
+              "absent": 3
+            }
+          }
+        }
+      }
+    }
+  }
+}

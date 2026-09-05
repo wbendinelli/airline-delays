@@ -1,0 +1,194 @@
+{
+  "canvas": {
+    "width": 500,
+    "height": 350,
+    "X": "60 + 4 Q",
+    "Y": "320 - 2.5 P"
+  },
+  "source": "Redrawn from piecewise-linear curves; nothing copied from Cohen and Coughlin (2003), Cohen, Coughlin and Ott (2009) or the monograph. Stylised, not calibrated.",
+  "figures": {
+    "fig1": {
+      "file": "figures/fig1_nivel_eficiente.svg",
+      "title": "Figura 1 — O nível eficiente de congestionamento",
+      "curves": {
+        "CMgP": "30 for Q <= 40, 30 + 0.5 (Q - 40) beyond",
+        "CMgS": "30 + 1.5 (Q - 40) for Q >= 40",
+        "BMg": "100 - Q"
+      },
+      "points": {
+        "A": [
+          60.0,
+          40.0
+        ],
+        "B": [
+          60.0,
+          60.0
+        ],
+        "C": [
+          52.0,
+          48.0
+        ],
+        "D": [
+          60.0,
+          48.0
+        ]
+      },
+      "quantities": {
+        "Q_c": 40.0,
+        "Q_P": 60.0,
+        "P_P": 40.0,
+        "Q_S": 52.0,
+        "P_S": 48.0,
+        "triangle_ABC_area": 80.0,
+        "toll_AD_equals_PS_minus_PP": 8.0,
+        "toll_pigou_at_QS": 12.0
+      },
+      "note": "AD = P_S - P_P is what the monograph's text says; the Pigouvian toll t* = CMgS(Q_S) - CMgP(Q_S) coincides with it only when CMgP is flat between Q_S and Q_P."
+    },
+    "fig2": {
+      "file": "figures/fig2_incerteza.svg",
+      "title": "Figura 2 — Benefício marginal em condições de incerteza",
+      "curves": {
+        "CMgP": "as Figure 1",
+        "CMgS": "as Figure 1",
+        "BMgE": "100 - Q (expected)",
+        "BMgR": "115 - Q (realised)",
+        "CMgP + t": "CMgP shifted up by the toll set on BMgE"
+      },
+      "points": {
+        "A": [
+          52.0,
+          63.0
+        ],
+        "B": [
+          52.0,
+          48.0
+        ],
+        "C": [
+          58.0,
+          57.0
+        ],
+        "E": [
+          62.0,
+          63.0
+        ],
+        "F": [
+          62.0,
+          53.0
+        ]
+      },
+      "quantities": {
+        "toll_set_on_expectations": 12.0,
+        "Q_Q_quota": 52.0,
+        "Q_S_efficient_under_BMgR": 58.0,
+        "P_S": 57.0,
+        "Q_T_under_the_toll": 62.0,
+        "triangle_ABC_area_quantity_regulation": 45.0,
+        "triangle_CEF_area_price_regulation": 20.0
+      },
+      "note": "With these slopes (|CMgS'| = 1.5 > |BMg'| = 1) the price instrument loses less: CEF < ABC, the case the monograph's text concludes with."
+    },
+    "fig3": {
+      "file": "figures/fig3_expansao.svg",
+      "title": "Figura 3 — Custo marginal social e privado antes e depois de uma expansão",
+      "curves": {
+        "before": "CMgP/CMgS as Figure 1 with the congestion threshold at Q_T = 40",
+        "after": "the same curves shifted right by 24 (threshold Q_TX = 64)",
+        "BMg": "100 - Q (elastic demand)",
+        "inelastic demand": "vertical at Q_I = 50"
+      },
+      "points": {
+        "E": [
+          60.0,
+          40.0
+        ],
+        "E'": [
+          68.0,
+          32.0
+        ],
+        "I": [
+          50.0,
+          35.0
+        ],
+        "I'": [
+          50.0,
+          30.0
+        ]
+      },
+      "quantities": {
+        "Q_T": 40.0,
+        "Q_TX": 64.0,
+        "Q_E_before": 60.0,
+        "Q_E_after": 68.0,
+        "elastic_still_congested_after": true,
+        "Q_I": 50.0,
+        "P_I_before": 35.0,
+        "P_I_after": 30.0,
+        "inelastic_uncongested_after": true
+      },
+      "note": "Elastic demand: the equilibrium moves from Q_E to Q_E' and stays beyond the new threshold, so congestion persists. Inelastic demand: Q_I is below the new threshold, so the expansion removes congestion."
+    },
+    "fig4": {
+      "file": "figures/fig4_externalidade_de_rede.svg",
+      "title": "Figura 4 — Expansão do aeroporto levando em conta as externalidades de rede",
+      "curves": {
+        "CMg": "30 (flat)",
+        "BMg local": "100 - Q",
+        "BMg social": "115 - Q"
+      },
+      "points": {
+        "Q_0": [
+          70.0,
+          30.0
+        ],
+        "Q_1": [
+          85.0,
+          30.0
+        ]
+      },
+      "quantities": {
+        "Q_0": 70.0,
+        "Q_1": 85.0,
+        "subsidy_at_Q_1": 15.0
+      },
+      "note": "The spoke airport that sets flights where its local marginal benefit meets marginal cost stops at Q_0; the network-wide benefit justifies Q_1, reached with a subsidy equal to the gap between the two benefit curves."
+    },
+    "fig5": {
+      "file": "figures/fig5_congestionamento_e_rede.svg",
+      "title": "Figura 5 — Congestionamento e externalidades de rede",
+      "curves": {
+        "CMgP": "as Figure 1",
+        "CMgS": "as Figure 1",
+        "BMg local": "100 - Q",
+        "BMg social": "120 - Q"
+      },
+      "points": {
+        "market": [
+          60.0,
+          40.0
+        ],
+        "congestion_only": [
+          52.0,
+          48.0
+        ],
+        "network_only": [
+          73.3333,
+          46.6667
+        ],
+        "both": [
+          60.0,
+          60.0
+        ]
+      },
+      "quantities": {
+        "Q_0": 60.0,
+        "Q_S_congestion_only": 52.0,
+        "Q_N_network_only": 73.3333,
+        "Q_star": 60.0,
+        "P_star": 60.0,
+        "Q_star_equals_Q_0": true
+      },
+      "note": "Drawn as the monograph describes its Figure 5: the two externalities offset each other exactly, so the market quantity Q_0 is already the efficient Q* and no intervention is needed."
+    }
+  }
+}

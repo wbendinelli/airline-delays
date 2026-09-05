@@ -10,6 +10,23 @@ version numbers, mark progress.
 
 ### Added
 
+- Theory layer (`theory/`, `just theory`, `reports/theory/`, `tests/test_theory.py`;
+  `DECISIONS.md` ADR-0019): the Stackelberg congestion model of the author's 2013
+  undergraduate monograph (section 4, after Brueckner and Van Dender 2008) re-derived
+  with sympy -- equations (1)-(12), the reaction-slope bounds `1/2 <= lambda < 1`, the
+  leader's toll at exactly three quarters of the marginal congestion damage under
+  linear cost, the condition `c''/s >= s^2 d''` for the inelastic-demand bounds, the
+  linear closed forms -- 29 identities pinned by the tests, three numeric examples,
+  comparative statics over cost curvature and demand slope, a low-cost-entrant
+  extension labelled as this repository's, and the join of each theory object to the
+  article's published signs (`theory/bridge.py`, from `replication/published.json`).
+  The five congestion-economics diagrams of the monograph's section 2 are redrawn as
+  hand-written SVG from piecewise-linear curves, every labelled point, toll and
+  triangle area computed into `reports/theory/figures.json`; `reports/theory.typ` is
+  the fourth Typst report. The report carries no timestamp, so
+  `tests/test_theory.py` rebuilds it in memory and fails when the committed copy is
+  stale. `sympy` joins the dependencies; `scripts/check_docs_paths.py` now also
+  checks `docs/theory/*.md` and `theory/` paths.
 - `just demo` is real (`scripts/demo.py`, `tests/test_demo.py`): the committed
   fixture (three routes cut from the 2004, 2009 and 2012 files, 19,907 staged
   legs) runs through the same code path as the full pipeline -- staged legs,
