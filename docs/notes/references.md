@@ -68,7 +68,18 @@ painel (Augusto Severo, substituído por São Gonçalo do Amarante/SBSG só em
 2014, fora da janela 2000-2013), mas vale checar se o pipeline de dados
 espera algum outro código para Natal. (iii) Coordenadas não foram
 cross-checadas linha a linha contra uma segunda fonte -- só por amostragem
-de distâncias.
+de distâncias. (iv) `monograph_airports.csv` transcreve os 38 aeroportos da
+Lista de Siglas da monografia de graduação do autor (2013); 31 deles estão
+em `nodes.csv` e cobrem os 27 nós do ADR-0001. Os 7 ausentes -- Juiz de
+Fora, Joinville, Londrina, Porto Seguro, Ribeirão Preto, São José dos
+Campos e Uberlândia -- não são capitais, e é por isso que o ADR-0001 não os
+tem. Três códigos IATA impressos na monografia divergem do OurAirports
+(`CPQ` contra `VCP` em SBKP, `PWM` contra `PMW` em SBPJ, e `NAT` em SBNT,
+cujo registro no OurAirports não traz IATA nenhum -- o item (ii) acima):
+ficam **anotados, não corrigidos**, porque a tabela é transcrição de um
+documento, não um cadastro de aeroportos. O script
+`scripts/monograph_airports.py` imprime as três contagens, e
+`docs/notes/monografia-2013.md` descreve o documento de onde vieram.
 
 ## 2. Empresas aéreas -- `groups.csv` (ADR-0003)
 
@@ -117,6 +128,18 @@ foram verificadas nesta sessão -- deliberadamente não inventei nomes de
 empresa para siglas que não reconheço com segurança (ex.: `RLE`, `TVJ`,
 `SBA`, `MSQ`).
 
+A monografia de graduação do autor (2013, seção 5.2) declara **os mesmos
+seis grupos**, com as mesmas regras e as mesmas datas que esta tabela usa:
+Trip com a Total "a partir de novembro de 2007", a Pantanal dentro da TAM
+"a partir de dezembro de 2009", e Azul com a Trip "a partir de maio de
+2012". É uma fonte convergente e datada -- escrita pelo próprio autor, não
+o ato regulatório que falta. Por isso **nenhum grau muda**: 2007-11,
+2009-12 e 2012-05 continuam B, exatamente como estavam. E a passagem da
+Varig para dentro da Gol em 2007-04, que `groups.csv` registra, **não
+aparece** na monografia: ali o grupo Gol é descrito como "a agregação entre
+Gol e Varig", sem data de corte. Ver `docs/notes/monografia-2013.md` seção
+2.
+
 **Validação.** Nenhum código tem dois períodos sobrepostos (checado
 programaticamente ao gerar o arquivo, não só por inspeção). 50 linhas para
 40 códigos distintos.
@@ -136,9 +159,17 @@ pesquisada (nem por WebSearch) -- são provavelmente companhias regionais,
 de táxi aéreo ou cargueiras de pequeno porte, ou códigos de empresas
 estrangeiras que operaram algum trecho doméstico sob tipo de linha
 internacional; ficam classificadas `other` até alguém identificar e
-reclassificar. (iii) A data de entrada em operação de TIB (Trip), PTB
-(Passaredo) e ONE (Oceanair) não foi verificada -- usei 2000-01 (início do
-painel VRA) como placeholder, não como data real de fundação/início.
+reclassificar. Uma pista nova: as Tabelas 3 e 4 da monografia de 2013
+nomeiam seis transportadoras que `groups.csv` não tem por nome -- Penta,
+Meta, Tavaj, Rico, Abaeté e Sete --, candidatas por semelhança de código a
+`PEP`, `MSQ`, `TVJ`, `RLE`, `ABJ` e `SLX`, respectivamente. É hipótese de
+grau B, não verificada: nenhum documento lido liga sigla a razão social, e
+reclassificar qualquer uma delas mudaria o escopo da leitura B do ADR-0017
+(que depende de a empresa ter classe FSC, LCC ou regional), o que é
+território de ADR, não de edição de tabela. (iii) A data de entrada em
+operação de TIB (Trip), PTB (Passaredo) e ONE (Oceanair) não foi
+verificada -- usei 2000-01 (início do painel VRA) como placeholder, não
+como data real de fundação/início.
 
 ## 3. Códigos da IAC 1504 -- `cause_codes.csv`, `di_codes.csv`, `line_types.csv` (ADR-0005)
 

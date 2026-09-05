@@ -65,6 +65,12 @@ All rows `confidence=A`.
 |---|---|---|---|
 | `events.csv` | references agent | 29 | `event, date, type, airlines, source, url, confidence, note`. Mergers (Gol-Varig, Gol-Webjet, TAM-Pantanal, TAM-LAN/LATAM, Azul-Trip), entries (Gol, Azul), exits (Transbrasil, Vasp), the 2006-2007 crisis ("apagao aereo": both fatal accidents plus the lab's own 2006m10-2007m12 period convention), an approximate 2008-2009 financial-crisis window, and the TAM-Varig codeshare (2003-2005, approximate). Where the author's research notes record genuinely divergent dates for the same fact (Vasp's bankruptcy decree: 2005, 2008 or 2013 depending on the source; TAM's Pantanal purchase: 19 or 21 Dec 2009), each version is kept as its own row with a `note`, not resolved into one. `airlines` is a `;`-separated list of ICAO codes (semicolon, not comma, so the field never needs CSV quoting). Only 4 of 29 rows are `confidence=A`. |
 
+## Monograph (2013)
+
+| File | Owner | Rows | Contents |
+|---|---|---|---|
+| `monograph_airports.csv` | theory layer | 38 | `icao, iata_as_printed, city_as_printed, uf, airport_name_as_printed, in_tables_3_4, note` (+ source/url/retrieved_at/confidence). A verbatim transcription of the "Lista de Siglas" of the author's 2013 undergraduate monograph (USP/ESALQ, Piracicaba) -- printed spellings kept as printed, including "São Luiz". `in_tables_3_4` is `True` for the 37 airports that also appear in that document's Tables 3 and 4 and `False` for the one that does not (`SBPS`, Porto Seguro). Three IATA codes differ from OurAirports (`CPQ`/`VCP` for SBKP, `PWM`/`PMW` for SBPJ, and `NAT` where the OurAirports record carries none, for SBNT); they are **annotated in `note`, not corrected** -- the table is a transcription of a document, not an airport register. `url` is deliberately blank: the source is a document, not a page. `scripts/monograph_airports.py` joins it to `nodes.csv` and prints the counts (38 listed, 37 in Tables 3-4, 31 in the ADR-0001 map covering all 27 nodes); the document itself is not redistributed -- see `docs/notes/monografia-2013.md` and `docs/data-availability.md` source 15. |
+
 ## Congestion and slots (ADR-0007)
 
 Both tables were populated with a genuine WebSearch/WebFetch attempt this

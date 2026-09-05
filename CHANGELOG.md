@@ -27,6 +27,16 @@ version numbers, mark progress.
   `tests/test_theory.py` rebuilds it in memory and fails when the committed copy is
   stale. `sympy` joins the dependencies; `scripts/check_docs_paths.py` now also
   checks `docs/theory/*.md` and `theory/` paths.
+- The data side of the 2013 monograph, cross-checked against this repository:
+  `data/external/monograph_airports.csv` (the 38 airports of its Lista de Siglas,
+  grade A, three IATA codes annotated where they differ from OurAirports) with
+  `scripts/monograph_airports.py` and its test (31 of the 38 are in the ADR-0001 map
+  and cover all 27 nodes; 37 appear in its Tables 3-4 and its text says 36 -- three
+  counts declared, none reconciled); `docs/notes/monografia-2013.md` (its four
+  sources, its six airline groups as a dated convergent source for `groups.csv`, the
+  weighted geometric mean of 2013 as the antecedent of `gmchhi`, and what its
+  surviving do-file does against what its text says, phrased as questions for the
+  author); source 15 of `docs/data-availability.md`.
 - `just demo` is real (`scripts/demo.py`, `tests/test_demo.py`): the committed
   fixture (three routes cut from the 2004, 2009 and 2012 files, 19,907 staged
   legs) runs through the same code path as the full pipeline -- staged legs,
@@ -191,6 +201,13 @@ version numbers, mark progress.
 
 ### Changed
 
+- `docs/data-availability.md` sources 1 (the VRA is HOTRAN plus BAV, and ANAC's
+  published percentages used 30- and 60-minute cuts), 3, 9, 12 and 13 (the RPE
+  reliability caveat of Resolução ANAC 8/2007 and the 2013 gap, stated by the author
+  in 2013); `docs/notes/references.md` sections 1-2; `docs/notes/features.md` section
+  5; `docs/declared-differences.md` gains the monograph's Table 5 under "Not
+  attempted, and why"; `scripts/check_no_private_paths.py` allowlists
+  `docs/notes/monografia-2013.md`; the README and M12 count 15 sources.
 - **The prediction layer reads an empty actual time as "no alteration
   reported"** (`DECISIONS.md` ADR-0017, panel of three reviewers under
   ADR-0010, verdicts in `docs/notes/colegiado-adr0012.md`). IAC 1504 issues the

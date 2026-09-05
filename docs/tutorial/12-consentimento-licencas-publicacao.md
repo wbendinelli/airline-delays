@@ -63,7 +63,7 @@ versionada — de modo que gancho e teste não podem divergir.
 ## Exercício
 
 Abra [`docs/data-availability.md`](../data-availability.md) e conte
-quantas das 14 linhas da tabela-resumo têm "Not redistributed" em
+quantas das 15 linhas da tabela-resumo têm "Not redistributed" em
 negrito. Compare esse número com o "zero autorizações obtidas" do acervo
 original: este repositório chegou a um número pequeno de fontes não
 redistribuídas (três) sem precisar pedir permissão a ninguém — porque
