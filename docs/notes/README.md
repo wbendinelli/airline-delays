@@ -15,9 +15,9 @@ English summary of the directory.
 | `prediction.md` | The flight-level prediction layer: the unit and the five targets, the D-1 and H-1 horizons, the leakage rule and the nine checks that impose it, the rolling-origin result and the scope of the pre-2010 target. Behind ADR-0009, ADR-0015 and ADR-0017. |
 | `colegiado-adr0012.md` | The review panel of ADR-0010 on the empty actual times of the 2000-2009 files: the question, the method, the three opinions in full and the decision that became ADR-0017. |
 | `esic-licenca-vra.md` | The text of the e-SIC request behind the VRA licence reading of ADR-0000; the protocol number and the reply go here when they exist. |
-| `monografia-2013.md` | The data side of the author's 2013 undergraduate monograph (USP/ESALQ): its sources, its 38 listed airports against the 27 nodes (`data/external/monograph_airports.csv`), its six airline groups as a dated source for `groups.csv`, what its surviving do-file does, and why its own regression is not re-estimated here. Behind ADR-0019. |
+| `monografia-2013.md` | The data side of the author's 2013 undergraduate monograph (USP): its sources, its 38 listed airports against the 27 nodes (`data/external/monograph_airports.csv`), its six airline groups as a dated source for `groups.csv`, what its surviving do-file does, and why its own regression is not re-estimated here. Behind ADR-0019. |
 
-`docs/tutorial/` cites these notes module by module
-(`docs/tutorial/06-dados-fonte-ao-painel.md` through `08-o-que-reproduz.md`
+The study, `docs/study/`, cites these notes chapter by chapter
+(`docs/study/05-os-dados.md` through `docs/study/07-resultados-e-replicacao.md`
 lean on them most); this index exists so that a reader who lands here first
 knows what each file covers before opening it.

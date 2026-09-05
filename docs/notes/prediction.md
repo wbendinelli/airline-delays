@@ -6,8 +6,8 @@ faz, por que faz assim, e o que os números querem e não querem dizer. Todos os
 valores foram medidos por `uv run airline-delays predict` sobre a série completa; os arquivos de origem estão em
 `reports/prediction/` e nenhum número aqui foi digitado à mão.
 
-O relatório compilado é `reports/prediction.typ`; esta nota é o registro de
-decisões e evidências por trás dele.
+O relatório é `reports/prediction.typ`, compilado em `reports/pdf/prediction.pdf`;
+esta nota é o registro de decisões e evidências por trás dele.
 
 ## 1. A unidade, os alvos e o que sai do universo
 
@@ -411,9 +411,9 @@ fica em 1,8 GB porque `src/airline_delays/prediction/split.py` lê e filtra um a
    informação que a véspera já tinha.
 3. **Sem meteorologia.** O METAR do DECEA/REDEMET não entra nesta fase. O que
    existe é a participação de códigos de clima no aeroporto no mês anterior, que
-   é climatologia defasada, não previsão do tempo. O acervo tem 4,2 milhões de
-   observações METAR de 2000–2013; incorporá-las é a extensão de maior retorno
-   esperado.
+   é climatologia defasada, não previsão do tempo. A série disponível tem
+   4,2 milhões de observações METAR de 2000–2013; incorporá-las é a extensão
+   de maior retorno esperado.
 4. **Sem capacidade declarada.** A hora cheia é o proxy p90 da ADR-0007 com a
    janela fechada no ano anterior. `data/external/capacity.csv` tem uma linha
    (Congonhas), e uma linha não sustenta um painel nacional.
@@ -439,7 +439,7 @@ fica em 1,8 GB porque `src/airline_delays/prediction/split.py` lê e filtra um a
 just predict-dataset   # a tabela de voos, uma varredura por ano de data/staged
 just predict           # reconstrói a tabela e roda a avaliação completa
 uv run pytest -q       # inclui as nove checagens de vazamento sobre o fixture
-typst compile --root . reports/prediction.typ reports/build/prediction.pdf
+typst compile --root . reports/prediction.typ reports/pdf/prediction.pdf   # ou `just report`, que compila os três
 ```
 
 `data/derived/ml/` é git-ignorado (ADR-0004): 320 MB de tabela de voos não entram

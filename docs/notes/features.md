@@ -218,7 +218,7 @@ diferentes:
 | arquivo | `panel_route_month.parquet` | `article_panel_route_month.parquet` |
 | origem | os 168 CSV do VRA, pelo pipeline desta nota | a base final dos autores (dezembro de 2015), curada por `airline-delays article-panel` (ADR-0020) |
 | rota-meses × colunas | 31.313 × 228 | 24.589 × 52 |
-| rotas, meses | 310, 168 (2000m1–2013m12) | 209, 144 (2002m1–2013m12) |
+| rotas, meses | 310, 168 (2000-01 a 2013-12) | 209, 144 (2002-01 a 2013-12) |
 | papel | a base aberta estendida e a entrada do preditor | a entrada de `airline-delays estimate` (`docs/notes/replication.md`) |
 | chave em `reports/summary.json` | `reconstruction.panel` | `article_panel` |
 

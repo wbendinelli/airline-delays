@@ -1,12 +1,12 @@
 # Style guide for the prose of this repository
 
 Every human-read page of this repository -- the two READMEs, the entry pages,
-the governance files, the notes, the tutorial, the theory chapters and the
-Typst reports -- follows these rules. They are checked by
-`scripts/check_docs_paths.py` (paths and commands), `tests/test_prose_vocabulary.py`
-(vocabulary), `scripts/check_prose_numbers.py` (numbers) and
-`scripts/check_readme_parity.py` (the two READMEs), and read by the editors
-who review a change.
+the governance files, the notes, the study and the Typst reports -- follows
+these rules. They are checked by `scripts/check_docs_paths.py` (paths and
+commands and relative links), `scripts/check_markdown_math.py` (math
+delimiters, tables, fences), `tests/test_prose_vocabulary.py` (vocabulary),
+`scripts/check_prose_numbers.py` (numbers) and `scripts/check_readme_parity.py`
+(the two READMEs), and read by the editors who review a change.
 
 1. **Confident and declarative.** State what the repository does and what the
    article found. No hedging clauses, no self-labels ("honest", "declared, not
@@ -38,9 +38,13 @@ who review a change.
    the retired private directory under `data/`, the retired agreement-rate CSV and
    reconciliation report file names, "vintage" / "safra" in
    the data sense, "honest" / "honesta" / "honestidade", "nota honesta", "top
-   journal". The word "benchmark" appears only in its economics sense inside the
-   theory chapters (the Cournot, atomistic and monopoly reference cases); new
-   theory prose prefers "reference case" / "caso de referência".
+   journal"; and, since ADR-0022, "ESALQ", "Piracicaba", "orientador" /
+   "advisor", "mestrado" / "master's", "dissertação" / "dissertation",
+   "seminário de tese", and the retired paths "docs/tutorial", "docs/theory",
+   "theory.typ", "reports/build". The word "benchmark" appears only in its
+   economics sense inside the study's theory chapters (the Cournot, atomistic
+   and monopoly reference cases); new theory prose prefers "reference case" /
+   "caso de referência".
 8. **The two panels.** English: "the article's estimation panel" (first
    mention: "the panel the authors estimated Tables 2-7 on, published here")
    and "the open reconstruction panel" ("the reconstruction panel" after the
@@ -56,10 +60,13 @@ who review a change.
 10. **ANAC and the other holders.** Raw data: "ANAC, Voo Regular Ativo (VRA),
     via dados.gov.br" -- that exact string in every licence statement. Other
     sources by their holder's name, as in `docs/data-availability.md`.
-11. **The monograph.** "The author's 2013 undergraduate monograph (USP/ESALQ)":
-    an outside document, cited, not redistributed; its numbers are
-    transcriptions marked "(monografia -- documento externo)"; the placeholder
-    `[DOI-MONOGRAFIA]` stays verbatim until the Zenodo deposit.
+11. **The monograph.** "The author's 2013 undergraduate monograph (USP)" /
+    "a monografia de graduação do autor (USP, 2013)": an outside document,
+    cited, not redistributed; the institution is USP alone, and nothing about
+    its supervision, the master's programme, the dissertation, seminars or the
+    article's peer review is written anywhere in the repository; its numbers
+    are transcriptions marked "(monografia -- documento externo)"; the
+    placeholder `[DOI-MONOGRAFIA]` stays verbatim until the Zenodo deposit.
 12. **Bilingual conventions.** English: `13,652,322`, `0.715`, `2000-2013`,
     "route x month", "2SGMM", "ADR-0001". Portuguese: `13.652.322`, `0,715`,
     `2000-2013`, "rota x mês", "2SGMM", "ADR-0001". Dates `YYYY-MM-DD` in both.
@@ -74,3 +81,18 @@ who review a change.
 15. **Reader before writer.** Every section opens with what the reader gets,
     then how; a command comes after the sentence that says what it produces and
     how long it takes.
+16. **Mathematics in Markdown renders on GitHub.** Inline math is written as
+    $`...`$ (code-span math); display math inside a ```math fence, one equation
+    per fence, numbered with `\tag{n}`; never `$$`, never bare `$...$` (the
+    Markdown parser eats `*`, `\,` and paired `_` before MathJax runs). Inside
+    a table cell, `\vert` replaces `|`. Multi-line environments are avoided.
+    `scripts/check_markdown_math.py` enforces the delimiters, a blank line
+    before every table and closed fences.
+17. **The study.** `docs/study/` is one work: every chapter opens with
+    "Português (ADR-0006)." and a paragraph on what the reader gets, cites the
+    article in full on first mention, cross-references other chapters by
+    number with a relative link (never a module code), embeds its figures from
+    `reports/theory/figures/` with a caption, labels theory statements [BVD],
+    [monografia] or [aqui], and closes with "Onde conferir" naming the
+    artefacts its numbers come from. The Typst edition, `reports/study.typ`,
+    follows the same parts and reads the same JSON.

@@ -151,7 +151,7 @@ EXTERNAL_TABLES: dict[str, tuple[str, list[str], str]] = {
     "monograph_airports": (
         "The 38 airports listed in the author's 2013 undergraduate monograph, spellings as printed.",
         ["icao"],
-        "Bendinelli (2013), undergraduate monograph, USP/ESALQ",
+        "Bendinelli (2013), undergraduate monograph, USP",
     ),
 }
 
