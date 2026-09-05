@@ -111,7 +111,9 @@ class TestTheCommittedReplicationIsFresh:
 
     The article panel is in git, so this needs no local data layer: it re-estimates
     every table into a temporary directory (about 40 s) and compares every
-    coefficient, standard error and statistic with the committed file.
+    coefficient, standard error and statistic with the committed file, to six significant
+    digits (an absolute floor of 1e-9 covers coefficients near zero, where the last digits
+    differ between BLAS implementations).
     """
 
     def test_every_estimate_matches_the_committed_results(self, tmp_path: Path) -> None:
@@ -130,14 +132,16 @@ class TestTheCommittedReplicationIsFresh:
             if table == "table2":
                 for statistic, values in old["univariate"].items():
                     for name, value in values.items():
-                        assert new["univariate"][statistic][name] == pytest.approx(value, rel=1e-9)
+                        assert new["univariate"][statistic][name] == pytest.approx(
+                            value, rel=1e-6, abs=1e-9
+                        )
                         compared += 1
                 continue
             for column, old_column in old["columns"].items():
                 new_column = new["columns"][column]
                 for kind in ("b", "se"):
                     for name, value in old_column[kind].items():
-                        assert new_column[kind][name] == pytest.approx(value, rel=1e-9), (
+                        assert new_column[kind][name] == pytest.approx(value, rel=1e-6, abs=1e-9), (
                             table,
                             column,
                             kind,
@@ -148,7 +152,9 @@ class TestTheCommittedReplicationIsFresh:
                     if isinstance(value, int | float) and not (
                         isinstance(value, float) and math.isnan(value)
                     ):
-                        assert new_column["stats"][name] == pytest.approx(value, rel=1e-9), (
+                        assert new_column["stats"][name] == pytest.approx(
+                            value, rel=1e-6, abs=1e-9
+                        ), (
                             table,
                             column,
                             name,

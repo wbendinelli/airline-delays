@@ -14,8 +14,7 @@
   "staged": {
    "rows": 13652322,
    "years": 14,
-   "files": 14,
-   "carried_over": false
+   "partitions": 14
   },
   "fact": {
    "rows": 165763,
@@ -448,7 +447,7 @@
  },
  "meta": {
   "generated_by": "airline-delays summary",
-  "git_commit": "04e0102",
+  "git_commit": "6d72a7c",
   "inputs": [
    "data/raw/manifest.json",
    "data/staged/manifest.json (when present)",
