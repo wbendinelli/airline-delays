@@ -2,7 +2,7 @@
 
 Nota de pesquisa em português (exceção deliberada ao inglês do repositório —
 `CLAUDE.md`, `DECISIONS.md` ADR-0006). Descreve **como** cada tabela publicada de
-Bendinelli, Bettini e Oliveira (2016, *Transportation Research Part A* 85, 39–52,
+Bendinelli, Bettini & Oliveira (2016, *Transportation Research Part A* 85, 39-52,
 [`10.1016/j.tra.2016.01.001`](https://doi.org/10.1016/j.tra.2016.01.001)) é
 montada aqui, **o que bate** e **o que fica registrado ao lado**.
 
@@ -10,14 +10,15 @@ Nenhum número desta nota é digitado à mão: todos vêm de
 `reports/replication/{results,summary,sensitivity}.json` e de
 `reports/replication/tables.md`, escritos por `airline-delays estimate`, ou de
 `reports/summary.json`. O relatório em PDF é
-[`reports/replication.typ`](../../reports/replication.typ).
+[`reports/replication.typ`](../../reports/replication.typ), compilado em
+`reports/pdf/replication.pdf`.
 
 ## 1. Uma fonte, um caminho de código
 
 A entrada da estimação é o painel de estimação do artigo — o painel sobre o
 qual os autores estimaram as Tabelas 2–7, publicado neste repositório em
 `data/analysis/article_panel_route_month.parquet` (ADR-0020): 24.589
-rota-meses × 52 colunas, 209 rotas, 144 meses de 2002m1 a 2013m12, curado uma
+rota-meses × 52 colunas, 209 rotas, 144 meses de 2002-01 a 2013-12, curado uma
 vez a partir da base final dos autores (dezembro de 2015) por
 `airline-delays article-panel`. O manifesto
 `data/analysis/article_panel_manifest.json` registra o sha256 da base de origem
@@ -28,13 +29,13 @@ que aparecem (`reports/summary.json`, bloco `estimation.sample`):
 
 | Passo | O que faz | Observações | Rotas |
 |---|---|---|---|
-| painel publicado | 2002m1–2013m12, todas as rotas | 24.589 | 209 |
+| painel publicado | 2002-01 a 2013-12, todas as rotas | 24.589 | 209 |
 | `drop if fsc_oddsarr==.` | remove a rota-mês sem o regressando das colunas (1) e (2) | 20.655 | — |
 | `findsingletons k ; drop if _count_k<=5` | remove a rota com cinco ou menos observações | 20.630 | 190 |
 
 O contrato do painel é `REQUIRED_COLUMNS`, em
 `src/airline_delays/estimation/specification.py`: os nomes de variável do próprio
-artigo, porque este módulo é uma porta de uma especificação em Stata e são
+artigo, porque esta camada é uma porta de uma especificação em Stata e são
 esses nomes que identificam cada regressor nas tabelas publicadas. A opção
 `--panel` aceita outro painel de rota-mês que traga esse contrato; um painel
 que não traga uma coluna é recusado por `PanelIncomplete`
@@ -167,7 +168,7 @@ fechada:
 
 com λ a menor correlação canônica ao quadrado. As duas identidades valem **até a
 precisão de máquina**, para vários formatos de problema, contra
-`cragg_donald()` do mesmo módulo — que passa por QR de cada bloco e uma SVD das
+`cragg_donald()` do mesmo arquivo — que passa por QR de cada bloco e uma SVD das
 projeções e **não compartilha código** com `kp_rk()` (raiz quadrada simétrica,
 produto de Kronecker, pseudo-inversa). Se a normalização de `Θ̂` estivesse
 errada, nenhuma das duas fecharia. Está em `tests/test_estimation_kp.py`.
@@ -260,8 +261,8 @@ uv run airline-delays estimate --panel /caminho/para/outro_painel.parquet --outd
 # refazer summary.json e tables.md a partir de results.json, sem reestimar
 uv run airline-delays estimate --rescore
 
-# relatório em PDF (também `just report`)
-typst compile --root . reports/replication.typ reports/build/replication.pdf
+# relatório em PDF (`just report` compila os três: study, replication, prediction)
+typst compile --root . reports/replication.typ reports/pdf/replication.pdf
 ```
 
 `just estimate` é a mesma coisa que o primeiro comando. Os números publicados

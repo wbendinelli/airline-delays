@@ -9490,8 +9490,8 @@
       "mediatype": "text/csv",
       "encoding": "utf-8",
       "description": "The 38 airports listed in the author's 2013 undergraduate monograph, spellings as printed. Every row cites its source, url, retrieval date and a confidence grade (data/external/README.md).",
-      "bytes": 9466,
-      "hash": "sha256:508e4c825693133b3bf8a9e9ba83a6dbca02adfa92b332137024926f82371fa7",
+      "bytes": 8782,
+      "hash": "sha256:b97df16555486d3f92896e83aa451b54b6037aa13a355dbe07006fa60d5bf3ba",
       "x-rows": 38,
       "x-confidence-grades": {
         "A": 38
@@ -9505,7 +9505,7 @@
       ],
       "sources": [
         {
-          "title": "Bendinelli (2013), undergraduate monograph, USP/ESALQ"
+          "title": "Bendinelli (2013), undergraduate monograph, USP"
         }
       ],
       "x-documentation": "data/external/README.md",

@@ -16,10 +16,8 @@ a transcrição da sua Lista de Siglas e passagens curtas entram aqui.
 
 *Efeitos da entrada de uma empresa aérea de baixo custo na internalização
 das externalidades do congestionamento*, monografia apresentada para a
-obtenção do título de Bacharel em Ciências Econômicas, USP/ESALQ,
-Piracicaba, 2013. Orientadores: Prof.ª Dra. Márcia Azanha Ferraz Dias de
-Moraes e Prof. Dr. Alessandro Vinícius Marques de Oliveira — o segundo é
-também orientador do mestrado e coautor do artigo de 2016 que este
+obtenção do título de Bacharel em Ciências Econômicas, USP, 2013 — a
+monografia de graduação do autor, primeiro autor do artigo de 2016 que este
 repositório replica (`CITATION.cff`, `preferred-citation`).
 
 Nove seções, na ordem do sumário: 1 Introdução; 2 Princípios econômicos dos
@@ -27,23 +25,19 @@ atrasos em aeroportos; 3 Revisão de literatura; 4 Modelo econômico para um
 líder de Stackelberg; 5 Análise da base de dados; 6 Modelagem econométrica;
 7 Resultados das estimações; 8 Considerações finais; 9 Bibliografia.
 
-Os metadados do arquivo dizem: criado em 2013-12-18, última impressão em
-2013-12-19, revisões até 2014-02-17. A proposta de mestrado descrita no
-módulo M1 do tutorial (`docs/tutorial/01-a-proposta.md`) é de 2013-09-16. Os
-dois documentos são, portanto, **contemporâneos**: nada no material lido
-permite dizer que um antecede conceitualmente o outro, e esta nota não
-afirma isso.
+A monografia é um documento externo a este repositório: este repositório a
+cita, sob o placeholder `[DOI-MONOGRAFIA]`, e não a redistribui.
 
 Depósito no Zenodo pendente: `[DOI-MONOGRAFIA]`. Até que exista, a
 monografia é **citada, não redistribuída** — a única coisa que este
 repositório publica dela é a tabela derivada da Lista de Siglas e as
-passagens citadas aqui e em `docs/theory/`.
+passagens citadas aqui e em `docs/study/`.
 
 ## 2. Os dados
 
 A seção 5.1 descreve quatro fontes, e é a descrição mais explícita do
-encadeamento VRA -> HOTRAN + BAV que existe em qualquer documento deste
-acervo.
+encadeamento VRA -> HOTRAN + BAV entre os documentos consultados para este
+repositório.
 
 **(i) Percentuais de atraso e cancelamento da ANAC.** Divulgados e
 consolidados por par de aeroportos de origem e destino, sob a Resolução ANAC
@@ -228,11 +222,12 @@ afirmar, para o autor confirmar contra o documento e a pasta original.
 ## 5. A ponte com o artigo de 2016
 
 A continuidade conceitual entre o modelo de Stackelberg da seção 4 da
-monografia e a especificação do artigo de 2016 é tratada em
-`docs/theory/03-do-modelo-ao-artigo.md`, escrito em paralelo a esta nota. A
-tabela de correspondência entre as variáveis das duas peças vive lá, não
-aqui: esta nota cuida da evidência documental, aquela cuida do argumento
-econômico.
+monografia e a especificação do artigo de 2016 é tratada no estudo: o modelo,
+derivado passo a passo, em `docs/study/03-o-jogo-do-congestionamento.md`; a
+ponte do modelo às hipóteses do artigo em
+`docs/study/04-do-modelo-as-hipoteses.md`. A tabela de correspondência entre
+as variáveis das duas peças vive lá, não aqui: esta nota cuida da evidência
+documental, o estudo cuida do argumento econômico.
 
 ## 6. Não tentado
 

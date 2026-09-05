@@ -3,9 +3,8 @@
 
 The source is Bendinelli (2013), *Efeitos da entrada de uma empresa aérea de
 baixo custo na internalização das externalidades do congestionamento*
-(USP/ESALQ, Piracicaba; orientadores Márcia Azanha Ferraz Dias de Moraes and
-Alessandro Vinícius Marques de Oliveira). The document is not redistributed
-here; what is redistributed is one derived table,
+(undergraduate monograph, USP). The document is not redistributed here; what
+is redistributed is one derived table,
 ``data/external/monograph_airports.csv``, transcribed verbatim from its "Lista
 de Siglas" and annotated with whether each airport also appears in its Tables 3
 and 4.

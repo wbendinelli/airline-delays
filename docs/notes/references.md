@@ -89,8 +89,8 @@ laboratório, tal como registrada em `fontes-vra-anac.md` e nas notas de
 pesquisa do autor (documento externo), que já testam essas trocas de grupo
 diretamente contra a coluna `airline` do VRA bruto. A transição TTL -> TRIP
 -> AZUL foi resolvida por transitividade, porque a mesma regra reatribui o
-grupo "TI2" (que já inclui TTL a partir de 2007m11) para "AZ2" a partir de
-2012m5 -- ou seja, TTL segue TIB para dentro do grupo Azul, mesmo o
+grupo "TI2" (que já inclui TTL a partir de 2007-11) para "AZ2" a partir de
+2012-05 -- ou seja, TTL segue TIB para dentro do grupo Azul, mesmo o
 enunciado da tarefa não dizendo isso explicitamente para TTL.
 
 Os outros 21 códigos (`ABJ, ABZ, AMG, AVI, BRB, LEG, MEL, MSQ, NHG, NRA,
@@ -235,7 +235,7 @@ escopo desta tarefa, que pedia só feriados nacionais.
 
 **Como foi construída.** Transcrição da tabela "Datas de eventos" de
 `fontes-vra-anac.md`, mais os tratamentos de regime citados em
-`avaliacao-vra-como-fonte.md` (janela do apagão aéreo 2006m10-2007m12,
+`avaliacao-vra-como-fonte.md` (janela do apagão aéreo 2006-10 a 2007-12,
 crise financeira 2008-2009, codeshare TAM-Varig 2003-2005) que não tinham
 uma data exata dia-a-dia em nenhuma das duas fontes -- para esses, usei o
 1º dia do mês/ano como marcador de precisão, deixado explícito na nota de

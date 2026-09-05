@@ -248,7 +248,7 @@ consumidor não pode ler o diretório como se fosse o ano: `build_fact()`
 inteira (`year_source_sql()`), afirma a unicidade das chaves e reporta as linhas
 datadas fora da janela construída em `rows_outside_years`
 (`data/analysis/manifest.json`). As 18 linhas de 2014-01 ficam de fora do painel,
-que passa a ter exatamente 168 meses, 2000m1 a 2013m12.
+que passa a ter exatamente 168 meses, 2000-01 a 2013-12.
 
 ## 6. Formato de saída
 

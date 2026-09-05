@@ -40,7 +40,7 @@ on this page is a value of `reports/summary.json`.
 | 12 | The article's estimation panel (route x month, 2002-2013) | The article's authors; released by the first author | **Yes** -- `data/analysis/article_panel_route_month.parquet` and `.csv.gz`, CC BY 4.0 | Free |
 | 13 | Infraero connections report | Infraero | Not public; feeds no published column | Not applicable |
 | 14 | Published article (Elsevier) | Elsevier Ltd | DOI only | Not applicable |
-| 15 | The author's 2013 undergraduate monograph (USP/ESALQ) | The author | One derived table and quoted passages; Zenodo deposit pending | Not applicable |
+| 15 | The author's 2013 undergraduate monograph (USP) | The author | One derived table and quoted passages; Zenodo deposit pending | Not applicable |
 
 ## 1. VRA -- Voo Regular Ativo
 
@@ -208,7 +208,7 @@ The weather columns of the authors' base are excluded from the article's
 estimation panel, because they came from a cession and not from an open
 channel. The same records are independently obtainable from REDEMET today,
 at the station x hour grain the flight-level layer would want
-(`docs/tutorial/13-propor-melhorias.md`).
+(`docs/study/apendice-d-extensoes.md`).
 
 **Redistributed here.** No.
 
@@ -315,12 +315,10 @@ replication compares against are parsed from the article's text into
 ## 15. The author's 2013 undergraduate monograph
 
 **Holder.** The author. *Efeitos da entrada de uma empresa aérea de baixo
-custo na internalização das externalidades do congestionamento*, monograph
-for the Bachelor's degree in Economics, USP/ESALQ, Piracicaba, 2013
-(advisors Márcia Azanha Ferraz Dias de Moraes and Alessandro Vinícius
-Marques de Oliveira): the document in which the congestion-internalisation
-theory behind the 2016 article was first worked out (`DECISIONS.md`
-ADR-0019, `docs/theory/`).
+custo na internalização das externalidades do congestionamento*, undergraduate
+monograph in Economics, USP, 2013: the document in which the
+congestion-internalisation theory behind the 2016 article was first worked
+out (`DECISIONS.md` ADR-0019, `docs/study/`).
 
 **How to obtain.** A Zenodo deposit is pending; its DOI is carried as the
 placeholder `[DOI-MONOGRAFIA]` until it exists. Until then the monograph is
@@ -332,7 +330,7 @@ redistributed and is read by nothing here.
 `data/external/monograph_airports.csv` (38 rows, confidence grade A: the
 verbatim transcription of the monograph's Lista de Siglas, with a flag for
 the airports that also appear in its Tables 3 and 4), and short quoted
-passages in `docs/notes/monografia-2013.md` and `docs/theory/`. Its own
+passages in `docs/notes/monografia-2013.md` and `docs/study/`. Its own
 estimates are quoted there as an outside document, never as a result of
 this repository.
 
