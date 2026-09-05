@@ -241,6 +241,9 @@ version numbers, mark progress.
 
 ### Changed
 
+- `empty_actual_means_on_time` replaces `legacy_missing_actual_as_zero` as the name of the
+  ADR-0012 convention -- the parameter, the CLI flag, the manifest key and the panel column.
+  The panel is regenerated with the one column renamed and every value unchanged.
 - **Single-source estimation.** `airline-delays estimate` runs Tables 2-7 on the article's
   panel (or any panel carrying the contract, `--panel`), writes `reports/replication/` flat --
   no `public/`/`private/` split -- and records the panel's repository path, row count and

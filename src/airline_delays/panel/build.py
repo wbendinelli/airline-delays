@@ -19,7 +19,7 @@ delay against ADR-0008's signed one. Both numbers are published.
 structure, schedule shape, cause-code taxonomy, recovery and padding, the
 city-side aggregates on both endpoints and the ADR-0007 congestion proxy.
 
-`legacy_missing_actual_as_zero` defaults to `True` here and only here (ADR-0012):
+`empty_actual_means_on_time` defaults to `True` here and only here (ADR-0012):
 this is the table built under the article's own convention, which read an empty
 actual time as "on schedule". The prediction layer builds its own dataset with
 `False`.
@@ -62,7 +62,7 @@ class PanelResult:
     seconds: float
     parquet: Path
     csv: Path
-    legacy_missing_actual_as_zero: bool
+    empty_actual_means_on_time: bool
 
 
 def _sums(fact: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
@@ -87,7 +87,7 @@ def _proportion(
             f"{prefix}{side}_missing_actual": f"{side}_missing_actual",
         }
     )
-    denominator = fact_mod.delay_denominator(stub, side, legacy_missing_actual_as_zero=legacy)
+    denominator = fact_mod.delay_denominator(stub, side, empty_actual_means_on_time=legacy)
     numerator = frame[f"{prefix}{side}_delayed_{cut}"].astype("float64")
     return numerator / denominator.where(denominator > 0)
 
@@ -106,7 +106,7 @@ def build_panel(
     derived_dir: Path,
     *,
     external_dir: Path | None = None,
-    legacy_missing_actual_as_zero: bool = True,
+    empty_actual_means_on_time: bool = True,
     panel_nodes_only: bool = True,
     write: bool = True,
 ) -> tuple[pd.DataFrame, PanelResult | None]:
@@ -135,14 +135,14 @@ def build_panel(
         fact = fact[fact["origin_node"].isin(nodes) & fact["dest_node"].isin(nodes)]
         fact = fact[fact["origin_node"] != fact["dest_node"]]
     city = fact_mod.city_month(
-        fact, day_hour, legacy_missing_actual_as_zero=legacy_missing_actual_as_zero
+        fact, day_hour, empty_actual_means_on_time=empty_actual_means_on_time
     )
     panel = assemble(
         fact,
         context,
         city,
         external_dir=external_dir,
-        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        empty_actual_means_on_time=empty_actual_means_on_time,
     )
     if not write:
         return panel, None
@@ -160,7 +160,7 @@ def build_panel(
         seconds=time.time() - started,
         parquet=parquet,
         csv=csv,
-        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        empty_actual_means_on_time=empty_actual_means_on_time,
     )
     _write_manifest(analysis_dir, result)
     return panel, result
@@ -172,15 +172,15 @@ def assemble(
     city: pd.DataFrame,
     *,
     external_dir: Path,
-    legacy_missing_actual_as_zero: bool = True,
+    empty_actual_means_on_time: bool = True,
 ) -> pd.DataFrame:
     """The panel itself: benchmark columns, declared variants and new features."""
     import numpy as np
     import pandas as pd
 
     keys = ["ym", "year", "month", "route", "origin_node", "dest_node"]
-    legacy = legacy_missing_actual_as_zero
-    base = fact_mod.aggregate(fact, "route_month", legacy_missing_actual_as_zero=legacy)
+    legacy = empty_actual_means_on_time
+    base = fact_mod.aggregate(fact, "route_month", empty_actual_means_on_time=legacy)
     klass = fact["class"]
     group = fact["group"]
     slices = {
@@ -278,7 +278,7 @@ def assemble(
         panel[name] = pd.Series(
             concentration_mod.passenger_weighted_hhi(None), index=panel.index, dtype="float32"
         )
-    panel["legacy_missing_actual_as_zero"] = np.int8(1 if legacy else 0)
+    panel["empty_actual_means_on_time"] = np.int8(1 if legacy else 0)
     out = _finalise(panel, slice_prefixes=tuple(slices), slice_keep=keep)
     fact_mod.assert_unique(out, fact_mod.ROUTE_MONTH_KEY, "panel_route_month")
     return out
@@ -393,7 +393,7 @@ def _write_manifest(analysis_dir: Path, result: PanelResult) -> Path:
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "git_commit": staging_mod.git_commit(repo_root, short=True),
         "tool_versions": staging_mod.tool_versions(),
-        "legacy_missing_actual_as_zero": result.legacy_missing_actual_as_zero,
+        "empty_actual_means_on_time": result.empty_actual_means_on_time,
         "outlier_threshold_min": delays_mod.OUTLIER_THRESHOLD_MIN,
         "rows": result.rows,
         "columns": result.columns,

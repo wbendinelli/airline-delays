@@ -1,19 +1,19 @@
 {
   "layer": "panel",
   "grain": "one row per route x month, replication universe",
-  "generated_at": "2026-09-05T19:03:09+00:00",
-  "git_commit": "f9e2f18",
+  "generated_at": "2026-09-05T19:13:01+00:00",
+  "git_commit": "15cc020",
   "tool_versions": {
     "python": "3.12.13",
     "duckdb": "1.5.5",
     "pyarrow": "25.0.1",
     "platform": "Darwin arm64"
   },
-  "legacy_missing_actual_as_zero": true,
+  "empty_actual_means_on_time": true,
   "outlier_threshold_min": 313.25,
   "rows": 31313,
   "columns": 228,
-  "parquet_bytes": 9941234,
-  "csv_bytes": 11788958,
-  "seconds": 8.01
+  "parquet_bytes": 9941210,
+  "csv_bytes": 11788959,
+  "seconds": 7.63
 }

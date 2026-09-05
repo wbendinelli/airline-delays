@@ -4461,7 +4461,7 @@
             "x-source": "derived in airline_delays.panel from the fact table"
           },
           {
-            "name": "legacy_missing_actual_as_zero",
+            "name": "empty_actual_means_on_time",
             "type": "integer",
             "title": "flag",
             "description": "The ADR-0012 convention this table was built under: 1 means a realised flight with no actual time counted as on schedule, the article's own convention.",
@@ -5321,8 +5321,8 @@
             "name": "route_late15_l1",
             "type": "number",
             "title": "share",
-            "description": "Share of the route's observed arrivals more than 15 minutes late in the PREVIOUS month. Denominator arr_delay_obs, so legacy_missing_actual_as_zero = False (ADR-0012).",
-            "x-definition-pt": "Proporção das chegadas observadas da rota com mais de 15 minutos de atraso no mês ANTERIOR. Denominador arr_delay_obs, ou seja legacy_missing_actual_as_zero = False (ADR-0012).",
+            "description": "Share of the route's observed arrivals more than 15 minutes late in the PREVIOUS month. Denominator arr_delay_obs, so empty_actual_means_on_time = False (ADR-0012).",
+            "x-definition-pt": "Proporção das chegadas observadas da rota com mais de 15 minutos de atraso no mês ANTERIOR. Denominador arr_delay_obs, ou seja empty_actual_means_on_time = False (ADR-0012).",
             "x-aggregation": "recompute",
             "x-source": "derived in airline_delays.prediction.dataset from data/staged and the fact table"
           },

@@ -23,7 +23,7 @@
    "route_months": 201055,
    "node_day_hours": 4269847,
    "outlier_threshold_min": 313.25,
-   "seconds": 12.57
+   "seconds": 10.97
   },
   "panel": {
    "rows": 31313,
@@ -35,9 +35,9 @@
     201312
    ],
    "nodes": 27,
-   "parquet_bytes": 9941234,
-   "csv_bytes": 11788958,
-   "seconds": 8.01
+   "parquet_bytes": 9941210,
+   "csv_bytes": 11788959,
+   "seconds": 7.63
   },
   "city_month": {
    "rows": 21231,
@@ -448,7 +448,7 @@
  },
  "meta": {
   "generated_by": "airline-delays summary",
-  "git_commit": "f4652c9",
+  "git_commit": "15cc020",
   "inputs": [
    "data/raw/manifest.json",
    "data/staged/manifest.json (when present)",

@@ -18,7 +18,7 @@ and the top-up the 2019 vintage implied (`arr_missing_actual`: realised, no
 actual time, schedule known). Nothing is imputed here, and no sum changes:
 under the vintage's rule those flights contribute exactly 0 minutes. What the
 rule changes is the **denominator** of every proportion and mean, and that is
-where `legacy_missing_actual_as_zero` acts — in `delay_denominator`, used by
+where `empty_actual_means_on_time` acts — in `delay_denominator`, used by
 `aggregate` and by `panel` (ADR-0012). `True` reproduces the benchmark; `False`
 is the honest small-sample reading of 2000-2009 and what the prediction layer
 uses.
@@ -79,7 +79,7 @@ class BuildResult:
     day_hour_rows: int
     seconds: float
     years: tuple[int, ...]
-    legacy_missing_actual_as_zero: bool
+    empty_actual_means_on_time: bool
     missing_actual_by_year: pd.DataFrame
     out_of_window: pd.DataFrame
     """Staged rows dated outside `years`, by year — declared, never absorbed."""
@@ -119,10 +119,10 @@ def _select_context(source: str, threshold: float, legacy: bool) -> str:
     """
     projected = ",\n    ".join(f'{sql} AS "{name}"' for name, sql in CONTEXT_MEASURES.items())
     dep = delays_mod.effective_delay_sql(
-        "sched_dep", "actual_dep", legacy_missing_actual_as_zero=legacy
+        "sched_dep", "actual_dep", empty_actual_means_on_time=legacy
     )
     arr = delays_mod.effective_delay_sql(
-        "sched_arr", "actual_arr", legacy_missing_actual_as_zero=legacy
+        "sched_arr", "actual_arr", empty_actual_means_on_time=legacy
     )
     inside = delays_mod.within_threshold_sql("{delay}", threshold)
     live = f"universe_repl AND is_realized AND {{delay}} IS NOT NULL AND {inside}"
@@ -231,7 +231,7 @@ def build_fact(
     years: tuple[int, ...] | None = None,
     groups_path: Path | None = None,
     outlier_threshold_min: float = delays_mod.OUTLIER_THRESHOLD_MIN,
-    legacy_missing_actual_as_zero: bool = True,
+    empty_actual_means_on_time: bool = True,
     con: Any = None,
     verbose: bool = True,
 ) -> BuildResult:
@@ -263,7 +263,7 @@ def build_fact(
             source = year_source_sql(staged_dir, year)
             fact = con.execute(_select_fact(source, outlier_threshold_min)).df()
             context = con.execute(
-                _select_context(source, outlier_threshold_min, legacy_missing_actual_as_zero)
+                _select_context(source, outlier_threshold_min, empty_actual_means_on_time)
             ).df()
             day_hour = con.execute(_select_day_hour(source)).df()
             fact_parts.append(fact)
@@ -296,7 +296,7 @@ def build_fact(
         day_hour_rows=len(day_hour_all),
         seconds=time.time() - started,
         years=tuple(years),
-        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        empty_actual_means_on_time=empty_actual_means_on_time,
         missing_actual_by_year=missing,
         out_of_window=outside,
     )
@@ -429,7 +429,7 @@ def _write_manifest(out_dir: Path, result: BuildResult, threshold: float) -> Pat
         "git_commit": staging_mod.git_commit(repo_root, short=True),
         "tool_versions": staging_mod.tool_versions(),
         "outlier_threshold_min": threshold,
-        "legacy_missing_actual_as_zero": result.legacy_missing_actual_as_zero,
+        "empty_actual_means_on_time": result.empty_actual_means_on_time,
         "years": list(result.years),
         "fact_rows": result.fact_rows,
         "route_months": result.context_rows,

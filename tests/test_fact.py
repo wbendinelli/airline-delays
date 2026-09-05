@@ -82,7 +82,7 @@ class TestTheMissingActualConvention:
         duck.register("flights", sample)
         for legacy in (False, True):
             expression = delays.effective_delay_sql(
-                "sched_arr", "actual_arr", legacy_missing_actual_as_zero=legacy
+                "sched_arr", "actual_arr", empty_actual_means_on_time=legacy
             )
             rows = duck.execute(f"SELECT {expression} AS d FROM flights").df()["d"]
             for index, value in enumerate(rows):
@@ -91,7 +91,7 @@ class TestTheMissingActualConvention:
                     _stamp(row["sched_arr"]),
                     _stamp(row["actual_arr"]),
                     bool(row["is_realized"]),
-                    legacy_missing_actual_as_zero=legacy,
+                    empty_actual_means_on_time=legacy,
                 )
                 if expected is None:
                     assert np.isnan(value)
@@ -102,26 +102,22 @@ class TestTheMissingActualConvention:
         scheduled = datetime(2004, 5, 1, 10, 0)  # noqa: DTZ001 - the VRA is naive local time
         assert delays.effective_delay_min(scheduled, None, False) is None
         assert (
-            delays.effective_delay_min(scheduled, None, False, legacy_missing_actual_as_zero=True)
+            delays.effective_delay_min(scheduled, None, False, empty_actual_means_on_time=True)
             is None
         )
 
     def test_the_flag_only_widens_the_denominator(self, built) -> None:
         route_month = fact_mod.aggregate(built["fact"], "route_month")
-        strict = fact_mod.delay_denominator(route_month, "arr", legacy_missing_actual_as_zero=False)
-        legacy = fact_mod.delay_denominator(route_month, "arr", legacy_missing_actual_as_zero=True)
+        strict = fact_mod.delay_denominator(route_month, "arr", empty_actual_means_on_time=False)
+        legacy = fact_mod.delay_denominator(route_month, "arr", empty_actual_means_on_time=True)
         assert (legacy >= strict).all()
         assert legacy.sum() > strict.sum(), "the fixture must contain 2000-2009 rows"
 
     def test_the_flag_does_not_move_a_single_delayed_count(self, built) -> None:
         # A missing actual time becomes 0 minutes, which is not "> 0", so no
         # threshold count changes -- only what they are divided by.
-        strict = fact_mod.aggregate(
-            built["fact"], "route_month", legacy_missing_actual_as_zero=False
-        )
-        legacy = fact_mod.aggregate(
-            built["fact"], "route_month", legacy_missing_actual_as_zero=True
-        )
+        strict = fact_mod.aggregate(built["fact"], "route_month", empty_actual_means_on_time=False)
+        legacy = fact_mod.aggregate(built["fact"], "route_month", empty_actual_means_on_time=True)
         for column in ("arr_delayed_gt15", "dep_delayed_gt0", "sum_arr_delay_min"):
             assert (strict[column] == legacy[column]).all()
         both = legacy["sh_arr_gt15"].notna() & strict["sh_arr_gt15"].notna()
