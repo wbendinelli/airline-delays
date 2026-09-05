@@ -15,9 +15,10 @@ article's congestion model, and trains a flight-level delay predictor -- see
 
 **English** for `README.md`, code identifiers, column names, docstrings,
 comments, decision records and commit text. **Portuguese** for
-`README.pt-BR.md` and the other `.pt-BR` pages, `docs/notes/`,
-`docs/tutorial/`, `docs/theory/` and the Typst reports `reports/*.typ`
-(ADR-0006 and ADR-0021). Do not "fix" the Portuguese to English. Column
+`README.pt-BR.md` and the other `.pt-BR` pages, `docs/notes/`, the study
+`docs/study/` and the Typst reports `reports/*.typ` (ADR-0006, ADR-0021 and
+ADR-0022). Mathematics in Markdown follows GitHub's renderer: inline as
+$`...`$, display inside a ```math fence (`scripts/check_markdown_math.py`). Do not "fix" the Portuguese to English. Column
 names, commands and paths are identical in both languages; the style guide
 is `docs/editorial/style-guide.md`.
 

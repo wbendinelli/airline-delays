@@ -9,7 +9,50 @@ dates mark progress until then.
 
 ## [Unreleased]
 
-Nothing yet.
+The study (`DECISIONS.md` ADR-0022): `docs/` reorganised as the final work
+that joins the economics of airport congestion, the game-theory model and the
+article.
+
+### Added
+
+- `docs/study/`: the study in Portuguese -- an opening, eight chapters in three
+  parts (the economics of airport congestion; game theory from the fundamentals
+  to the Stackelberg congestion model derived step by step; the article: from
+  the model to the hypotheses, data, specification and identification, results
+  and replication, reception), four appendices (the delay predictor, how to
+  reproduce, rights and licences, extensions) and the bibliography.
+- `docs/study/02-teoria-dos-jogos-fundamentos.md`, a game-theory primer with
+  airline examples, and the `primer` block of `reports/theory/model.json` that
+  `airline-delays theory` writes for its discrete game (pinned by
+  `tests/test_theory.py`).
+- `reports/pdf/`: the compiled reports are tracked (`study.pdf`,
+  `replication.pdf`, `prediction.pdf`); `airline-delays report` stamps the
+  PDF with the release date of `CITATION.cff`, which the reports also print,
+  so a rerun rewrites identical bytes.
+- `scripts/check_markdown_math.py`: GitHub-safe math delimiters, a blank line
+  before every table and closed fences, in `just check` and the `docs-paths`
+  CI job.
+
+### Changed
+
+- `reports/theory.typ` -> `reports/study.typ`, the study report, extended with
+  the article's part (hypotheses, data, specification, results, replication).
+- Every mention of the 2013 monograph names USP alone; the source strings of
+  `data/external/monograph_airports.csv`, `reports/theory/model.json` and
+  `datapackage.json` were regenerated accordingly.
+- The theory chapters' mathematics rewritten in the forms GitHub renders
+  (inline $`...`$, display in ```math fences).
+- `tests/test_prose_vocabulary.py` also rejects the biographical vocabulary
+  and the retired paths.
+- `docs/notes/`: paths to the study and to `reports/pdf/`; the monograph note
+  loses its biographical opening; month tokens in the `AAAA-MM` form.
+
+### Removed
+
+- `docs/tutorial/` (fifteen modules) and `docs/theory/`: the proposal, designs,
+  dissertation, peer-review and reception modules are out of scope; the data,
+  specification, replication, rights and extensions material lives on in the
+  study.
 
 ## [1.0.0] - 2026-09-05
 

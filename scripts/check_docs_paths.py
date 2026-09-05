@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Check that every path and command mentioned in the reader-facing docs is real.
 
-Scope is deliberately narrow: ``README.md``, ``docs/tutorial/*.md`` and
-``docs/theory/*.md`` and the other entry pages are what a reader follows literally, step by
+Scope is deliberately narrow: the READMEs, the study and the notes under
+``docs/`` and the other entry pages are what a reader follows literally, step by
 step, so a stale path or a renamed target there is the most expensive kind of
 error -- it strands someone mid-exercise. This script scans them for three
 things and fails on
@@ -18,7 +18,7 @@ any miss:
    the module or script resolves to.
 
 Markdown link targets (``[text](path)``) are also checked, resolved relative
-to the file that contains them -- a link written in ``docs/tutorial/06-x.md``
+to the file that contains them -- a link written in ``docs/study/05-x.md``
 as ``../dictionary.md`` is checked against ``docs/dictionary.md``, not
 ``dictionary.md`` at the repository root.
 
@@ -104,7 +104,7 @@ ROOT_FILES = {
     ".sapians-repo.yml",
 }
 # Pipeline output: git-ignored beyond these tracked anchors (see .gitignore).
-GENERATED_PREFIXES = ("data/raw/", "data/staged/", "data/derived/", "reports/build/")
+GENERATED_PREFIXES = ("data/raw/", "data/staged/", "data/derived/")
 GENERATED_ANCHORS = {
     "data/raw/README.md",
     "data/raw/manifest.json",

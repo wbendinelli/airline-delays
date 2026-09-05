@@ -1,7 +1,7 @@
 # ROADMAP
 
 What is done and what is left, by pipeline stage, plus the publication
-milestone, the open items and the didactic modules. Every number here is a
+milestone, the open items and the study. Every number here is a
 value of `reports/summary.json`; every decision named is in `DECISIONS.md`.
 
 ## Pipeline stages
@@ -38,9 +38,8 @@ runs everything from ANAC's servers to the compiled reports.
    `docs/data-availability.md` source 12). `tests/test_metadata_consistency.py`
    holds the files together. Then tag v1.0.1.
 3. **The monograph's own Zenodo deposit** (the author's action). Its DOI
-   replaces `[DOI-MONOGRAFIA]` wherever the placeholder stands (`docs/theory/`,
-   `docs/notes/monografia-2013.md`, `docs/tutorial/14-a-teoria-por-tras-do-artigo.md`,
-   `docs/data-availability.md`), fills the `url` column of
+   replaces `[DOI-MONOGRAFIA]` wherever the placeholder stands (`docs/study/`,
+   `docs/notes/monografia-2013.md`, `docs/data-availability.md`), fills the `url` column of
    `data/external/monograph_airports.csv` and enters `CITATION.cff` under
    `references` -- a `fix` commit, because it corrects an identifier already
    in prose.
@@ -91,7 +90,7 @@ runs everything from ANAC's servers to the compiled reports.
   two-phase commit, not yet worth the machinery.
 - **The monograph's residual cross-check** (`docs/notes/monografia-2013.md`):
   the CR2 measure, the airport-pair grain for the Viracopos dummy
-  (`docs/tutorial/13-propor-melhorias.md`, section 9), the 30-or-more against
+  (`docs/study/apendice-d-extensoes.md`), the 30-or-more against
   more-than-30 boundary, departure against arrival, and the airport count of
   its text against its tables.
 - **`o_icao`/`d_icao` wording** -- ADR-0001 says every table carries `o_icao`
@@ -104,58 +103,16 @@ runs everything from ANAC's servers to the compiled reports.
   lose less, as the text concludes; Figure 5 has the two externalities offset
   exactly, as the text describes.
 
-## Didactic modules
+## The study
 
-`docs/tutorial/` (Portuguese, ADR-0006): `00-como-usar.md` plus fourteen
-modules, the research arc from the 2013 proposal to this repository. M1-M13
-keep their numbers; M14 is the door into `docs/theory/`.
-
-- **M0** (`00-como-usar.md`) -- how to use this material: the map of the arc,
-  the conventions, what sits outside the repository and why.
-- **M1** (`01-a-proposta.md`) -- the original proposal (Sep 2013): a question
-  about prices, the target journals, the timeline against reality.
-- **M2** (`02-a-leitura-do-orientador.md`) -- the advisor's reading list and
-  the pivot from prices to delays.
-- **M3** (`03-primeiro-desenho.md`) -- the first design (Jul 2014): an
-  airport-level model; an apron-capacity variable built, then abandoned.
-- **M4** (`04-segundo-desenho.md`) -- the second design (Mar 2015): OLS with
-  fixed effects, and the OLS-to-2SGMM sign change Table 6 still shows.
-- **M5** (`05-caminho-nao-tomado.md`) -- the road not taken (Jun 2015): the
-  pricing draft and the delay-threshold question.
-- **M6** (`06-dados-fonte-ao-painel.md`) -- the data pipeline from source to
-  panel: ANAC's raw files and their two layouts, the universe, the node map,
-  the fact table and the reconstruction panel, and the definitions the two
-  panels share.
-- **M7** (`07-especificacao-e-estimacao.md`) -- specification and estimation:
-  2SGMM, HAC, and the Kleibergen-Paap statistic written from scratch.
-- **M8** (`08-o-que-reproduz.md`) -- the replication: Tables 2-7 re-estimated
-  on the article's estimation panel, published here, and compared with the
-  published tables number by number -- 306 coefficients, 302 with the same
-  sign, 259 within half a published standard error, the HHI sign pattern in
-  12 of 12; the published and re-estimated sample sizes side by side.
-- **M9** (`09-da-dissertacao-ao-artigo.md`) -- from dissertation to article
-  (Oct 2015-Mar 2016): dates, title, authorship, footnotes.
-- **M10** (`10-revisao-por-pares.md`) -- peer review: nothing survived it in
-  writing; what this repository does instead.
-- **M11** (`11-recepcao.md`) -- reception: what the field picked up and who
-  adopted the method (`citation-audit`).
-- **M12** (`12-consentimento-licencas-publicacao.md`) -- rights, licences and
-  what is published where: who holds each source, the licence of each layer,
-  the article's estimation panel released by its first author with the
-  co-authors credited, and what stays outside the repository.
-- **M13** (`13-propor-melhorias.md`) -- propose improvements: the extensions
-  the architecture already supports and the next concrete step for each.
-- **M14** (`14-a-teoria-por-tras-do-artigo.md`) -- the theory the article
-  rests on, derived and checked by `just theory`.
-
-## Theory layer (ADR-0019)
-
-Done: `src/airline_delays/theory/` (the Stackelberg congestion model of the
-author's 2013 undergraduate monograph re-derived with sympy and checked
-numerically, 29 identities; eleven figures in the SAPIANS style; the join of
-each theory object to the article's published signs), `reports/theory/`,
-`reports/theory.typ`, `tests/test_theory.py`, the four Portuguese chapters
-under `docs/theory/` with `bibliografia.md`, module M14, and the evidence note
-`docs/notes/monografia-2013.md` with `data/external/monograph_airports.csv`.
-What remains is under "Open items": the monograph's deposit, the residual
-cross-check, the `o_icao` wording and the figure checks.
+`docs/study/` (Portuguese, ADR-0006; layout in ADR-0022) is the final work:
+an opening, eight chapters in three parts and four appendices, plus the
+bibliography. Part I is the economics of airport congestion (chapter 1). Part
+II is game theory, from the fundamentals an economist needs (chapter 2) to the
+Stackelberg congestion model derived step by step, with every identity checked
+by `just theory` (chapter 3). Part III is the article: from the model to the
+hypotheses (4), the data (5), specification and identification (6), results and
+replication (7), reception (8). The appendices cover the delay predictor, how
+to reproduce every number, rights and licences, and the extensions the code
+already supports. The same study compiles to `reports/pdf/study.pdf` from
+`reports/study.typ` (`just report`); the index is `docs/study/README.md`.

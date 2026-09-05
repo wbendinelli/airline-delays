@@ -95,9 +95,10 @@ in four lines.
 
 ## Learn more  (`## Learn more` / `## Para saber mais`)
 
-`docs/tutorial/` (M0-M14), `docs/theory/` (four chapters), `docs/notes/`,
-`reports/` (three Typst reports) -- each "written in Portuguese; the index page
-carries an English summary". The sibling repositories `citation-audit` and
+`docs/study/` (the study: three parts, four appendices, its PDF
+`reports/pdf/study.pdf`), `docs/notes/`, `reports/` (three Typst reports and
+their PDFs) -- "written in Portuguese; the index page carries an English
+summary". The sibling repositories `citation-audit` and
 `sapians-research`.
 
 ## Citation  (`## Citation` / `## Citação`)
