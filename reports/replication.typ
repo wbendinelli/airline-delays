@@ -7,7 +7,7 @@
 // `src/airline_delays/estimation/published.json`, extraídos do texto do artigo por
 // `src/airline_delays/estimation/published.py`.
 //
-// Compilar:  typst compile --root . reports/replication.typ reports/build/replication.pdf
+// Compilar:  typst compile --root . reports/replication.typ reports/pdf/replication.pdf
 
 #let results = json("replication/results.json")
 #let summary = json("replication/summary.json")

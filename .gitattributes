@@ -27,6 +27,9 @@ reports/summary.json linguist-generated
 # reports/theory/figures/*.svg are drawn by theory/figures.py from fixed
 # geometry (`just theory`); the diff a reviewer wants is the Python, not the XML.
 reports/theory/figures/*.svg linguist-generated
+# The compiled reports are tracked (DECISIONS.md ADR-0022): binary, rewritten by
+# `just report` with the release date of CITATION.cff as creation timestamp.
+reports/pdf/*.pdf binary linguist-generated
 
 # data/external/*.csv is NOT marked linguist-generated, on purpose: it is
 # human judgment (the node map, each merger's date, each code's class), and
