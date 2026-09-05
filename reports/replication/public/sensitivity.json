@@ -1,0 +1,165 @@
+{
+ "sample": {
+  "source": "public",
+  "filter_regressand": "fsc_oddsarr",
+  "n_raw": 31760,
+  "routes_raw": 310,
+  "n_outside_window": 3844,
+  "window": [
+   200201,
+   201312
+  ],
+  "missing_contract_columns": [
+   "maxprdel",
+   "cshare",
+   "dailyflcong",
+   "dailyflncong",
+   "h1_maxcthhi",
+   "h2_maxcthhi",
+   "h2_rthhi",
+   "h3_maxcthhi",
+   "l1h1_maxcthhi",
+   "l1h2_maxcthhi",
+   "lnh1_maxcthhi"
+  ],
+  "n_after_missing_regressand": 22522,
+  "n_after_singleton_cut": 22490,
+  "routes": 211,
+  "months": 144,
+  "singleton_cutoff": 5
+ },
+ "focus": [
+  "rthhi",
+  "maxcthhi"
+ ],
+ "default_outlier_threshold": "313.25",
+ "cells": [
+  {
+   "column": 1,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr",
+   "outlier_threshold": "313.25",
+   "with_seasonality": true,
+   "is_default": true,
+   "available": false,
+   "reason": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel."
+  },
+  {
+   "column": 1,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr",
+   "outlier_threshold": "313.25",
+   "with_seasonality": false,
+   "is_default": true,
+   "available": false,
+   "reason": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel."
+  },
+  {
+   "column": 1,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__out11710",
+   "outlier_threshold": "117.10",
+   "with_seasonality": true,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__out11710': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  },
+  {
+   "column": 1,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__out11710",
+   "outlier_threshold": "117.10",
+   "with_seasonality": false,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__out11710': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  },
+  {
+   "column": 1,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__outnone",
+   "outlier_threshold": "none",
+   "with_seasonality": true,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__outnone': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  },
+  {
+   "column": 1,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__outnone",
+   "outlier_threshold": "none",
+   "with_seasonality": false,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__outnone': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  },
+  {
+   "column": 2,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr",
+   "outlier_threshold": "313.25",
+   "with_seasonality": true,
+   "is_default": true,
+   "available": false,
+   "reason": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel."
+  },
+  {
+   "column": 2,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr",
+   "outlier_threshold": "313.25",
+   "with_seasonality": false,
+   "is_default": true,
+   "available": false,
+   "reason": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel."
+  },
+  {
+   "column": 2,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__out11710",
+   "outlier_threshold": "117.10",
+   "with_seasonality": true,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__out11710': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  },
+  {
+   "column": 2,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__out11710",
+   "outlier_threshold": "117.10",
+   "with_seasonality": false,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__out11710': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  },
+  {
+   "column": 2,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__outnone",
+   "outlier_threshold": "none",
+   "with_seasonality": true,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__outnone': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  },
+  {
+   "column": 2,
+   "regressand": "fsc_oddsarr",
+   "regressand_column": "fsc_oddsarr__outnone",
+   "outlier_threshold": "none",
+   "with_seasonality": false,
+   "is_default": false,
+   "available": false,
+   "reason": "the panel does not carry 'fsc_oddsarr__outnone': this source cannot rebuild the regressand at a different flight-level outlier threshold (ADR-0008)"
+  }
+ ],
+ "n_cells": 12,
+ "n_available": 0,
+ "unavailable_thresholds": [
+  "117.10",
+  "313.25",
+  "none"
+ ]
+}

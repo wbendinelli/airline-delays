@@ -2,7 +2,7 @@
 
 Reproduces Tables 2-7 of Bendinelli, Bettini & Oliveira (2016,
 *Transportation Research Part A*, `10.1016/j.tra.2016.01.001`) from public
-data only: `tabela2.py` through `tabela7.py`, plus `especificacao.md`
+data only: `table2.py` through `table7.py`, plus `especificacao.md`
 (the specification notes carried over from the archive's reconstruction
 work).
 

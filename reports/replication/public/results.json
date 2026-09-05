@@ -1,0 +1,40 @@
+{
+ "meta": {
+  "source": "public",
+  "tables_not_estimated": {},
+  "bandwidth": 4,
+  "debiased": true,
+  "with_seasonality": true,
+  "published_json": "replication/published.json",
+  "sample": {
+   "source": "public",
+   "filter_regressand": "fsc_oddsarr",
+   "n_raw": 31760,
+   "routes_raw": 310,
+   "n_outside_window": 3844,
+   "window": [
+    200201,
+    201312
+   ],
+   "missing_contract_columns": [
+    "maxprdel",
+    "cshare",
+    "dailyflcong",
+    "dailyflncong",
+    "h1_maxcthhi",
+    "h2_maxcthhi",
+    "h2_rthhi",
+    "h3_maxcthhi",
+    "l1h1_maxcthhi",
+    "l1h2_maxcthhi",
+    "lnh1_maxcthhi"
+   ],
+   "n_after_missing_regressand": 22522,
+   "n_after_singleton_cut": 22490,
+   "routes": 211,
+   "months": 144,
+   "singleton_cutoff": 5
+  },
+  "seconds": 0.2
+ }
+}
