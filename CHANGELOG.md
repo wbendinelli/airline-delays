@@ -263,6 +263,18 @@ version numbers, mark progress.
   unchanged: it still runs under the 2019 vintage's convention (ADR-0012), which
   is what reproduces the benchmark.
 
+### Removed
+
+- The verification layer against the authors' private base -- `replication/gabarito/`,
+  `scripts/verify_reconcile.py`, `scripts/check_no_private_paths.py`, `data/analysis/taxas.csv`,
+  `data/private/`, `reports/reconciliation.md`, `reports/reconciliation_by_month.csv`,
+  `reports/replication/public/`, `docs/declared-differences.md`, `docs/audit/`, the pytest marker
+  `gabarito`, the `AIRLINE_DELAYS_PRIVATE_DIR` variable, the `vra verify` command and the
+  `just gabarito`/`just verify` recipes, the two `no-private-data` pre-commit hooks -- because the
+  article's own estimation panel is now published in this repository (ADR-0020) and the
+  replication runs on it directly. Registry definitions that quoted agreement rates were reworded;
+  `docs/dictionary.md` and `datapackage.json` regenerated.
+
 ### Fixed
 
 Everything under this heading down to "Duplicated route-month keys" closes a

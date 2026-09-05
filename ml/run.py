@@ -380,8 +380,8 @@ def accounting(dataset_dir: Path, manifest: dict[str, Any]) -> dict[str, Any]:
     arrival time* -- so a reader following the README's own citation found a
     53,180-flight contradiction that was really two different quantities with
     one label. Every count below comes from the dataset the models are fitted
-    on, read here and nowhere else; `results.md`, `README.md` and
-    `docs/declared-differences.md` quote this block and nothing else.
+    on, read here and nowhere else; `results.md` and `README.md` quote this
+    block and nothing else.
 
     Nothing is redefined. `on_time_no_bav` is the flag the build writes
     (`ml/dataset_flights.py`, reading B: realised, pre-2010, carrier class in
@@ -693,11 +693,9 @@ def write_markdown(
 def _accounting_block(manifest: dict[str, Any]) -> list[str]:
     """Render `dataset.json`'s `accounting` block, and only it.
 
-    Every population count in this report, in `README.md` and in
-    `docs/declared-differences.md` comes from here, under the same headers, so
-    the three cannot drift the way they did before the 2026-09-05 audit
-    (M-2/M-3). If the block is missing the report says so instead of
-    recomputing anything.
+    Every population count in this report and in `README.md` comes from here,
+    under the same headers, so the two cannot drift. If the block is missing
+    the report says so instead of recomputing anything.
     """
     block = manifest.get("accounting")
     if not block:
@@ -715,9 +713,8 @@ def _accounting_block(manifest: dict[str, Any]) -> list[str]:
         "",
         "The canonical population count. Everything here is read from the flight",
         "table the models are fitted on and written by `ml/run.py` into",
-        "`reports/prediction/dataset.json` (`accounting`); `README.md` and",
-        "`docs/declared-differences.md` quote this block and compute nothing of",
-        "their own.",
+        "`reports/prediction/dataset.json` (`accounting`); `README.md` quotes",
+        "this block and computes nothing of its own.",
         "",
         "`targets available` are the realised flights whose arrival outcome is",
         "readable: an actual arrival time, or — before 2010, for a carrier whose",

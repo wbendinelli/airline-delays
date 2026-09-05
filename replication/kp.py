@@ -10,8 +10,7 @@ which is a test of a parameter, not of a rank. Stata's ``ranktest`` and R's
 ``ivreg2r`` are the reference implementations. This module is written from the
 paper and validated two ways: an exact algebraic collapse under i.i.d. errors
 (``tests/test_replication_kp.py``) and a regression test against the published
-values of Bendinelli, Bettini and Oliveira (2016) (same file, marked
-``gabarito``).
+values of Bendinelli, Bettini and Oliveira (2016) (same file).
 
 The construction, with ``Y`` the endogenous regressors and ``Z`` the excluded
 instruments, both after partialling out the included exogenous regressors::

@@ -9,7 +9,7 @@ things and fails on
 any miss:
 
 1. Backticked or fenced-code filesystem paths (``src/vra/registry.py``,
-   ``data/analysis/taxas.csv``, brace groups like ``src/vra/{groups,codes}.py``).
+   ``data/analysis/manifest.json``, brace groups like ``src/vra/{groups,codes}.py``).
 2. ``just <target>`` invocations, checked against the recipe names actually
    defined in ``justfile``.
 3. ``uv run vra <subcommand>`` invocations, checked against the commands the

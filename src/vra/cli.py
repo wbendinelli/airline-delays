@@ -1,4 +1,4 @@
-"""Command line entry point: ``vra fetch | stage | verify | fixture``.
+"""Command line entry point: ``vra fetch | stage | fixture | ...``.
 
 Each command is a thin shell over the library, so everything it does is also
 callable from Python and from a notebook.
@@ -73,38 +73,6 @@ def stage(
         root=root,
     )
     typer.echo(f"staged {sum(r.rows for r in results):,d} rows across {len(results)} years")
-
-
-@app.command()
-def verify(
-    private_dir: Annotated[
-        Path | None,
-        typer.Option(envvar="AIRLINE_DELAYS_PRIVATE_DIR", help="Private benchmark directory."),
-    ] = None,
-    sample: Annotated[
-        int, typer.Option(help="Rows in the deterministic column-by-column sample.")
-    ] = 200_000,
-    out: Annotated[
-        Path | None, typer.Option(help="Report path; defaults to reports/reconciliation.md.")
-    ] = None,
-) -> None:
-    """Reconcile the staged data with the acervo's private vra.dta (optional)."""
-    if private_dir is None:
-        typer.echo("AIRLINE_DELAYS_PRIVATE_DIR is not set; nothing to reconcile.", err=True)
-        raise typer.Exit(code=0)
-    root = repo_root()
-    script = root / "scripts" / "verify_reconcile.py"
-    command = [
-        sys.executable,
-        str(script),
-        "--private-dir",
-        str(private_dir),
-        "--sample",
-        str(sample),
-        "--out",
-        str(out or root / "reports" / "reconciliation.md"),
-    ]
-    raise typer.Exit(code=subprocess.run(command, check=False).returncode)
 
 
 @app.command()

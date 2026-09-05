@@ -18,9 +18,8 @@ replicate`) without rebuilding anything first.
 | `airline_city_month.parquet` | ~4 MB | group x node x month, with the hub share, score and dummy. |
 | `manifest.json` | 5 KB | How the fact table was built: the git commit, years, tool versions, outlier threshold, the ADR-0012 convention, the per-year count of realised flights with no actual time, and `rows_outside_years` — the staged rows dated outside the years built, which ADR-0016 counts rather than folds into a neighbouring year. |
 | `panel_manifest.json` | < 1 KB | The same for the panel: git commit, tool versions, row/column counts and the byte sizes of the two files it wrote. |
-| `taxas.csv` | 8 KB | Column-by-column agreement against the private benchmark, written by `replication/gabarito/compare.py`. Statistics only — no benchmark value is ever copied here. |
 
-All eight files sit well under the pre-commit `check-added-large-files`
+All seven files sit well under the pre-commit `check-added-large-files`
 threshold (50 MB, raised for exactly this in ADR-0014); the flight-level
 table stays out of git regardless of size (ADR-0004) and goes to Zenodo
 instead.
@@ -46,8 +45,7 @@ uv run vra panel      # ~10 s: the public route-month panel, parquet and csv.gz
 
 Both commands need `data/staged/`, which `just fetch && just stage` produces
 from ANAC's published files. `just features && just panel` runs the pair in
-about 22 seconds and is what regenerates every file in the table above
-except `taxas.csv` (`just gabarito`, needs `AIRLINE_DELAYS_PRIVATE_DIR`).
+about 22 seconds and is what regenerates every file in the table above.
 
 `data/derived/` holds two intermediates these commands write and read —
 `route_month_context.parquet` (route-month counts outside the replication

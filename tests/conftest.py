@@ -1,41 +1,13 @@
-"""Shared pytest configuration.
+"""Shared pytest configuration and the offline fixtures.
 
-Registers the ``gabarito`` marker (tests that read the private benchmark
-through ``AIRLINE_DELAYS_PRIVATE_DIR``) and skips those tests automatically
-when the variable is unset, so a contributor without the private directory
-sees a skip, not a failure or an accidental read of a path that does not
-exist. See CLAUDE.md and CONTRIBUTING.md. ``pyproject.toml``'s
-``addopts = "-m 'not gabarito'"`` already deselects these tests by default;
-this hook is the safety net for the case where someone runs
-``pytest -m gabarito`` or overrides ``addopts`` directly.
+Everything runs against the files committed in ``tests/fixtures`` and the
+tables committed in ``data/analysis``; no test needs a network connection or
+a directory outside the repository. Tests marked ``analysis`` additionally
+rebuild committed tables from ``data/staged``/``data/derived`` and skip when
+those layers are absent (``pyproject.toml``).
 """
 
 from __future__ import annotations
-
-import os
-
-import pytest
-
-PRIVATE_DIR_VAR = "AIRLINE_DELAYS_PRIVATE_DIR"
-
-
-def pytest_configure(config: pytest.Config) -> None:
-    config.addinivalue_line(
-        "markers",
-        "gabarito: requires data/private/ via AIRLINE_DELAYS_PRIVATE_DIR -- does not run in CI",
-    )
-
-
-def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
-    if os.environ.get(PRIVATE_DIR_VAR):
-        return
-    skip_gabarito = pytest.mark.skip(
-        reason=f"{PRIVATE_DIR_VAR} is unset -- gabarito tests need the private benchmark directory"
-    )
-    for item in items:
-        if "gabarito" in item.keywords:
-            item.add_marker(skip_gabarito)
-
 
 # --------------------------------------------------------------------------- fixtures
 #
@@ -44,9 +16,10 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 # real ANAC files (so latin-1, CRLF, ``N/A`` and the free-text 2010 layout are
 # all exercised) and one staged parquet. Rebuild them with
 # ``uv run vra fixture``.
+import sys
+from pathlib import Path
 
-import sys  # noqa: E402
-from pathlib import Path  # noqa: E402
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "src") not in sys.path:

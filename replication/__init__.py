@@ -25,9 +25,9 @@ Layout
 ``run``
     Runs everything and writes ``reports/replication/``.
 
-Nothing here is ever tuned to make a number match. Where the replication and
-the article disagree, the disagreement is measured and written down -- in
-``docs/declared-differences.md`` and ``docs/notes/replication.md``.
+Every re-estimated coefficient is compared with the published one and the
+comparison is written down in ``reports/replication/`` and
+``docs/notes/replication.md``.
 """
 
 from __future__ import annotations

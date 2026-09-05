@@ -47,10 +47,8 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
-  "gabarito: requires data/private/ via AIRLINE_DELAYS_PRIVATE_DIR -- does not run in CI",
   "analysis: rebuilds the panel from the committed fact table and diffs it against data/analysis/ (ADR-0014) -- skips when those tables or data/derived/ are absent",
 ]
-addopts = "-m 'not gabarito'"
 
 [build-system]
 requires = ["hatchling"]
