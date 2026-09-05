@@ -154,6 +154,10 @@ comentário no código diz isso e não unifica.
 
 ## 3. A tabela-ponte
 
+![Figura 11 — OLS contra 2SGMM nos regressores de estrutura de mercado](../../reports/theory/figures/fig11_inversao_de_sinal.svg)
+
+A Figura 11 desenha os quatro regressores de estrutura de mercado nas duas colunas (2), OLS em cinza e 2SGMM colorido, com os coeficientes publicados (`reports/theory/figures.json`, `fig11`).
+
 Uma linha por objeto teórico, na ordem de `bridge.rows` de
 `reports/theory/model.json`. As duas colunas de 2016 são o coeficiente
 publicado com as estrelas, lidos de

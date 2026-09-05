@@ -43,7 +43,7 @@ externo), nenhum recalculado aqui.
 
 ![Figura 1 — O nível eficiente de congestionamento](../../reports/theory/figures/fig1_nivel_eficiente.svg)
 
-Redesenhada por `theory/figures.py` a partir de curvas paramétricas;
+Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -98,7 +98,7 @@ realizado, $\mathrm{BMgR}$, mais alto.
 
 ![Figura 2 — Benefício marginal em condições de incerteza](../../reports/theory/figures/fig2_incerteza.svg)
 
-Redesenhada por `theory/figures.py` a partir de curvas paramétricas;
+Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -147,7 +147,7 @@ congestionamento.
 
 ![Figura 3 — Custo marginal social e privado antes e depois de uma expansão](../../reports/theory/figures/fig3_expansao.svg)
 
-Redesenhada por `theory/figures.py` a partir de curvas paramétricas;
+Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -175,7 +175,7 @@ conta do planejador local.
 
 ![Figura 4 — Expansão do aeroporto levando em conta as externalidades de rede](../../reports/theory/figures/fig4_externalidade_de_rede.svg)
 
-Redesenhada por `theory/figures.py` a partir de curvas paramétricas;
+Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -189,7 +189,7 @@ sinal trocado.
 
 ![Figura 5 — Congestionamento e externalidades de rede](../../reports/theory/figures/fig5_congestionamento_e_rede.svg)
 
-Redesenhada por `theory/figures.py` a partir de curvas paramétricas;
+Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 

@@ -10,6 +10,19 @@ version numbers, mark progress.
 
 ### Added
 
+- The theory layer in the SAPIANS standard: the eleven figures of `reports/theory/figures/`
+  are now drawn with matplotlib in the SAPIANS scientific style vendored with attribution
+  in `theory/sapians_style.py` (an active insight title, a subtitle with the parameters,
+  direct labels, the SAPIANS palette, Inter when installed) -- the five diagrams of the
+  monograph's section 2 keep their geometry and numbers, and six new figures show the
+  follower's reaction function, the tolls by market structure, the comparative statics in
+  cost curvature and demand slope, the low-cost entrant and the OLS-to-2SGMM sign
+  inversion of the published coefficients; `reports/theory.typ` is rewritten as a
+  SAPIANS report (design package vendored under `reports/sapians/`, MIT copy of
+  `sapians-latex` v0.1.0), a complete study that formulates the game from players,
+  strategies and timing and derives every equation step by step, with intuition boxes,
+  tables read from `model.json` and the figures with captions; `matplotlib` joins the
+  dependencies.
 - Theory layer (`theory/`, `just theory`, `reports/theory/`, `tests/test_theory.py`;
   `DECISIONS.md` ADR-0019): the Stackelberg congestion model of the author's 2013
   undergraduate monograph (section 4, after Brueckner and Van Dender 2008) re-derived

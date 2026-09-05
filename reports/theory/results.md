@@ -230,3 +230,85 @@ The spoke airport that sets flights where its local marginal benefit meets margi
 | Q_star_equals_Q_0 | yes |
 
 Drawn as the monograph describes its Figure 5: the two externalities offset each other exactly, so the market quantity Q_0 is already the efficient Q* and no intervention is needed.
+
+### Figura 6 — A função de reação da seguidora e os equilíbrios (exemplo linear)
+
+![Figura 6 — A função de reação da seguidora e os equilíbrios (exemplo linear)](figures/fig6_funcao_de_reacao.svg)
+
+| quantity | value |
+|---|---|
+| reaction_slope | -0.5000 |
+| F_stackelberg | 67.5000 |
+| F_cournot | 60 |
+| F_star | 45 |
+| F_atomistic | 90 |
+
+Linear example of model.json; the follower's reaction is f2 = (D - b f1)/(2b).
+
+### Figura 7 — Tarifas no ótimo simétrico por estrutura de mercado
+
+![Figura 7 — Tarifas no ótimo simétrico por estrutura de mercado](figures/fig7_tarifas_por_estrutura.svg)
+
+| quantity | value |
+|---|---|
+| monopoly | 0 |
+| cournot_and_follower | 0.5000 |
+| stackelberg_leader_linear | 0.7500 |
+| stackelberg_leader_quadratic | 0.7835 |
+| atomistic | 1 |
+| lambda_star_quadratic | 0.5670 |
+
+Proposition 1 of Brueckner and Van Dender (2008) as numbers; the quadratic bar is where lambda* > 1/2 lifts the leader's toll above three quarters.
+
+### Figura 8 — Estática comparativa na curvatura do custo de congestionamento
+
+![Figura 8 — Estática comparativa na curvatura do custo de congestionamento](figures/fig8_estatica_curvatura.svg)
+
+| quantity | value |
+|---|---|
+| q | [0.0, 0.25, 0.5, 1.0, 2.0, 4.0] |
+| lambda_star | [0.5, 0.543491, 0.556041, 0.566989, 0.575777, 0.582477] |
+| T1_star_over_MCD | [0.75, 0.771745, 0.778021, 0.783494, 0.787888, 0.791239] |
+| f1_over_f2 | [2.0, 2.14889, 2.18555, 2.21611, 2.23987, 2.25761] |
+
+From model.json comparative_statics.cost_curvature.
+
+### Figura 9 — Demanda inelástica: o total de Stackelberg contra o ótimo
+
+![Figura 9 — Demanda inelástica: o total de Stackelberg contra o ótimo](figures/fig9_demanda_inelastica.svg)
+
+| quantity | value |
+|---|---|
+| dd | [0.0, 0.005, 0.015, 0.03] |
+| F_stackelberg | [67.5, 95.0, 57.0, 35.625] |
+| F_star | [45.0, 76.0, 54.2857, 38.0] |
+| market_power_term | [0.0, -15.8333, -28.5, -35.625] |
+| uninternalised_term | [22.5, 31.6667, 19.0, 11.875] |
+
+From model.json comparative_statics.demand_slope.
+
+### Figura 10 — A entrante de baixo custo e a parcela internalizada
+
+![Figura 10 — A entrante de baixo custo e a parcela internalizada](figures/fig10_entrante_lcc.svg)
+
+| quantity | value |
+|---|---|
+| duopoly_shares | [0.5, 0.5] |
+| triopoly_shares | [0.6, 0.2, 0.2] |
+| F_duopoly | 60 |
+| F_triopoly | 75 |
+
+From model.json extension_lcc; labelled as this repository's extension.
+
+### Figura 11 — OLS contra 2SGMM nos regressores de estrutura de mercado
+
+![Figura 11 — OLS contra 2SGMM nos regressores de estrutura de mercado](figures/fig11_inversao_de_sinal.svg)
+
+| quantity | value |
+|---|---|
+| variables | ['rthhi', 'maxcthhi', 'lcc', 'maxalccfu'] |
+| ols_table6_col2 | [-0.3126, 0.1057, -0.1636, -0.1793] |
+| gmm_table3_col2 | [0.8192, -1.5144, -0.0412, -0.4234] |
+| stars_table3_col2 | ['**', '***', '', '**'] |
+
+Published coefficients only (replication/published.json); nothing re-estimated.

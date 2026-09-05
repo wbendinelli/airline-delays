@@ -18,6 +18,13 @@ figures/tables they depend on are not.
 | `prediction.typ` | `prediction/*.json` | `just ml` (`uv run python -m ml.run`) | `typst compile reports/prediction.typ reports/build/prediction.pdf` |
 | `theory.typ` | `theory/{model,figures}.json`, `theory/figures/*.svg` | `just theory` (`uv run python -m theory.run`) | `typst compile reports/theory.typ reports/build/theory.pdf` |
 
+`sapians/` is the SAPIANS design package for Typst (`@local/sapians:0.1.0`), vendored
+from `sapians-latex` (MIT) so that `reports/theory.typ` compiles from a clean clone
+with `typst compile --root . reports/theory.typ reports/build/theory.pdf`; the Inter
+font is used when installed, with Helvetica Neue or Arial as the fallback the
+package declares. `theory/figures/*.svg` are drawn by `theory/figures.py` with
+matplotlib in the SAPIANS figure style (`theory/sapians_style.py`).
+
 `theory/` holds `model.json` (every identity of the Stackelberg congestion
 model with whether it holds, the reaction-slope bounds, the tolls of
 Proposition 1, three numeric examples, comparative statics, the low-cost

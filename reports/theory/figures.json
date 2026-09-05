@@ -1,15 +1,11 @@
 {
-  "canvas": {
-    "width": 500,
-    "height": 350,
-    "X": "60 + 4 Q",
-    "Y": "320 - 2.5 P"
-  },
-  "source": "Redrawn from piecewise-linear curves; nothing copied from Cohen and Coughlin (2003), Cohen, Coughlin and Ott (2009) or the monograph. Stylised, not calibrated.",
+  "style": "SAPIANS scientific figure style (sapians-latex, MIT), see theory/sapians_style.py",
+  "source": "Figures 1-5 redrawn from piecewise-linear curves after Cohen and Coughlin (2003) and Cohen, Coughlin and Ott (2009); nothing copied. Figures 6-11 from theory/equilibrium.py and theory/bridge.py. Stylised, not calibrated.",
   "figures": {
     "fig1": {
       "file": "figures/fig1_nivel_eficiente.svg",
       "title": "Figura 1 — O nível eficiente de congestionamento",
+      "insight": "Sem tarifa, o mercado voa 8 voos além do ótimo",
       "curves": {
         "CMgP": "30 for Q <= 40, 30 + 0.5 (Q - 40) beyond",
         "CMgS": "30 + 1.5 (Q - 40) for Q >= 40",
@@ -48,6 +44,7 @@
     "fig2": {
       "file": "figures/fig2_incerteza.svg",
       "title": "Figura 2 — Benefício marginal em condições de incerteza",
+      "insight": "Quando o benefício surpreende, a tarifa perde menos que a cota (20 contra 45)",
       "curves": {
         "CMgP": "as Figure 1",
         "CMgS": "as Figure 1",
@@ -91,6 +88,7 @@
     "fig3": {
       "file": "figures/fig3_expansao.svg",
       "title": "Figura 3 — Custo marginal social e privado antes e depois de uma expansão",
+      "insight": "Expandir o aeroporto só descongestiona quem não responde ao preço",
       "curves": {
         "before": "CMgP/CMgS as Figure 1 with the congestion threshold at Q_T = 40",
         "after": "the same curves shifted right by 24 (threshold Q_TX = 64)",
@@ -131,6 +129,7 @@
     "fig4": {
       "file": "figures/fig4_externalidade_de_rede.svg",
       "title": "Figura 4 — Expansão do aeroporto levando em conta as externalidades de rede",
+      "insight": "O aeroporto-spoke para em 70 voos; a rede justifica 85",
       "curves": {
         "CMg": "30 (flat)",
         "BMg local": "100 - Q",
@@ -156,6 +155,7 @@
     "fig5": {
       "file": "figures/fig5_congestionamento_e_rede.svg",
       "title": "Figura 5 — Congestionamento e externalidades de rede",
+      "insight": "Quando congestionamento e rede se compensam, o mercado já está no ótimo",
       "curves": {
         "CMgP": "as Figure 1",
         "CMgS": "as Figure 1",
@@ -189,6 +189,176 @@
         "Q_star_equals_Q_0": true
       },
       "note": "Drawn as the monograph describes its Figure 5: the two externalities offset each other exactly, so the market quantity Q_0 is already the efficient Q* and no intervention is needed."
+    },
+    "fig6": {
+      "file": "figures/fig6_funcao_de_reacao.svg",
+      "title": "Figura 6 — A função de reação da seguidora e os equilíbrios (exemplo linear)",
+      "insight": "A seguidora corta metade de cada voo extra da líder",
+      "points": {
+        "stackelberg": [
+          45.0,
+          22.5
+        ],
+        "cournot": [
+          30.0,
+          30.0
+        ],
+        "social_symmetric": [
+          22.5,
+          22.5
+        ]
+      },
+      "quantities": {
+        "reaction_slope": -0.5,
+        "F_stackelberg": 67.5,
+        "F_cournot": 60.0,
+        "F_star": 45.0,
+        "F_atomistic": 90.0
+      },
+      "note": "Linear example of model.json; the follower's reaction is f2 = (D - b f1)/(2b)."
+    },
+    "fig7": {
+      "file": "figures/fig7_tarifas_por_estrutura.svg",
+      "title": "Figura 7 — Tarifas no ótimo simétrico por estrutura de mercado",
+      "insight": "A líder de Stackelberg paga três quartos do dano marginal sob custo linear",
+      "quantities": {
+        "monopoly": 0.0,
+        "cournot_and_follower": 0.5,
+        "stackelberg_leader_linear": 0.75,
+        "stackelberg_leader_quadratic": 0.783494,
+        "atomistic": 1.0,
+        "lambda_star_quadratic": 0.566989
+      },
+      "note": "Proposition 1 of Brueckner and Van Dender (2008) as numbers; the quadratic bar is where lambda* > 1/2 lifts the leader's toll above three quarters."
+    },
+    "fig8": {
+      "file": "figures/fig8_estatica_curvatura.svg",
+      "title": "Figura 8 — Estática comparativa na curvatura do custo de congestionamento",
+      "insight": "Custo marginal mais curvo: a seguidora reage menos e a líder paga mais",
+      "quantities": {
+        "q": [
+          0.0,
+          0.25,
+          0.5,
+          1.0,
+          2.0,
+          4.0
+        ],
+        "lambda_star": [
+          0.5,
+          0.543491,
+          0.556041,
+          0.566989,
+          0.575777,
+          0.582477
+        ],
+        "T1_star_over_MCD": [
+          0.75,
+          0.771745,
+          0.778021,
+          0.783494,
+          0.787888,
+          0.791239
+        ],
+        "f1_over_f2": [
+          2.0,
+          2.14889,
+          2.18555,
+          2.21611,
+          2.23987,
+          2.25761
+        ]
+      },
+      "note": "From model.json comparative_statics.cost_curvature."
+    },
+    "fig9": {
+      "file": "figures/fig9_demanda_inelastica.svg",
+      "title": "Figura 9 — Demanda inelástica: o total de Stackelberg contra o ótimo",
+      "insight": "Com demanda inclinada, o tráfego de Stackelberg cai abaixo do ótimo",
+      "quantities": {
+        "dd": [
+          0.0,
+          0.005,
+          0.015,
+          0.03
+        ],
+        "F_stackelberg": [
+          67.5,
+          95.0,
+          57.0,
+          35.625
+        ],
+        "F_star": [
+          45.0,
+          76.0,
+          54.2857,
+          38.0
+        ],
+        "market_power_term": [
+          0.0,
+          -15.8333,
+          -28.5,
+          -35.625
+        ],
+        "uninternalised_term": [
+          22.5,
+          31.6667,
+          19.0,
+          11.875
+        ]
+      },
+      "note": "From model.json comparative_statics.demand_slope."
+    },
+    "fig10": {
+      "file": "figures/fig10_entrante_lcc.svg",
+      "title": "Figura 10 — A entrante de baixo custo e a parcela internalizada",
+      "insight": "A entrante de baixo custo internaliza a maior parcela do dano marginal",
+      "quantities": {
+        "duopoly_shares": [
+          0.5,
+          0.5
+        ],
+        "triopoly_shares": [
+          0.6,
+          0.2,
+          0.2
+        ],
+        "F_duopoly": 60.0,
+        "F_triopoly": 75.0
+      },
+      "note": "From model.json extension_lcc; labelled as this repository's extension."
+    },
+    "fig11": {
+      "file": "figures/fig11_inversao_de_sinal.svg",
+      "title": "Figura 11 — OLS contra 2SGMM nos regressores de estrutura de mercado",
+      "insight": "O 2SGMM inverte o sinal das duas concentrações",
+      "quantities": {
+        "variables": [
+          "rthhi",
+          "maxcthhi",
+          "lcc",
+          "maxalccfu"
+        ],
+        "ols_table6_col2": [
+          -0.3126,
+          0.1057,
+          -0.1636,
+          -0.1793
+        ],
+        "gmm_table3_col2": [
+          0.8192,
+          -1.5144,
+          -0.0412,
+          -0.4234
+        ],
+        "stars_table3_col2": [
+          "**",
+          "***",
+          "",
+          "**"
+        ]
+      },
+      "note": "Published coefficients only (replication/published.json); nothing re-estimated."
     }
   }
 }

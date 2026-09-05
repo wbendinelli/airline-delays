@@ -1,0 +1,10 @@
+[package]
+name = "sapians"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["SAPIANS Team <design@sapians.ai>"]
+license = "MIT"
+description = "Official SAPIANS document & presentation design system for Typst."
+repository = "https://github.com/sapians/sapians-typst"
+keywords = ["presentation", "beamer", "slides", "scientific", "sapians", "theme"]
+categories = ["presentation", "paper", "report"]
