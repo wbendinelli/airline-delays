@@ -104,7 +104,7 @@ class TestTheDeclaredVariants:
         assert table["rthhi_flights"].notna().any()
 
     def test_the_convention_travels_with_the_table(self, built) -> None:
-        assert (built["panel"]["legacy_missing_actual_as_zero"] == 1).all()
+        assert (built["panel"]["empty_actual_means_on_time"] == 1).all()
 
 
 class TestTheNewFeatures:

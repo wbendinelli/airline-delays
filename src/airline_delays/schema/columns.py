@@ -1533,7 +1533,7 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
         "Distância great-circle entre os dois nós, de data/external/distances_km.csv.",
         "none",
     ),
-    "legacy_missing_actual_as_zero": _Doc(
+    "empty_actual_means_on_time": _Doc(
         "int8",
         "flag",
         "The ADR-0012 convention this table was built under: 1 means a realised flight with no actual time counted as on schedule, the article's own convention.",
@@ -2082,8 +2082,8 @@ _ML_DOCS: dict[str, _Doc] = {
     "route_late15_l1": _Doc(
         "float32",
         "share",
-        "Share of the route's observed arrivals more than 15 minutes late in the PREVIOUS month. Denominator arr_delay_obs, so legacy_missing_actual_as_zero = False (ADR-0012).",
-        "Proporção das chegadas observadas da rota com mais de 15 minutos de atraso no mês ANTERIOR. Denominador arr_delay_obs, ou seja legacy_missing_actual_as_zero = False (ADR-0012).",
+        "Share of the route's observed arrivals more than 15 minutes late in the PREVIOUS month. Denominator arr_delay_obs, so empty_actual_means_on_time = False (ADR-0012).",
+        "Proporção das chegadas observadas da rota com mais de 15 minutos de atraso no mês ANTERIOR. Denominador arr_delay_obs, ou seja empty_actual_means_on_time = False (ADR-0012).",
         "recompute",
     ),
     "route_obs_l1": _Doc(

@@ -159,8 +159,8 @@ def suspect_time_sql(
 
 # ------------------------------------------------- the 2019-vintage empty-time rule
 
-LEGACY_MISSING_ACTUAL_AS_ZERO: bool = False
-"""Default for `legacy_missing_actual_as_zero` (ADR-0012): keep nulls.
+EMPTY_ACTUAL_MEANS_ON_TIME: bool = False
+"""Default for `empty_actual_means_on_time` (ADR-0012): keep nulls.
 
 `True` reproduces the private 2019 vintage, which read an empty actual time on
 a realised flight as "operated on schedule" (actual = scheduled, delay 0). In
@@ -177,25 +177,25 @@ def effective_delay_min(
     actual: datetime | None,
     is_realized: bool,
     *,
-    legacy_missing_actual_as_zero: bool = LEGACY_MISSING_ACTUAL_AS_ZERO,
+    empty_actual_means_on_time: bool = EMPTY_ACTUAL_MEANS_ON_TIME,
 ) -> float | None:
     """The signed delay under one of the two conventions of ADR-0012.
 
-    With `legacy_missing_actual_as_zero`, a **realised** flight whose actual
+    With `empty_actual_means_on_time`, a **realised** flight whose actual
     timestamp is missing but whose schedule is known counts as 0 minutes; a
     cancelled flight stays null under both conventions, because it never
     operated.
 
     >>> from datetime import datetime as dt
     >>> effective_delay_min(dt(2004, 5, 1, 10, 0), None, True)  # returns None
-    >>> effective_delay_min(dt(2004, 5, 1, 10, 0), None, True, legacy_missing_actual_as_zero=True)
+    >>> effective_delay_min(dt(2004, 5, 1, 10, 0), None, True, empty_actual_means_on_time=True)
     0.0
     >>> effective_delay_min(
-    ...     dt(2004, 5, 1, 10, 0), None, False, legacy_missing_actual_as_zero=True
+    ...     dt(2004, 5, 1, 10, 0), None, False, empty_actual_means_on_time=True
     ... )  # cancelled: None
     """
     if actual is None:
-        if legacy_missing_actual_as_zero and is_realized and scheduled is not None:
+        if empty_actual_means_on_time and is_realized and scheduled is not None:
             return 0.0
         return None
     return signed_delay_min(scheduled, actual)
@@ -206,7 +206,7 @@ def effective_delay_sql(
     actual: str,
     realized: str = "is_realized",
     *,
-    legacy_missing_actual_as_zero: bool = LEGACY_MISSING_ACTUAL_AS_ZERO,
+    empty_actual_means_on_time: bool = EMPTY_ACTUAL_MEANS_ON_TIME,
 ) -> str:
     """DuckDB translation of `effective_delay_min`.
 
@@ -214,7 +214,7 @@ def effective_delay_sql(
     convention can never drift between the Python and the SQL path.
     """
     signed = signed_delay_sql(scheduled, actual)
-    if not legacy_missing_actual_as_zero:
+    if not empty_actual_means_on_time:
         return signed
     return (
         f"CASE WHEN {actual} IS NULL AND {realized} AND {scheduled} IS NOT NULL "

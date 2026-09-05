@@ -27,7 +27,7 @@ from airline_delays.fact.measures import (
 
 
 def delay_denominator(
-    frame: pd.DataFrame, side: str, *, legacy_missing_actual_as_zero: bool
+    frame: pd.DataFrame, side: str, *, empty_actual_means_on_time: bool
 ) -> pd.Series:
     """Flights a delay proportion is divided by, under one of the two conventions.
 
@@ -40,7 +40,7 @@ def delay_denominator(
     reports arrival-delay rates far above the published ones.
     """
     observed = frame[f"{side}_delay_obs"].astype("float64")
-    if not legacy_missing_actual_as_zero:
+    if not empty_actual_means_on_time:
         return observed
     return observed + frame[f"{side}_missing_actual"].astype("float64")
 
@@ -96,7 +96,7 @@ def aggregate(
     fact: pd.DataFrame,
     grain: Grain,
     *,
-    legacy_missing_actual_as_zero: bool = True,
+    empty_actual_means_on_time: bool = True,
 ) -> pd.DataFrame:
     """Project the fact table onto a coarser grain.
 
@@ -107,9 +107,7 @@ def aggregate(
     """
     assert_unique(fact, FACT_UNIQUE_KEY, "fact table handed to aggregate()")
     if grain == "route_month":
-        out = _aggregate_route_month(
-            fact, legacy_missing_actual_as_zero=legacy_missing_actual_as_zero
-        )
+        out = _aggregate_route_month(fact, empty_actual_means_on_time=empty_actual_means_on_time)
         assert_unique(out, ROUTE_MONTH_KEY, "route_month projection")
         return out
     if grain in {"city_month", "airline_city_month"}:
@@ -117,7 +115,7 @@ def aggregate(
         out = _aggregate_city(
             fact,
             with_group=with_group,
-            legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+            empty_actual_means_on_time=empty_actual_means_on_time,
         )
         assert_unique(
             out, AIRLINE_CITY_MONTH_KEY if with_group else CITY_MONTH_KEY, f"{grain} projection"
@@ -126,18 +124,14 @@ def aggregate(
     raise ValueError(f"unknown grain {grain!r}; expected one of {Grain.__args__}")  # type: ignore[attr-defined]
 
 
-def _aggregate_route_month(
-    fact: pd.DataFrame, *, legacy_missing_actual_as_zero: bool
-) -> pd.DataFrame:
+def _aggregate_route_month(fact: pd.DataFrame, *, empty_actual_means_on_time: bool) -> pd.DataFrame:
     import pandas as pd
 
     keys = ["ym", "year", "month", "route", "origin_node", "dest_node"]
     sums = fact.groupby(keys, observed=True, as_index=False)[list(FACT_SUM_COLUMNS)].sum()
     structure = _market_structure(fact, keys)
     out = sums.merge(structure, on=keys, how="left")
-    return pd.DataFrame(
-        _add_shares(out, legacy_missing_actual_as_zero=legacy_missing_actual_as_zero)
-    )
+    return pd.DataFrame(_add_shares(out, empty_actual_means_on_time=empty_actual_means_on_time))
 
 
 def _market_structure(fact: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
@@ -176,7 +170,7 @@ def _index_of(frame: pd.DataFrame, keys: list[str]):
 
 
 def _aggregate_city(
-    fact: pd.DataFrame, *, with_group: bool, legacy_missing_actual_as_zero: bool
+    fact: pd.DataFrame, *, with_group: bool, empty_actual_means_on_time: bool
 ) -> pd.DataFrame:
     import pandas as pd
 
@@ -214,7 +208,7 @@ def _aggregate_city(
     if not with_group:
         structure = _city_structure(fact)
         out = out.merge(structure, on=["ym", "node"], how="left")
-    out = _add_city_shares(out, legacy_missing_actual_as_zero=legacy_missing_actual_as_zero)
+    out = _add_city_shares(out, empty_actual_means_on_time=empty_actual_means_on_time)
     return pd.DataFrame(out.sort_values(keys, ignore_index=True))
 
 
@@ -237,7 +231,7 @@ def _city_structure(fact: pd.DataFrame) -> pd.DataFrame:
     ).reset_index()
 
 
-def _add_shares(out: pd.DataFrame, *, legacy_missing_actual_as_zero: bool) -> pd.DataFrame:
+def _add_shares(out: pd.DataFrame, *, empty_actual_means_on_time: bool) -> pd.DataFrame:
     """Route-month proportions and means, recomputed from the sums.
 
     Built into a dictionary and attached in one `concat` rather than eighty
@@ -250,7 +244,7 @@ def _add_shares(out: pd.DataFrame, *, legacy_missing_actual_as_zero: bool) -> pd
     new: dict[str, pd.Series] = {"sh_cancel": _ratio(out["cancelled"], flights)}
     for side in ("dep", "arr"):
         denominator = delay_denominator(
-            out, side, legacy_missing_actual_as_zero=legacy_missing_actual_as_zero
+            out, side, empty_actual_means_on_time=empty_actual_means_on_time
         )
         new[f"{side}_delay_denominator"] = denominator
         for cut in ("gt0", "gt15", "gt30", "gt60"):
@@ -283,14 +277,14 @@ def _add_shares(out: pd.DataFrame, *, legacy_missing_actual_as_zero: bool) -> pd
     return pd.concat([out, pd.DataFrame(new, index=out.index)], axis=1)
 
 
-def _add_city_shares(out: pd.DataFrame, *, legacy_missing_actual_as_zero: bool) -> pd.DataFrame:
+def _add_city_shares(out: pd.DataFrame, *, empty_actual_means_on_time: bool) -> pd.DataFrame:
     """City-month proportions: departures against departures, arrivals against arrivals."""
     import pandas as pd
 
     new: dict[str, pd.Series] = {"sh_cancel": _ratio(out["movements_cancelled"], out["movements"])}
     for side in ("dep", "arr"):
         denominator = delay_denominator(
-            out, side, legacy_missing_actual_as_zero=legacy_missing_actual_as_zero
+            out, side, empty_actual_means_on_time=empty_actual_means_on_time
         )
         new[f"{side}_delay_denominator"] = denominator
         for cut in ("gt0", "gt15", "gt30"):
@@ -353,16 +347,14 @@ def city_month(
     fact: pd.DataFrame,
     day_hour: pd.DataFrame,
     *,
-    legacy_missing_actual_as_zero: bool = True,
+    empty_actual_means_on_time: bool = True,
 ) -> pd.DataFrame:
     """City-month table with class shares, the LCC presence dummy, congestion and hubs."""
     import pandas as pd
 
-    city = aggregate(
-        fact, "city_month", legacy_missing_actual_as_zero=legacy_missing_actual_as_zero
-    )
+    city = aggregate(fact, "city_month", empty_actual_means_on_time=empty_actual_means_on_time)
     airline_city = aggregate(
-        fact, "airline_city_month", legacy_missing_actual_as_zero=legacy_missing_actual_as_zero
+        fact, "airline_city_month", empty_actual_means_on_time=empty_actual_means_on_time
     )
     airline_city = add_hub(airline_city)
     by_class = (

@@ -231,7 +231,7 @@ def fact(
     ] = None,
     year_from: Annotated[int | None, typer.Option("--from", help="First year.")] = None,
     year_to: Annotated[int | None, typer.Option("--to", help="Last year.")] = None,
-    legacy_missing_actual_as_zero: Annotated[
+    empty_actual_means_on_time: Annotated[
         bool,
         typer.Option(help="ADR-0012: count a realised flight with no actual time as on schedule."),
     ] = True,
@@ -248,7 +248,7 @@ def fact(
         root / "data" / "derived",
         years=_years(year_from, year_to) if year_from and year_to else None,
         groups_path=root / "data" / "external" / "groups.csv",
-        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        empty_actual_means_on_time=empty_actual_means_on_time,
     )
     typer.echo(
         f"fact: {result.fact_rows:,d} cells over {len(result.years)} years in {result.seconds:.1f}s"
@@ -277,13 +277,13 @@ def fact(
     city = fact_mod.city_month(
         fact,
         pd.read_parquet(root / "data" / "derived" / "node_day_hour.parquet"),
-        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        empty_actual_means_on_time=empty_actual_means_on_time,
     )
     airline_city = fact_mod.add_hub(
         fact_mod.aggregate(
             fact,
             "airline_city_month",
-            legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+            empty_actual_means_on_time=empty_actual_means_on_time,
         )
     )
     fact_mod.write_table(fact_mod.slim(city), analysis / "city_month.parquet")
@@ -297,7 +297,7 @@ def panel(
     analysis_dir: Annotated[
         Path | None, typer.Option(help="Fact table location; defaults to data/analysis.")
     ] = None,
-    legacy_missing_actual_as_zero: Annotated[
+    empty_actual_means_on_time: Annotated[
         bool, typer.Option(help="ADR-0012 convention; True reproduces the benchmark.")
     ] = True,
     panel_nodes_only: Annotated[
@@ -312,7 +312,7 @@ def panel(
         analysis_dir or root / "data" / "analysis",
         root / "data" / "derived",
         external_dir=root / "data" / "external",
-        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        empty_actual_means_on_time=empty_actual_means_on_time,
         panel_nodes_only=panel_nodes_only,
     )
     assert result is not None

@@ -1,8 +1,8 @@
 {
   "layer": "analysis",
   "grain": "one row per group x route x month, replication universe",
-  "generated_at": "2026-09-05T19:02:59+00:00",
-  "git_commit": "f9e2f18",
+  "generated_at": "2026-09-05T19:12:52+00:00",
+  "git_commit": "15cc020",
   "tool_versions": {
     "python": "3.12.13",
     "duckdb": "1.5.5",
@@ -10,7 +10,7 @@
     "platform": "Darwin arm64"
   },
   "outlier_threshold_min": 313.25,
-  "legacy_missing_actual_as_zero": true,
+  "empty_actual_means_on_time": true,
   "years": [
     2000,
     2001,
@@ -30,7 +30,7 @@
   "fact_rows": 165763,
   "route_months": 201055,
   "node_day_hours": 4269847,
-  "seconds": 12.57,
+  "seconds": 10.97,
   "missing_actual_by_year": [
     {
       "year": 2000,
