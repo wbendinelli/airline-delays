@@ -2,7 +2,7 @@
 
 `data/analysis/*.parquet` and `*.csv.gz` are tracked so a reviewer can run the
 public replication without rebuilding. The risk of tracking a generated table
-is that it goes stale -- someone edits `registry.py` or `panel.py` (an ADR-0013
+is that it goes stale -- someone edits `schema.py` or `panel.py` (an ADR-0013
 rename, say) and forgets to run `just panel` before committing. This module
 rebuilds the panel from the *committed* fact table, in memory, and diffs it
 against the *committed* panel: a stale commit fails it.
@@ -11,13 +11,12 @@ Marked `analysis` (registered in `pyproject.toml`, run by `just check-analysis`
 and by a plain `pytest -q` alongside everything else). It skips rather than fails when its inputs are not on
 disk: CI's ordinary job has no `data/staged/` and therefore no `data/derived/`
 (ADR-0004, `CLAUDE.md`), so the rebuild this test performs cannot run there.
-It runs wherever `just features && just panel` has already been executed, which
+It runs wherever `just fact && just panel` has already been executed, which
 is exactly where a stale second edit is possible.
 """
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -26,10 +25,8 @@ import pytest
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
 
+ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS_DIR = ROOT / "data" / "analysis"
 DERIVED_DIR = ROOT / "data" / "derived"
 EXTERNAL_DIR = ROOT / "data" / "external"
@@ -64,12 +61,12 @@ class TestTheCommittedPanelIsNotStale:
         if missing:
             pytest.skip(
                 "data/analysis/ or data/derived/ is incomplete for the ADR-0014 staleness "
-                "check -- run `just features && just panel` first: missing "
+                "check -- run `just fact && just panel` first: missing "
                 + ", ".join(str(path.relative_to(ROOT)) for path in missing)
             )
         import pandas as pd
 
-        from vra import panel as panel_mod
+        from airline_delays import panel as panel_mod
 
         rebuilt, result = panel_mod.build_panel(
             ANALYSIS_DIR, DERIVED_DIR, external_dir=EXTERNAL_DIR, write=False
@@ -94,7 +91,7 @@ class TestTheCommittedPanelIsNotStale:
         rebuilt, committed = rebuilt_and_committed
         assert list(rebuilt.columns) == list(committed.columns), (
             "panel_route_month.parquet's columns have drifted from what the current "
-            "registry.py/panel.py build from the committed fact table -- run `just panel` "
+            "schema.py/panel.py build from the committed fact table -- run `just panel` "
             "and commit the result."
         )
 

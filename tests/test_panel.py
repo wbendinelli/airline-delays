@@ -1,18 +1,15 @@
-"""`vra.panel`: the article's columns, the declared variants, and the identities."""
+"""`airline_delays.panel`: the article's columns, the declared variants, and the identities."""
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
-
-from vra import features, groups, keys, panel  # noqa: E402
+from airline_delays import fact as fact_mod
+from airline_delays import panel
+from airline_delays.definitions import carriers, nodes
 
 
 class TestTheGrainAndTheKeys:
@@ -124,7 +121,7 @@ class TestTheNewFeatures:
 
     def test_the_hourly_detail_is_left_in_the_fact_table(self, built) -> None:
         table = built["panel"]
-        assert not [name for name in features.HOUR_COLUMNS if name in table.columns]
+        assert not [name for name in fact_mod.HOUR_COLUMNS if name in table.columns]
         assert {"peak_hour_share", "hhi_hours", "sh_night"} <= set(table.columns)
 
     def test_both_city_sides_are_attached(self, built) -> None:
@@ -148,9 +145,9 @@ class TestTheNewFeatures:
 class TestTheScope:
     def test_the_panel_only_covers_the_nodes_of_adr_0001(self, built) -> None:
         table = built["panel"]
-        nodes = set(keys.PANEL_NODES)
-        assert set(table["origin_node"]) <= nodes
-        assert set(table["dest_node"]) <= nodes
+        node_set = set(nodes.PANEL_NODES)
+        assert set(table["origin_node"]) <= node_set
+        assert set(table["dest_node"]) <= node_set
 
     def test_a_route_never_starts_and_ends_at_the_same_node(self, built) -> None:
         table = built["panel"]
@@ -160,7 +157,7 @@ class TestTheScope:
         table = built["panel"]
         assert set(table["lcc"].unique()) <= {0, 1}
         assert (table["lcc"] >= table[["pres_glo", "pres_azu"]].max(axis=1)).all()
-        assert groups.BENCHMARK_LCC_GROUPS == ("GOL", "AZUL")
+        assert carriers.BENCHMARK_LCC_GROUPS == ("GOL", "AZUL")
 
 
 class TestTheWrittenFiles:
@@ -186,4 +183,4 @@ class TestTheWrittenFiles:
 
 @pytest.mark.parametrize("grain", ["route_month", "city_month", "airline_city_month"])
 def test_every_grain_returns_rows(built, grain: str) -> None:
-    assert len(features.aggregate(built["fact"], grain)) > 0
+    assert len(fact_mod.aggregate(built["fact"], grain)) > 0

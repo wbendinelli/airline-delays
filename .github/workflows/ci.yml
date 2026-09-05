@@ -1,6 +1,6 @@
 # Four checks: lint (ruff), test (pytest against the committed fixture, no
 # network), citation (CITATION.cff stays schema-valid), docs-paths (every
-# backticked path and `just`/`vra` command in README.md and
+# backticked path and `just`/`airline-delays` command in README.md and
 # docs/tutorial/*.md resolves to something real -- scripts/check_docs_paths.py).
 #
 # Third-party actions are pinned by commit SHA (tag kept as a comment), per

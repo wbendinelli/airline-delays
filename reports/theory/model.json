@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_by": "uv run python -m theory.run",
+    "generated_by": "airline-delays theory",
     "source": "Bendinelli (2013), undergraduate monograph, USP/ESALQ, section 4, following Brueckner and Van Dender (2008, Journal of Urban Economics 64, 288-295) and Brueckner (2002, American Economic Review 92, 1357-1375); figures after Cohen and Coughlin (2003) and Cohen, Coughlin and Ott (2009), redrawn",
     "sympy": "1.14.0",
     "n_identities": 29,

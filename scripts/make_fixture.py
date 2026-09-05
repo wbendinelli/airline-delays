@@ -31,10 +31,8 @@ import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-
-from vra.io import layout_for
-from vra.stage import connect
+from airline_delays.ingest import layout_for
+from airline_delays.staging import connect
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -128,13 +126,14 @@ def main(argv: list[str] | None = None) -> int:
     for year, name in RAW_SAMPLES.items():
         source = args.raw_dir / "vra" / str(year) / name
         if not source.exists():
-            print(f"missing raw file {source}; run `vra fetch` first", file=sys.stderr)
+            print(f"missing raw file {source}; run `airline-delays fetch` first", file=sys.stderr)
             return 1
         sample_raw(source, args.out_dir / f"vra_raw_sample_{year}.csv", args.max_rows)
 
     if not (args.staged_dir / f"year={FIXTURE_YEARS[0]}").exists():
         print(
-            f"missing staged data under {args.staged_dir}; run `vra stage` first", file=sys.stderr
+            f"missing staged data under {args.staged_dir}; run `airline-delays stage` first",
+            file=sys.stderr,
         )
         return 1
     sample_staged(args.staged_dir, args.out_dir / "vra_sample.parquet")

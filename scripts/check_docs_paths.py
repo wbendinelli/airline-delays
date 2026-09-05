@@ -8,12 +8,12 @@ error -- it strands someone mid-exercise. This script scans them for three
 things and fails on
 any miss:
 
-1. Backticked or fenced-code filesystem paths (``src/vra/registry.py``,
-   ``data/analysis/manifest.json``, brace groups like ``src/vra/{groups,codes}.py``).
+1. Backticked or fenced-code filesystem paths (``src/airline_delays/schema.py``,
+   ``data/analysis/manifest.json``, brace groups like ``src/airline_delays/definitions/{carriers,cause_codes}.py``).
 2. ``just <target>`` invocations, checked against the recipe names actually
    defined in ``justfile``.
-3. ``uv run vra <subcommand>`` invocations, checked against the commands the
-   ``vra`` CLI actually registers; ``uv run python -m <module>`` and
+3. ``airline-delays <subcommand>`` invocations (with or without ``uv run``),
+   checked against the commands the CLI actually registers; ``uv run python -m <module>`` and
    ``uv run python scripts/<name>.py`` invocations, checked against the file
    the module or script resolves to.
 
@@ -58,9 +58,6 @@ KNOWN_TOP = {
     "data",
     "docs",
     "reports",
-    "replication",
-    "ml",
-    "theory",
     "sql",
     ".github",
 }
@@ -97,14 +94,13 @@ GENERATED_ANCHORS = {
     "data/raw/manifest.json",
     "data/staged/README.md",
     "data/derived/README.md",
-    "data/private/README.md",
 }
 
 FENCE_RE = re.compile(r"```[a-zA-Z0-9_-]*\n(.*?)```", re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`([^`\n]+)`")
 LINK_RE = re.compile(r"\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 JUST_RE = re.compile(r"\bjust\s+([a-zA-Z][a-zA-Z0-9_-]*)")
-VRA_RE = re.compile(r"\buv run vra\s+([a-zA-Z][a-zA-Z0-9_-]*)")
+CLI_RE = re.compile(r"\b(?:uv run )?airline-delays\s+([a-z][a-z0-9-]*)")
 MODULE_RE = re.compile(r"\buv run python -m\s+([a-zA-Z0-9_.]+)")
 SCRIPT_RE = re.compile(r"\buv run python\s+(scripts/[a-zA-Z0-9_./-]+\.py)")
 JUSTFILE_RECIPE_RE = re.compile(
@@ -137,10 +133,10 @@ def justfile_recipes() -> set[str]:
     return recipes
 
 
-def vra_subcommands() -> set[str]:
+def cli_subcommands() -> set[str]:
     import typer
 
-    from vra.cli import app
+    from airline_delays.cli import app
 
     return set(typer.main.get_command(app).commands.keys())
 
@@ -157,7 +153,7 @@ def is_path_candidate(token: str) -> bool:
 
 
 def expand_braces(token: str) -> list[str]:
-    """``src/vra/{groups,codes}.py`` -> two literal paths. One brace group only."""
+    """``src/airline_delays/definitions/{carriers,cause_codes}.py`` -> two literal paths. One brace group only."""
     m = re.search(r"\{([^{}]+)\}", token)
     if not m:
         return [token]
@@ -302,7 +298,7 @@ def check_commands(
                 )
             )
 
-    for m in VRA_RE.finditer(text):
+    for m in CLI_RE.finditer(text):
         checked += 1
         sub = m.group(1)
         if sub not in subcommands:
@@ -310,9 +306,9 @@ def check_commands(
                 Problem(
                     file,
                     line_of(m.start()),
-                    "vra",
+                    "airline-delays",
                     sub,
-                    f"no such `vra` subcommand (have: {', '.join(sorted(subcommands))})",
+                    f"no such `airline-delays` subcommand (have: {', '.join(sorted(subcommands))})",
                 )
             )
 
@@ -344,10 +340,10 @@ def check_commands(
 def main() -> int:
     recipes = justfile_recipes()
     try:
-        subcommands = vra_subcommands()
+        subcommands = cli_subcommands()
     except Exception as exc:  # noqa: BLE001 -- CLI introspection can fail in many ways; degrade, don't crash
         print(
-            f"warning: could not introspect the `vra` CLI ({exc}); skipping `uv run vra` checks",
+            f"warning: could not introspect the CLI ({exc}); skipping `airline-delays` command checks",
             file=sys.stderr,
         )
         subcommands = set()

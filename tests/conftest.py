@@ -15,17 +15,13 @@ from __future__ import annotations
 # committed in ``tests/fixtures``: two raw samples cut byte for byte from the
 # real ANAC files (so latin-1, CRLF, ``N/A`` and the free-text 2010 layout are
 # all exercised) and one staged parquet. Rebuild them with
-# ``uv run vra fixture``.
-import sys
+# ``uv run airline-delays fixture``.
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
-
-FIXTURES = Path(__file__).parent / "fixtures"
+FIXTURES = ROOT / "tests" / "fixtures"
 
 
 @pytest.fixture(scope="session")
@@ -38,7 +34,7 @@ def raw_2002() -> Path:
     """A sample of the legacy 12-column layout, bytes untouched."""
     path = FIXTURES / "vra_raw_sample_2002.csv"
     if not path.exists():  # pragma: no cover - fixture missing
-        pytest.skip(f"missing fixture {path}; run `uv run vra fixture`")
+        pytest.skip(f"missing fixture {path}; run `uv run airline-delays fixture`")
     return path
 
 
@@ -47,7 +43,7 @@ def raw_2012() -> Path:
     """A sample of the 20-column layout, bytes untouched."""
     path = FIXTURES / "vra_raw_sample_2012.csv"
     if not path.exists():  # pragma: no cover - fixture missing
-        pytest.skip(f"missing fixture {path}; run `uv run vra fixture`")
+        pytest.skip(f"missing fixture {path}; run `uv run airline-delays fixture`")
     return path
 
 
@@ -56,7 +52,7 @@ def staged_sample() -> Path:
     """Staged rows for three routes in 2004, 2009 and 2012."""
     path = FIXTURES / "vra_sample.parquet"
     if not path.exists():  # pragma: no cover - fixture missing
-        pytest.skip(f"missing fixture {path}; run `uv run vra fixture`")
+        pytest.skip(f"missing fixture {path}; run `uv run airline-delays fixture`")
     return path
 
 
@@ -77,7 +73,7 @@ def staged_frame(staged_table):
 @pytest.fixture
 def duck():
     """A small DuckDB connection, closed after the test."""
-    from vra.stage import connect
+    from airline_delays.staging import connect
 
     con = connect(memory_limit="2GB", threads=2)
     yield con
@@ -111,7 +107,7 @@ def external_dir() -> Path:
 def staged_tree(tmp_path_factory: pytest.TempPathFactory, staged_sample: Path) -> Path:
     """The fixture parquet re-partitioned as ``year=YYYY/part-0.parquet``.
 
-    `vra.features.build_fact` reads one year at a time, so the fixture has to
+    `airline_delays.fact_mod.build_fact` reads one year at a time, so the fixture has to
     look like `data/staged/` even though it is a single file on disk.
     """
     import pyarrow as pa
@@ -134,18 +130,19 @@ def built(tmp_path_factory: pytest.TempPathFactory, staged_tree: Path, groups_cs
     """Every table of the analysis layer, built once from the fixture."""
     import pandas as pd
 
-    from vra import features, panel
+    from airline_delays import fact as fact_mod
+    from airline_delays import panel
 
     root = tmp_path_factory.mktemp("built")
     analysis, derived = root / "analysis", root / "derived"
-    result = features.build_fact(
+    result = fact_mod.build_fact(
         staged_tree, analysis, derived, groups_path=groups_csv, verbose=False
     )
     fact = pd.read_parquet(analysis / "fact_group_route_month.parquet")
     context = pd.read_parquet(derived / "route_month_context.parquet")
     day_hour = pd.read_parquet(derived / "node_day_hour.parquet")
     city = panel.city_month(fact, day_hour)
-    airline_city = features.add_hub(features.aggregate(fact, "airline_city_month"))
+    airline_city = fact_mod.add_hub(fact_mod.aggregate(fact, "airline_city_month"))
     table = panel.assemble(fact, context, city, external_dir=ROOT / "data" / "external")
     return {
         "result": result,

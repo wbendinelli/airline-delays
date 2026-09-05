@@ -12,7 +12,7 @@ Four things are checked, none of which needs data or the network:
    point lies on the curves that define it;
 4. ``reports/theory/`` is what today's code produces: ``model.json`` (meta
    aside), ``figures.json``, the SVG files and ``results.md`` are rebuilt in
-   memory and compared, so a ``theory/`` edit without ``just theory`` fails here.
+   memory and compared, so a ``airline_delays.theory`` edit without ``just theory`` fails here.
 """
 
 from __future__ import annotations
@@ -20,7 +20,6 @@ from __future__ import annotations
 import json
 import math
 import subprocess
-import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -28,12 +27,10 @@ from typing import Any
 import pytest
 import sympy as sp
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+from airline_delays.theory import equilibrium, figures, model, run
+from airline_delays.theory.families import LinearCost, LinearDemand, Primitives, QuadraticCost
 
-from theory import equilibrium, figures, model, run  # noqa: E402
-from theory.families import LinearCost, LinearDemand, Primitives, QuadraticCost  # noqa: E402
+ROOT = Path(__file__).resolve().parents[1]
 
 REPORT = ROOT / "reports" / "theory"
 MODEL_KEYS = {

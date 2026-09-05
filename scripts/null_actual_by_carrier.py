@@ -21,20 +21,17 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src") not in sys.path:  # pragma: no cover - script bootstrap
-    sys.path.insert(0, str(ROOT / "src"))
-
-from vra import groups as groups_mod  # noqa: E402
-from vra import stage as stage_mod  # noqa: E402
-from vra import universe as universe_mod  # noqa: E402
+from airline_delays import staging as staging_mod
+from airline_delays.definitions import carriers as carriers_mod
+from airline_delays.definitions import universe as universe_mod
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import pandas as pd
+
+ROOT = Path(__file__).resolve().parents[1]
 
 LEGACY_YEARS: tuple[int, ...] = tuple(range(2000, 2010))
 """The layout the question is about; from 2010 the null rate is 0.0% everywhere."""
@@ -60,17 +57,17 @@ def measure(staged_dir: Path, groups_path: Path) -> pd.DataFrame:
     sides of every transition in this window fall on the same side of the
     scope rule.
     """
-    con = stage_mod.connect()
+    con = staging_mod.connect()
     try:
-        groups_mod.GroupTable.load(groups_path).register(con)
+        carriers_mod.GroupTable.load(groups_path).register(con)
         source = f"read_parquet('{staged_dir}/year=*/*.parquet', hive_partitioning=false)"
-        label = groups_mod.label_sql("f.airline", "f.ym", alias="g")
+        label = carriers_mod.label_sql("f.airline", "f.ym", alias="g")
         frame = con.execute(
             f"""
             SELECT f.airline AS airline,
                    f.year AS year,
-                   arg_max({groups_mod.resolved_group_sql("f.airline")}, f.ym) AS "group",
-                   arg_max({groups_mod.resolved_class_sql()}, f.ym) AS "class",
+                   arg_max({carriers_mod.resolved_group_sql("f.airline")}, f.ym) AS "group",
+                   arg_max({carriers_mod.resolved_class_sql()}, f.ym) AS "class",
                    count(*)::BIGINT AS realized,
                    count(*) FILTER (WHERE f.actual_arr IS NULL)::BIGINT AS null_actual_arr,
                    count(*) FILTER (WHERE f.actual_dep IS NULL)::BIGINT AS null_actual_dep
