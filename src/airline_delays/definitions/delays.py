@@ -9,7 +9,7 @@ flight, and some realised ones — the delay is null, never zero.
 
 The outlier threshold is a named parameter with default 313.25 minutes. The
 laboratory used 313.25 in one script and 117.10 (arrival) with 111.75
-(departure) in another; the benchmark panel trims nothing. Because the evidence
+(departure) in another; the article's panel trims nothing. Because the evidence
 does not settle it, no default trimming happens during staging: the staged
 table keeps every delay, and the replication report carries a sensitivity table
 across thresholds.
@@ -44,7 +44,7 @@ OUTLIER_THRESHOLD_DEP_ALT_MIN: float = 111.75
 DELAY_THRESHOLDS_MIN: tuple[float, ...] = (0.0, 15.0, 30.0, 60.0, 120.0, 240.0)
 """Delay cut points reported throughout: strictly greater than each value.
 
-``0`` is the benchmark panel's own late definition — its departure-delay counts
+``0`` is the article panel's own late definition — its departure-delay counts
 match "more than 0 minutes", not "15 or more" (agreement 92.4%). ``15`` is the
 article's definition for the delay *proportions*. The remaining cut points
 mirror ANAC's own published bands.
@@ -162,7 +162,7 @@ def suspect_time_sql(
 EMPTY_ACTUAL_MEANS_ON_TIME: bool = False
 """Default for `empty_actual_means_on_time` (ADR-0012): keep nulls.
 
-`True` reproduces the private 2019 vintage, which read an empty actual time on
+`True` is the article's own convention, which read an empty actual time on
 a realised flight as "operated on schedule" (actual = scheduled, delay 0). In
 the 2000-2009 raw files that is the *normal* case: an actual time is written
 only when there was an occurrence, so 55-80% of realised flights have empty

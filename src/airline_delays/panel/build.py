@@ -1,10 +1,10 @@
-"""The public route-month panel: the benchmark's columns plus everything new.
+"""The reconstruction panel, route x month: the article's columns plus everything new.
 
 Three blocks live side by side in one table, and the names say which is which.
 
-**The benchmark block** carries the article's own column names (`f`, `fl_can`,
+**The article block** carries the article's own column names (`f`, `fl_can`,
 `fsc_prdelarr`, `prwheather`, `maxalccfu`, ...) computed from the public VRA
-under the definitions the reconstruction recovered against the private panel
+under the article's own definitions (ADR-0001, 0002, 0005, 0008, 0012, 0013)
 (`reconstrucao-vra.md`). They are here to be *compared*, so they keep the
 article's spelling — including `prwheather`, which is misspelled in the source
 and is not renamed.
@@ -46,9 +46,9 @@ from airline_delays.definitions import nodes as nodes_mod
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import pandas as pd
 from airline_delays.panel.columns import (
-    BENCHMARK_ONLY_NULL,
     CITY_SIDE_COLUMNS,
     DROPPED_FROM_PANEL,
+    NOT_IN_VRA,
     _is_published_slice_column,
 )
 
@@ -174,7 +174,7 @@ def assemble(
     external_dir: Path,
     empty_actual_means_on_time: bool = True,
 ) -> pd.DataFrame:
-    """The panel itself: benchmark columns, declared variants and new features."""
+    """The panel itself: the article's columns, the documented variants and the new features."""
     import numpy as np
     import pandas as pd
 
@@ -184,10 +184,10 @@ def assemble(
     klass = fact["class"]
     group = fact["group"]
     slices = {
-        "fsc_": group.isin(carriers_mod.BENCHMARK_FSC_GROUPS),
+        "fsc_": group.isin(carriers_mod.ARTICLE_FSC_GROUPS),
         "lccclass_": klass.eq("LCC"),
         "fscc_": klass.eq("FSC"),
-        "lccfu_": group.isin(carriers_mod.BENCHMARK_LCC_GROUPS),
+        "lccfu_": group.isin(carriers_mod.ARTICLE_LCC_GROUPS),
     }
     panel = base
     for prefix, mask in slices.items():
@@ -195,7 +195,7 @@ def assemble(
     sliced = [name for name in panel.columns if any(name.startswith(prefix) for prefix in slices)]
     panel[sliced] = panel[sliced].fillna(0)
 
-    # ---------------------------------------------------------------- benchmark block
+    # ------------------------------------------------------------------ article block
     #
     # Built into a dictionary and attached in one `concat`: eighty separate
     # assignments on a 200-column frame make pandas copy the block manager
@@ -274,7 +274,7 @@ def assemble(
     panel = _attach_distance(panel, external_dir)
     # Published as nulls on purpose: `hhi.passenger_weighted_hhi` has no traffic
     # table to read, and one row of declared capacity is not a panel (ADR-0007).
-    for name in BENCHMARK_ONLY_NULL:
+    for name in NOT_IN_VRA:
         panel[name] = pd.Series(
             concentration_mod.passenger_weighted_hhi(None), index=panel.index, dtype="float32"
         )
@@ -298,7 +298,7 @@ def _presence(fact: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
         "pres_glo": ("GOL",),
         "pres_azu": ("AZUL",),
         "pres_tam": ("TAM",),
-        "lcc": carriers_mod.BENCHMARK_LCC_GROUPS,
+        "lcc": carriers_mod.ARTICLE_LCC_GROUPS,
     }
     out: pd.DataFrame | None = None
     for name, wanted_groups in wanted.items():
@@ -375,7 +375,7 @@ def _finalise(
     panel = panel.drop(columns=sorted(set(drop)))
     floats = [name for name, dtype in panel.dtypes.items() if str(dtype).startswith("float")]
     # Six decimals, not three: the city projections round harder, but this table
-    # is compared against the benchmark at a tolerance of 1e-4 on proportions,
+    # is compared with the article panel at a tolerance of 1e-4 on proportions,
     # and a rounding step coarser than the tolerance would show up as a
     # disagreement that the definition never had.
     panel[floats] = panel[floats].round(6).astype("float32")

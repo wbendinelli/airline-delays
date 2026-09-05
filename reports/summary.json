@@ -448,7 +448,7 @@
  },
  "meta": {
   "generated_by": "airline-delays summary",
-  "git_commit": "62ee17f",
+  "git_commit": "1bad3b9",
   "inputs": [
    "data/raw/manifest.json",
    "data/staged/manifest.json (when present)",

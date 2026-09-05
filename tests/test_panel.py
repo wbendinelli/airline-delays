@@ -31,7 +31,7 @@ class TestTheGrainAndTheKeys:
 
 
 class TestTheBenchmarkIdentities:
-    """Identities the private panel satisfies, so this one has to as well."""
+    """Identities the article's panel satisfies, so this one has to as well."""
 
     def test_f_is_realised_plus_cancelled(self, built) -> None:
         table = built["panel"]
@@ -65,9 +65,7 @@ class TestTheBenchmarkIdentities:
         assert np.isfinite(table["fsc_oddsarr"].dropna()).all()
 
     def test_fl_odel_counts_departures_late_by_more_than_zero_not_fifteen(self, built) -> None:
-        # The benchmark's cut is 0 minutes, measured at 92.4% agreement against
-        # 15 minutes' far lower rate (ADR-0002); getting this backwards is the
-        # single easiest way to break the replication.
+        # The article's cut is 0 minutes (fl_odel counts flights more than 0 minutes late).
         table = built["panel"]
         assert (table["fl_odel"] == table["dep_delayed_gt0"]).all()
         assert (table["fl_odel"] >= table["dep_delayed_gt15"]).all()
@@ -98,7 +96,7 @@ class TestTheDeclaredVariants:
 
     def test_the_columns_the_vra_cannot_produce_are_null_not_substituted(self, built) -> None:
         table = built["panel"]
-        for name in panel.BENCHMARK_ONLY_NULL:
+        for name in panel.NOT_IN_VRA:
             assert table[name].isna().all(), name
         # ...and the flight-based counterpart exists under its own name.
         assert table["rthhi_flights"].notna().any()
@@ -157,7 +155,7 @@ class TestTheScope:
         table = built["panel"]
         assert set(table["lcc"].unique()) <= {0, 1}
         assert (table["lcc"] >= table[["pres_glo", "pres_azu"]].max(axis=1)).all()
-        assert carriers.BENCHMARK_LCC_GROUPS == ("GOL", "AZUL")
+        assert carriers.ARTICLE_LCC_GROUPS == ("GOL", "AZUL")
 
 
 class TestTheWrittenFiles:

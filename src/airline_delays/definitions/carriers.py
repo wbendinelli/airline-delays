@@ -43,7 +43,7 @@ CLASSES: tuple[str, ...] = ("FSC", "LCC", "regional", "other")
 DEFAULT_CLASS = "other"
 """Class of an airline that `groups.csv` does not label (ADR-0011)."""
 
-BENCHMARK_FSC_GROUPS: tuple[str, ...] = ("TAM", "VARIG", "TRANSBRASIL", "VASP")
+ARTICLE_FSC_GROUPS: tuple[str, ...] = ("TAM", "VARIG", "TRANSBRASIL", "VASP")
 """The article's FSC set, as groups: TA2, VR2, TB2 and VSP of the laboratory code.
 
 Differs from ``class == "FSC"`` by exactly one group, ``AVIANCA_BRASIL``
@@ -51,7 +51,7 @@ Differs from ``class == "FSC"`` by exactly one group, ``AVIANCA_BRASIL``
 Both are computed and both are published; neither is adjusted to fit the other.
 """
 
-BENCHMARK_LCC_GROUPS: tuple[str, ...] = ("GOL", "AZUL")
+ARTICLE_LCC_GROUPS: tuple[str, ...] = ("GOL", "AZUL")
 """The article's ``lccfu``/``olccfu`` set: the Gol and Azul groups.
 
 Differs from ``class == "LCC"`` by ``WEBJET``, an independent low-cost carrier
@@ -224,8 +224,8 @@ def in_set_sql(column: str, values: tuple[str, ...]) -> str:
 
 
 __all__ = [
-    "BENCHMARK_FSC_GROUPS",
-    "BENCHMARK_LCC_GROUPS",
+    "ARTICLE_FSC_GROUPS",
+    "ARTICLE_LCC_GROUPS",
     "CLASSES",
     "DEFAULT_CLASS",
     "GroupPeriod",

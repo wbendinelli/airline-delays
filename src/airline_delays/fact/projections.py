@@ -156,7 +156,7 @@ def _market_structure(fact: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
         out[f"sh_flights_{klass.lower()}"] = (
             (column / totals.where(totals > 0)).reindex(_index_of(out, keys)).to_numpy()
         )
-    lcc_entry = active[active["group"].isin(carriers_mod.BENCHMARK_LCC_GROUPS)]
+    lcc_entry = active[active["group"].isin(carriers_mod.ARTICLE_LCC_GROUPS)]
     entry = lcc_entry.groupby(keys, observed=True)["is_entry"].max().rename("entry_lcc")
     out = out.merge(entry.reset_index(), on=keys, how="left")
     out["entry_lcc"] = out["entry_lcc"].fillna(0).astype("int8")
@@ -368,7 +368,7 @@ def city_month(
         shares[f"sh_movements_{klass.lower()}"] = by_class.get(klass, 0) / totals.where(totals > 0)
     city = city.merge(shares.reset_index(), on=["ym", "node"], how="left")
     lccfu = airline_city[
-        airline_city["group"].isin(carriers_mod.BENCHMARK_LCC_GROUPS)
+        airline_city["group"].isin(carriers_mod.ARTICLE_LCC_GROUPS)
         & (airline_city["movements"] > 0)
     ]
     presence = (

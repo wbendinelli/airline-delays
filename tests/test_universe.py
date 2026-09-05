@@ -18,7 +18,7 @@ class TestReplicationUniverse:
 
     @pytest.mark.parametrize("di", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     def test_only_di_zero_is_in(self, di: int) -> None:
-        # Admitting DI 1 and 2 dropped agreement with the benchmark from 97%
+        # Admitting DI 1 and 2 would change the article's flight count
         # to 54%; extras and return flights are features, never filters.
         assert not universe.in_universe_repl("N", di)
 
@@ -27,7 +27,7 @@ class TestReplicationUniverse:
         assert not universe.in_universe_repl("N", None)
 
     def test_cancelled_flights_are_inside_the_replication_universe(self) -> None:
-        # The benchmark's flight count includes cancellations: prcanc = fl_can / f.
+        # The article's flight count includes cancellations: prcanc = fl_can / f.
         assert universe.in_universe_repl("N", 0)
         assert not universe.in_universe_ml("N", 0, universe.STATUS_CANCELLED)
 

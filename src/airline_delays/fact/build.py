@@ -19,7 +19,7 @@ actual time, schedule known). Nothing is imputed here, and no sum changes:
 under the vintage's rule those flights contribute exactly 0 minutes. What the
 rule changes is the **denominator** of every proportion and mean, and that is
 where `empty_actual_means_on_time` acts — in `delay_denominator`, used by
-`aggregate` and by `panel` (ADR-0012). `True` reproduces the benchmark; `False`
+`aggregate` and by `panel` (ADR-0012). `True` is the article's convention; `False`
 is the honest small-sample reading of 2000-2009 and what the prediction layer
 uses.
 

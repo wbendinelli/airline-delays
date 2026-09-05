@@ -793,7 +793,7 @@ def _side_doc(name: str) -> _Doc | None:
             return _Doc(
                 "float32",
                 "minute",
-                f"Mean {side_en} delay truncated at zero, the private vintage's convention (ADR-0008).",
+                f"Mean {side_en} delay truncated at zero, the article's convention (ADR-0008).",
                 f"Atraso médio de {side_pt} truncado em zero, a convenção da safra privada (ADR-0008).",
                 "recompute",
             )
@@ -1459,8 +1459,8 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
     "pr_connc": _Doc(
         "float32",
         "share",
-        "Article `pr_connc`: flights coded RA divided by f. RA is aircraft rotation, not passengers held for a connection as the article's label says (declared difference). Reproduces at 99.2%.",
-        "`pr_connc` do artigo: voos com código RA divididos por f. RA é conexão de aeronave, não espera de passageiros como diz o rótulo do artigo (diferença declarada). Reproduz 99,2%.",
+        "Article `pr_connc`: flights coded RA divided by f. RA is aircraft rotation, not passengers held for a connection as the article's label says. Reproduces at 99.2%.",
+        "`pr_connc` do artigo: voos com código RA divididos por f. RA é conexão de aeronave, não espera de passageiros como diz o rótulo do artigo. Reproduz 99,2%.",
         "recompute",
     ),
     "rthhi": _Doc(
@@ -1602,8 +1602,8 @@ _SLICE_SUFFIX_DOCS: dict[str, tuple[str, str, str, str, Aggregation]] = {
     "minsarr": (
         "float32",
         "minute/flight",
-        "Sum of the signed arrival delays of {en} divided by the realised flights of ALL carriers on the route-month. The denominator is the article's, and it dilutes the mean by the other carriers' share (declared difference).",
-        "Soma dos atrasos de chegada com sinal {pt} dividida pelos voos realizados de TODAS as empresas na rota-mês. O denominador é o do artigo, e dilui a média pela participação das outras empresas (diferença declarada).",
+        "Sum of the signed arrival delays of {en} divided by the realised flights of ALL carriers on the route-month. The denominator is the article's, and it dilutes the mean by the other carriers' share.",
+        "Soma dos atrasos de chegada com sinal {pt} dividida pelos voos realizados de TODAS as empresas na rota-mês. O denominador é o do artigo, e dilui a média pela participação das outras empresas.",
         "recompute",
     ),
     "minsdep": (
@@ -1630,7 +1630,7 @@ _SLICE_SUFFIX_DOCS: dict[str, tuple[str, str, str, str, Aggregation]] = {
     "minsarr_trunc": (
         "float32",
         "minute/flight",
-        "minsarr with early arrivals truncated at zero, the private vintage's convention (ADR-0008); published next to the signed one, not instead of it.",
+        "minsarr with early arrivals truncated at zero, the article's convention (ADR-0008); published next to the signed one, not instead of it.",
         "minsarr com chegadas antecipadas truncadas em zero, a convenção da safra privada (ADR-0008); publicado ao lado da versão com sinal, não no lugar dela.",
         "recompute",
     ),

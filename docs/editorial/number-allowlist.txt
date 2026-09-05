@@ -1,0 +1,5 @@
+# Numbers that may appear in the entry pages without being a value of reports/summary.json.
+# One token per line, then a reason. Years, DOIs, versions and ADR/table numbers need no entry.
+16    RAM of the reference machine, in GB (README "Reproducing")
+10    cores of the reference machine (README "Reproducing")
+3.12  the Python version
