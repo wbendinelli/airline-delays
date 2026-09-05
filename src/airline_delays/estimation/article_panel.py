@@ -159,6 +159,16 @@ def _source_metadata(source: Path) -> dict[str, object]:
     return metadata
 
 
+def _csv_text(frame: pd.DataFrame) -> pd.DataFrame:
+    """Floats printed with nine significant digits (exact for float32), missing values empty."""
+    out = frame.copy()
+    for name in out.columns:
+        if str(out[name].dtype).startswith("float"):
+            values = out[name]
+            out[name] = values.map(lambda v: "" if pd.isna(v) else f"{v:.9g}").astype("string")
+    return out
+
+
 def write(
     frame: pd.DataFrame, out_dir: Path, *, source_metadata: dict[str, object]
 ) -> ArticlePanelResult:
@@ -168,7 +178,7 @@ def write(
     parquet = write_table(frame, out_dir / PARQUET.name)
     csv = out_dir / CSV.name
     with gzip.GzipFile(filename="", mode="wb", fileobj=csv.open("wb"), mtime=0) as handle:
-        frame.to_csv(handle, index=False, float_format="%.9g")
+        _csv_text(frame).to_csv(handle, index=False)
     manifest = out_dir / MANIFEST.name
     nulls = {name: int(frame[name].isna().sum()) for name in COLUMNS if frame[name].isna().any()}
     payload = {

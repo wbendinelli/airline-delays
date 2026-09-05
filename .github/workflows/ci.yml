@@ -1,8 +1,10 @@
-# Four checks: lint (ruff), test (pytest against the committed fixture and the
+# Five checks: lint (ruff), test (pytest against the committed fixture and the
 # committed tables, no network), citation (CITATION.cff stays schema-valid),
 # docs-paths (every backticked path and `just`/`airline-delays` command in the
 # READMEs, docs/ and the data guides resolves to something real --
-# scripts/check_docs_paths.py).
+# scripts/check_docs_paths.py), metadata (datapackage.json, docs/dictionary.md,
+# .zenodo.json and reports/summary.json are rebuilds of the registry and the
+# tables, and the Data Package validates with frictionless).
 #
 # Third-party actions are pinned by commit SHA (tag kept as a comment), per
 # SECURITY.md; Dependabot proposes the bumps.
@@ -64,3 +66,21 @@ jobs:
       - run: uv sync --locked --group dev
       - name: Every path and command quoted in the READMEs and docs must exist
         run: uv run python scripts/check_docs_paths.py
+
+  metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+      - run: uv sync --locked --group dev
+      - name: The generated metadata is a rebuild of the registry and the tables
+        run: |
+          uv run airline-delays dictionary --check
+          uv run airline-delays datapackage --check
+          uv run airline-delays zenodo-json --check
+          uv run airline-delays summary --check
+      - name: The Data Package validates (frictionless, first 5,000 rows of each resource; `just validate` runs them all)
+        run: uv run frictionless validate datapackage.json --type package --limit-rows 5000

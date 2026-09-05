@@ -85,13 +85,20 @@ report:
 publish: summary report
     uv run airline-delays datapackage --check
     uv run airline-delays dictionary --check
-    uv run cffconvert --validate
+    uv run airline-delays summary --check
+    uv run airline-delays zenodo-json --check
+    uvx cffconvert --validate
     @echo "publish: metadata consistent. Next: tag the release (see ROADMAP.md), Zenodo archives it and mints the DOI."
 
 [group('dev')]
 [doc('The smallest end-to-end reproduction on the committed fixture, offline, about a second')]
 demo:
     uv run python scripts/demo.py
+
+[group('9-reporting')]
+[doc('Full frictionless validation of datapackage.json, every row of every resource (about 8 min)')]
+validate:
+    uv run frictionless validate datapackage.json --type package
 
 [group('dev')]
 test:

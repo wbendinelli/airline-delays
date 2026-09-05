@@ -5,6 +5,7 @@ No column reaches a public table without a `Column` here; `docs/dictionary.md` a
 
 from __future__ import annotations
 
+from . import metadata, zenodo
 from .columns import (
     ARTICLE_PANEL,
     DTYPE_ALIASES,
@@ -32,10 +33,11 @@ from .datapackage import (
     RESOURCES,
     SOURCES,
     built_layers,
-    datapackage,
+    package_descriptor,
     resource,
 )
 from .datapackage import build as build_datapackage
+from .datapackage import render as render_datapackage
 from .dictionary import (
     LAYER_TITLES,
     dictionary_markdown,
@@ -60,15 +62,18 @@ __all__ = [
     "build_datapackage",
     "build_layer",
     "built_layers",
-    "datapackage",
     "describe",
     "describe_frame",
     "dictionary_markdown",
     "dtype_matches",
     "fact_columns",
     "get",
+    "metadata",
     "ml_columns",
+    "package_descriptor",
+    "render_datapackage",
     "resource",
     "to_frame",
     "validate_schema",
+    "zenodo",
 ]

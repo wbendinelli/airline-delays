@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this repository, please cite it as below."
-title: "airline-delays: from ANAC's raw VRA records to replication and delay prediction"
+title: "airline-delays: Brazil's scheduled domestic flights 2000-2013, from ANAC's raw records to a published article's tables, its theory, and a flight-level delay predictor"
 type: software
 version: 0.1.0
 date-released: '2026-09-05'
@@ -27,6 +27,9 @@ keywords:
   - reproducible research
   - econometrics
   - machine learning
+  - Brazil
+  - ANAC VRA
+  - open data
 abstract: >-
   Reconstructs Brazil's Voo Regular Ativo (VRA) flight-leg records (ANAC,
   2000-2013, about 13.5 million legs) into a single canonical flight table,

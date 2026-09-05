@@ -1,7 +1,7 @@
 [project]
 name = "airline-delays"
 version = "0.1.0"
-description = "From ANAC's raw VRA flight-leg records (2000-2013) to the replication of Bendinelli et al. (2016) and per-flight delay prediction."
+description = "Brazil's scheduled domestic flights 2000-2013 -- from ANAC's raw records to a published article's tables, its theory, and a flight-level delay predictor."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.12,<3.13"
@@ -41,7 +41,8 @@ dev = [
   "pytest-cov>=5",
   "ruff>=0.16",
   "pre-commit>=4",
-  "cffconvert>=2.0",
+  "frictionless[parquet]>=5.18",
+  "jsonschema>=4.20",
 ]
 
 [tool.pytest.ini_options]

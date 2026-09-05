@@ -10,6 +10,16 @@ version numbers, mark progress.
 
 ### Added
 
+- **Publication metadata at the Data Package v2 standard.** `datapackage.json` now describes 24
+  resources -- the article panel and the reconstruction panel in parquet and csv.gz, the fact
+  table, the two projections, the 13 curated `data/external/` tables and the four provenance
+  manifests -- each with sha256, size, row count, licence, sources and field constraints, and
+  lists the two regenerated layers (staged flights, the modelling table) under `x-regenerated`
+  with the command that rebuilds them. `.zenodo.json` is generated (`airline-delays zenodo-json`)
+  from `schema/metadata.py`, the single source of title, version, keywords, creators, licences
+  and related identifiers that `CITATION.cff` and `pyproject.toml` are tested against. A CI job
+  `metadata` rebuilds the four generated files and validates the package with frictionless;
+  `just validate` runs the full validation.
 - **`reports/summary.json`, the numbers manifest** (`airline-delays summary`): every headline
   number the READMEs quote, read from the committed manifests, tables and reports -- the
   reconstruction's counts and flights by year, the article panel's shape, the published Table 3

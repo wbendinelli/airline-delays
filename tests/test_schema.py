@@ -146,7 +146,7 @@ class TestTheGeneratedDatapackage:
                 ["route", "ym"],
             )
         ]
-        return schema.datapackage(resources)
+        return schema.package_descriptor(resources)
 
     def test_it_is_json_serialisable(self, package: dict) -> None:
         assert json.loads(json.dumps(package))["name"] == "airline-delays"

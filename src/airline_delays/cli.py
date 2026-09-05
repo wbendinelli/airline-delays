@@ -369,9 +369,8 @@ def datapackage(
     """Generate datapackage.json (Frictionless v2) from the schema."""
 
     root = repo_root()
-    descriptor = schema.build_datapackage(root)
     target = out or root / "datapackage.json"
-    rendered = json.dumps(descriptor, indent=2, ensure_ascii=False) + "\n"
+    rendered = schema.render_datapackage(root)
     if check:
         if target.exists() and target.read_text(encoding="utf-8") == rendered:
             typer.echo(f"datapackage: {target} is in step with the registry and the tables")
@@ -379,12 +378,37 @@ def datapackage(
         typer.echo(f"datapackage: {target} is stale; run `airline-delays datapackage`", err=True)
         raise typer.Exit(code=1)
     target.write_text(rendered, encoding="utf-8")
-    typer.echo(f"datapackage: {len(descriptor['resources'])} resources -> {target}")
+    n_resources = len(json.loads(rendered)["resources"])
+    typer.echo(f"datapackage: {n_resources} resources -> {target}")
 
 
 def _passthrough(module_main, ctx: typer.Context) -> None:
     """Hand the raw arguments to a stage's own ``main``; the stage owns its options."""
     raise typer.Exit(code=module_main(list(ctx.args)))
+
+
+@app.command(name="zenodo-json")
+def zenodo_json(
+    out: Annotated[Path | None, typer.Option(help="Destination; defaults to .zenodo.json.")] = None,
+    check: Annotated[
+        bool,
+        typer.Option(
+            "--check", help="Compare the committed file with a rebuild; exit 1 on a difference."
+        ),
+    ] = False,
+) -> None:
+    """Generate .zenodo.json from the publication metadata. Never edit it by hand."""
+    root = repo_root()
+    target = out or root / ".zenodo.json"
+    rendered = schema.zenodo.render()
+    if check:
+        if target.exists() and target.read_text(encoding="utf-8") == rendered:
+            typer.echo(f"zenodo-json: {target} is in step with the metadata")
+            return
+        typer.echo(f"zenodo-json: {target} is stale; run `airline-delays zenodo-json`", err=True)
+        raise typer.Exit(code=1)
+    target.write_text(rendered, encoding="utf-8")
+    typer.echo(f"zenodo-json -> {target}")
 
 
 @app.command(name="article-panel")
