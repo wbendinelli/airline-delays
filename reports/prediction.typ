@@ -5,7 +5,7 @@
 // `reports/prediction/{rolling,fixed,importance,calibration,dataset,leakage}.json`,
 // escritos por `airline-delays predict` (`just predict`).
 //
-// Compilar:  typst compile --root . reports/prediction.typ reports/build/prediction.pdf
+// Compilar:  typst compile --root . reports/prediction.typ reports/pdf/prediction.pdf
 
 #let rolling = json("prediction/rolling.json")
 #let fixed = json("prediction/fixed.json")

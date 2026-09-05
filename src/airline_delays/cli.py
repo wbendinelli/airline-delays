@@ -506,10 +506,10 @@ def summary(
 def report(
     only: Annotated[
         list[str] | None,
-        typer.Option(help="Compile only these reports (replication, prediction, theory)."),
+        typer.Option(help="Compile only these reports (study, replication, prediction)."),
     ] = None,
 ) -> None:
-    """Compile the Typst reports into reports/build/ (needs typst on the PATH)."""
+    """Compile the Typst reports into reports/pdf/, tracked (needs typst on the PATH)."""
     from airline_delays import reporting
 
     for pdf in reporting.compile_all(tuple(only) if only else None):

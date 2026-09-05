@@ -3,7 +3,7 @@
 ``summary`` reads every committed manifest and report and writes
 ``reports/summary.json``: the only source of numbers the READMEs quote
 (`airline-delays summary`). ``typst`` compiles the three Typst reports under
-``reports/`` into ``reports/build/`` (`airline-delays report`).
+``reports/`` into the tracked ``reports/pdf/`` (`airline-delays report`).
 """
 
 from __future__ import annotations
