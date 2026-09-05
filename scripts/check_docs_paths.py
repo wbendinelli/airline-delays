@@ -104,7 +104,7 @@ ROOT_FILES = {
     ".sapians-repo.yml",
 }
 # Pipeline output: git-ignored beyond these tracked anchors (see .gitignore).
-GENERATED_PREFIXES = ("data/raw/", "data/staged/", "data/derived/")
+GENERATED_PREFIXES = ("data/raw/", "data/staged/", "data/derived/", "reports/build/")
 GENERATED_ANCHORS = {
     "data/raw/README.md",
     "data/raw/manifest.json",

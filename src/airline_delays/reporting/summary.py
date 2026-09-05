@@ -62,13 +62,12 @@ def _reconstruction(previous: dict[str, Any]) -> dict[str, Any]:
         out["staged"] = {
             "rows": staged["total_rows"],
             "years": len(staged["years"]),
-            "files": sum(int(year.get("files", 1)) for year in staged["years"]),
-            "carried_over": False,
+            "partitions": len(staged["years"]),
         }
     else:
-        carried = dict(previous.get("reconstruction", {}).get("staged", {}))
-        carried["carried_over"] = True
-        out["staged"] = carried
+        # The staged layer is regenerated, not committed: without its manifest the
+        # committed block is carried forward unchanged (meta.inputs says so).
+        out["staged"] = dict(previous.get("reconstruction", {}).get("staged", {}))
     fact_manifest = _json(paths.ANALYSIS / "manifest.json")
     fact_rows, fact_columns = _parquet_shape(paths.ANALYSIS / "fact_group_route_month.parquet")
     out["fact"] = {

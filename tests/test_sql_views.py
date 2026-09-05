@@ -7,6 +7,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SQL = ROOT / "sql" / "views.sql"
+STAGED_VIEWS = {
+    "v_flights",
+    "v_flights_repl",
+    "v_flights_ml",
+    "v_route_month",
+    "v_route_hhi",
+    "v_node_movements",
+    "v_city_month",
+    "v_check_additivity",
+}
 COMMITTED_VIEWS = (
     "v_fact",
     "v_panel",
@@ -53,9 +63,8 @@ def test_every_view_over_committed_data_builds_and_returns_rows() -> None:
     if staged_present:
         assert failed == {}, failed
     else:
-        assert all("staged" in message or "No files" in message for message in failed.values()), (
-            failed
-        )
+        # Without data/staged the flight views and everything built on them cannot bind.
+        assert set(failed) <= STAGED_VIEWS, failed
     for name in COMMITTED_VIEWS:
         assert name not in failed, failed.get(name)
         rows = con.execute(f"SELECT count(*) FROM {name}").fetchone()[0]
