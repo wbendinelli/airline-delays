@@ -78,6 +78,7 @@ just panel      # fact table -> the replication panel, dictionary, datapackage
 just replicate           # Tables 2-7 from the public panel
 just replicate private   # Tables 2-7 from the private benchmark (needs AIRLINE_DELAYS_PRIVATE_DIR)
 just ml         # flight-level dataset, temporal split, rolling evaluation
+just theory     # the monograph's congestion model derived and checked, five figures (offline, ~1 s)
 ```
 
 Every recipe is a thin wrapper over `uv run` on Python 3.12 (pinned in
@@ -147,7 +148,7 @@ renders it as the repository's "Cite this repository" button.
 
 ## License
 
-**MIT** for code — `src/`, `scripts/`, `replication/`, `ml/`, `tests/`,
+**MIT** for code — `src/`, `scripts/`, `replication/`, `ml/`, `theory/`, `tests/`,
 `.github/` — see [LICENSE](./LICENSE). **CC BY 4.0** for text and for the
 derived-data tables this repository curates — this README, `CLAUDE.md`,
 `CONTRIBUTING.md`, `ROADMAP.md`, `docs/`, the prose of `reports/`, and
@@ -346,6 +347,9 @@ statement about current Brazilian air-traffic performance — the schema and
 the cause-code taxonomy this repository is built on (IAC 1504) were retired
 around 2020 (the exact revoking instrument is pending e-SIC confirmation,
 `docs/notes/esic-licenca-vra.md`). Numbers in this README and in `reports/`
-are printed by versioned scripts under `replication/` and `ml/`, never typed
-by hand (`CLAUDE.md`); a number without a script behind it is a bug in this
-repository, not a fact about Brazilian aviation.
+are printed by versioned scripts under `replication/`, `ml/` and `theory/`,
+never typed by hand (`CLAUDE.md`); a number without a script behind it is a
+bug in this repository, not a fact about Brazilian aviation. The theory
+chapters derive and review; they estimate nothing, and the
+2013 monograph's own coefficients are quoted there as an outside document,
+never as a result of this repository.

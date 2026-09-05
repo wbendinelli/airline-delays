@@ -41,7 +41,7 @@ A red CI is correct behaviour — fix the cause, never weaken the check:
 ## Duties CI does not cover (do these without being asked)
 
 1. **Update `CHANGELOG.md`** — one line per notable change to `src/vra/`,
-   `replication/`, `ml/` or `data/external/`, under the right heading.
+   `replication/`, `ml/`, `theory/` or `data/external/`, under the right heading.
 2. **Run `just check` before committing** — `pre-commit run --all-files`,
    plus the local doclint (see `CONTRIBUTING.md`).
 3. **Never commit anything from `data/raw/`, `data/staged/`,

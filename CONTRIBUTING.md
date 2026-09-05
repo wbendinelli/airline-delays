@@ -88,5 +88,5 @@ must cite the JSON, CSV or `.md` report it comes from, next to the number
 ## Style
 
 Commit messages: `type(scope): summary`, scopes `vra data replication ml
-docs ci`. A fix to a number already in prose is always `fix`, never
+theory docs ci`. A fix to a number already in prose is always `fix`, never
 `docs`, even when the diff is only text.

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Check that every path and command mentioned in the reader-facing docs is real.
 
-Scope is deliberately narrow: ``README.md`` and ``docs/tutorial/*.md`` are the
-two places a reader follows literally, step by step, so a stale path or a
-renamed target there is the most expensive kind of error -- it strands
-someone mid-exercise. This script scans both for three things and fails on
+Scope is deliberately narrow: ``README.md``, ``docs/tutorial/*.md`` and
+``docs/theory/*.md`` are the three places a reader follows literally, step by
+step, so a stale path or a renamed target there is the most expensive kind of
+error -- it strands someone mid-exercise. This script scans them for three
+things and fails on
 any miss:
 
 1. Backticked or fenced-code filesystem paths (``src/vra/registry.py``,
@@ -41,7 +42,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-CHECKED_FILES = [ROOT / "README.md", *sorted((ROOT / "docs" / "tutorial").glob("*.md"))]
+CHECKED_FILES = [
+    ROOT / "README.md",
+    *sorted((ROOT / "docs" / "tutorial").glob("*.md")),
+    *sorted((ROOT / "docs" / "theory").glob("*.md")),
+]
 
 # Top-level names that make a slash-containing backtick span worth treating as
 # a repository path, rather than prose that happens to contain a slash (line
@@ -55,6 +60,7 @@ KNOWN_TOP = {
     "reports",
     "replication",
     "ml",
+    "theory",
     "sql",
     ".github",
 }

@@ -70,6 +70,14 @@ ml-dataset:
 ml:
     uv run python -m ml.run --rebuild
 
+# The Stackelberg congestion model of the author's 2013 monograph (after
+# Brueckner and Van Dender 2008), derived with sympy and checked numerically,
+# plus the five congestion-economics diagrams of its section 2 redrawn as SVG.
+# Offline, deterministic, about a second. Writes reports/theory/{model,figures}.json,
+# figures/*.svg and results.md; a second run on an unchanged tree changes nothing.
+theory:
+    uv run python -m theory.run
+
 report:
     @echo "report: not implemented yet"
 
