@@ -20,12 +20,20 @@ wrong.
    uv run pre-commit install
    ```
 
-3. **Run the smallest reproduction** (`just demo`, over the fixture
-   committed in `tests/fixtures/`) to see the pipeline work without
-   touching the network or `data/raw/`.
-4. **Branch, change, open a pull request.** CI runs `ruff`, `pytest`
-   against the fixture, and validates `CITATION.cff` — if something is
-   wrong, it says exactly what, before anyone reviews by hand.
+3. **Run the smallest reproduction.** `just demo` is meant to run
+   end to end over the fixture committed in `tests/fixtures/`, no network
+   and no `data/raw/`; as of this writing it is still the placeholder
+   recipe in `justfile`. `just replicate` already works today without any
+   of that: `data/analysis/panel_route_month.parquet` is committed
+   (`DECISIONS.md` ADR-0014), so it reproduces Table 2 in under a second.
+4. **Branch, change, open a pull request.** CI runs `ruff` (lint),
+   `pytest` against the fixture (test), validates `CITATION.cff`
+   (citation), checks the README against the `research` doclint profile
+   (docs), scans for secrets (security), and confirms every path and
+   `just`/`vra` command in `README.md` and `docs/tutorial/*.md` resolves
+   to something real (`docs-paths`, `scripts/check_docs_paths.py`) — if
+   something is wrong, it says exactly what, before anyone reviews by
+   hand.
 
 ## The hard rules
 
@@ -42,8 +50,8 @@ wrong.
    (`proj18.dta`, the LABTAR/NECTAR laboratory bases, `vra.dta`) is
    reached only through the `AIRLINE_DELAYS_PRIVATE_DIR` environment
    variable, by `replication/gabarito/` or a `scripts/verify*.py`, and
-   only its derived agreement rate (`replication/gabarito/taxas.csv`) is
-   ever committed.
+   only its derived agreement rate (`data/analysis/taxas.csv`) is ever
+   committed.
 4. **When a measurement contradicts prose, the prose changes and the old
    value stays in the text, marked corrected.** A divergence against the
    original article or the private benchmark is declared in
@@ -56,12 +64,24 @@ wrong.
 ## Data availability while you work
 
 `data/raw/`, `data/staged/` and `data/derived/` are git-ignored on purpose
-— you regenerate them locally (`just fetch`, `just stage`, once those
-phases land) instead of pulling them from git. `data/external/*.csv` is
-the exception: small, hand-curated reference tables (the node map, airline
-groups, the IAC 1504 taxonomy), each row citing its own source and URL,
-committed because their diff is exactly what needs to stay reviewable in a
-pull request.
+— you regenerate them locally (`just fetch`, `just stage`) instead of
+pulling them from git. Two exceptions: `data/external/*.csv`, small
+hand-curated reference tables (the node map, airline groups, the IAC 1504
+taxonomy), each row citing its own source and URL, committed because
+their diff is exactly what needs to stay reviewable in a pull request;
+and `data/analysis/*.parquet`/`*.csv.gz` (the fact table, the panel and
+its two projections — `DECISIONS.md` ADR-0014), committed so a
+contributor can run `just replicate` without rebuilding the pipeline
+first. `just check-analysis` fails a commit where those tables drift from
+what `registry.py` and the fact table would produce.
+
+## Documentation changes
+
+A path or a `just`/`vra` command in `README.md` or `docs/tutorial/*.md`
+must exist — `scripts/check_docs_paths.py` proves it, in CI and locally
+(`uv run python scripts/check_docs_paths.py`). A number in either file
+must cite the JSON, CSV or `.md` report it comes from, next to the number
+— see `docs/declared-differences.md` for the pattern.
 
 ## Style
 

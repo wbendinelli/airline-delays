@@ -33,6 +33,9 @@ A red CI is correct behaviour — fix the cause, never weaken the check:
 - **docs** — the README matches the `research` profile declared in
   `.sapians-repo.yml` (required sections, the tier/class identity line, the
   BibTeX block, brand spelling) — see the reusable `docs-lint.yml`.
+- **docs-paths** — every backticked path and every `just`/`vra` command in
+  `README.md` and `docs/tutorial/*.md` resolves to something real
+  (`scripts/check_docs_paths.py`).
 - **security** — `gitleaks` scans the full git history for secrets.
 
 ## Duties CI does not cover (do these without being asked)
@@ -47,8 +50,9 @@ A red CI is correct behaviour — fix the cause, never weaken the check:
    `no-private-data` pre-commit hook enforce this, but they are a safety
    net, not a substitute for checking `git status` yourself.
 4. **Regenerate the dictionary and `datapackage.json` whenever
-   `src/vra/registry.py` changes.** They are generated artefacts, never
-   hand-edited (once the `vra dict` command exists — see `ROADMAP.md`).
+   `src/vra/registry.py` changes** — `uv run vra dictionary` and
+   `uv run vra datapackage` (`just panel` already runs both). They are
+   generated artefacts, never hand-edited.
 5. **Process raw data year by year, never two full scans of `data/raw/` at
    once.** One machine, 16 GB RAM, 10 cores — see the README's
    "Reproducing" section.

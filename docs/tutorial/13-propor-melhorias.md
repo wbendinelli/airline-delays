@@ -1,0 +1,115 @@
+# M13 — Propor melhorias: o que este repositório já sustenta
+
+**Objetivo.** Para cada extensão que o arco original prometeu, abandonou
+ou nunca tentou (M1-M10), dizer com precisão o que já existe neste
+repositório para construí-la, o que falta, e o próximo passo concreto —
+sem confundir "a arquitetura já suporta isto" com "isto já está pronto".
+As duas coisas são diferentes, e cada seção abaixo diz qual é qual.
+
+## 1. A decomposição de curto e longo prazo (a promessa removida, M9)
+
+**O que falta.** `lcc_sr`/`lcc_lr` (LCC antes/depois de uma data de corte
+por grupo) não existem em `src/vra/registry.py` — confirmável com
+`grep -c "lcc_sr\|lcc_lr" src/vra/registry.py` (0 ocorrências).
+
+**O que já existe para construí-la.** `data/external/groups.csv` já traz
+`start`/`end` datados ao mês por empresa e grupo (`DECISIONS.md`
+ADR-0003), e a tabela-fato já marca entrada e saída de grupo na rota
+(`is_entry`/`is_exit`, `docs/dictionary.md`). O próximo passo é uma
+função em `src/vra/features.py` que, dado um corte (por exemplo, a data
+de entrada do grupo na rota, não uma data fixa de calendário como o
+artigo original parece ter usado), particiona `sh_flights_lcc` em dois
+regressores — exatamente o par que o artigo prometeu e nunca publicou.
+
+## 2. HHI ponderado por passageiros
+
+**O que já existe.** `src/vra/hhi.py` já tem uma função
+`passenger_weighted_hhi` com a assinatura certa, que devolve `None` até a
+fonte existir — as colunas
+`rthhi`/`maxcthhi` já estão no painel, inteiramente nulas, documentadas
+como tal (`docs/declared-differences.md`, seção 6).
+
+**O que falta.** Os dados estatísticos da ANAC por empresa-rota-mês
+(`docs/data-availability.md`, fonte 3) — não coletados. O próximo passo é
+`vra fetch-stats` (a construir) e um `join` por `route`/`ym`/`group` — as
+mesmas três chaves que o painel público já usa.
+
+## 3. O limiar de 30 minutos
+
+**Já implementado, não uma proposta.** `fsc_prdelarr1530` e
+`fsc_prdelarr30m` (e as variantes `fscc_`/`all_`/`lccfu_`/`lccclass_`)
+já existem e já foram medidos contra o gabarito privado — ver M5, que
+mostra a mesma ambiguidade sem resolução no projeto irmão original.
+
+## 4. Meteorologia (METAR)
+
+**O que falta.** Nenhuma coluna de METAR existe aqui — o sinal de clima
+deste repositório vem inteiramente dos códigos de justificativa do
+próprio VRA (`DECISIONS.md` ADR-0005), como já era no artigo original.
+
+**O que já existe.** A REDEMET/DECEA é pública hoje
+(`docs/data-availability.md`, fonte 9); `flight_date`, `dep_hour` e
+`origin_node`/`dest_node` já dão a chave de junção (estação × hora) que
+um METAR precisaria. O próximo passo é um script paralelo a
+`scripts/fetch.py` (por exemplo, `fetch_metar.py`, a criar), e uma nova
+família de features em `ml/dataset_flights.py` — não na tabela-fato,
+porque METAR varia por hora exata, não por mês.
+
+## 5. A pergunta original de preços
+
+**O que falta.** Nenhuma coluna de tarifa (`docs/data-availability.md`,
+fonte 4) — ver M1 e M5.
+
+**O que já existe.** As mesmas chaves `route`/`ym` do painel público
+tornam uma junção com microdados tarifários por rota-mês direta, sem
+reextrair o VRA.
+
+## 6. Atraso de LCC como variável de resposta
+
+**Já implementado, não uma proposta.** `lccfu_prdelarr` (o conjunto de
+empresas do artigo, Gol e Azul) e `lccclass_prdelarr` (a classe LCC,
+incluindo a Webjet enquanto independente) já existem e já foram medidos
+contra o gabarito (`data/analysis/taxas.csv`: 56,1% e 51,4% de
+concordância). Tratar atraso de LCC como resposta em vez de regressor é
+uma escolha de especificação sobre colunas que já existem — não uma
+extensão de dado.
+
+## 7. Desenhos no nível do aeroporto
+
+**O que já existe.** `origin_icao`/`dest_icao` já ficam ao lado dos nós
+metropolitanos em **cada etapa de voo** (`data/staged/`,
+`src/vra/registry.py`, ADR-0001) — não no painel de rota-mês, onde um nó
+metropolitano (`MRSP`, `MRRJ`, `MRBH`) mistura aeroportos por desenho
+(ADR-0001). Um desenho a nível de aeroporto não precisa reprocessar o VRA
+bruto: agrupa `data/staged/` por `origin_icao`/`dest_icao` em vez de por
+`origin_node`/`dest_node`, reusando toda a limpeza já feita no staging.
+
+**O que falta.** Nenhuma tabela agregada por aeroporto (em vez de nó)
+existe hoje — só a flight-level já carrega a chave certa.
+
+## 8. Previsão de atraso por voo
+
+**Em andamento, não uma proposta.** O desenho — universo, dois horizontes
+(véspera e no portão), avaliação por origem rolante 2006-2013,
+`AUC`/`PR-AUC`/`Brier`/calibração, testes de vazamento — está fixado em
+`DECISIONS.md` ADR-0009 e `ml/README.md`. Os números finais chegam em
+<!-- PREDICTION: filled after phase 5 --> `reports/prediction/results.md`,
+que ainda não existe nesta sessão de documentação — este módulo aponta
+para o arquivo certo, não para um número.
+
+## Exercício
+
+Escolha uma das oito extensões acima cuja seção comece com "O que já
+existe" mais longa que "O que falta". Rode o comando `grep`/`cat` que a
+seção cita, confirme o número, e escreva as duas próximas linhas de
+código (arquivo e função) que você adicionaria para completá-la —
+sem escrevê-las de verdade, só nomeá-las.
+
+## Nota honesta
+
+"A arquitetura já sustenta" não é o mesmo que "já está pronto" — das oito
+extensões acima, só duas (o limiar de 30 minutos e o atraso de LCC como
+resposta) já têm coluna medida e publicada hoje; a previsão está em
+andamento; as outras cinco precisam de uma fonte de dado ainda não
+coletada ou de uma função ainda não escrita. Nenhuma foi implementada
+neste módulo de documentação — descrever o caminho não é percorrê-lo.

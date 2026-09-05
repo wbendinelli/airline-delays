@@ -29,7 +29,15 @@ the Infraero connections report — those layers are declared unavailable in
 [Data availability](#data-availability), never silently dropped or
 approximated without saying so.
 
-<!-- TODO: filled in phase N -- row/column counts and coverage once `stage` first runs end to end -->
+Measured on the full 2000-2013 series (`data/staged/manifest.json`,
+`data/analysis/manifest.json`, `data/analysis/panel_manifest.json`): staging
+produces 13,652,322 flight legs from 168 monthly files (265 MB of
+zstd-compressed parquet from 2.17 GB of raw CSV); the canonical fact table
+(`group x route x month`, the replication universe) holds 166,203 cells
+across 87 columns; the public replication panel (`route x month`, the 27
+nodes of `DECISIONS.md` ADR-0001) holds 31,760 rows across 228 columns, 310
+routes, 2000m1-2014m1; the city-month and airline-city-month projections
+hold 21,250 and 49,828 rows respectively.
 
 ## Quickstart
 
@@ -43,9 +51,14 @@ just demo
 `just demo` is meant to run the smallest end-to-end reproduction over the
 committed fixture in `tests/fixtures/` (a deterministic, few-MB slice of the
 flight table) — no network access, no ANAC download, no private directory.
-<!-- TODO: filled in phase N -- the fixture and the `vra` CLI ship with the
-data and features phases; until then `just demo` prints "not implemented
-yet" and exits 0, per the justfile's convention for unimplemented targets. -->
+As of this writing `just demo` itself is still the placeholder recipe in
+`justfile` (it prints "not implemented yet" and exits 0, the convention for
+every unimplemented target here); the fixture and the pipeline it would
+wire together already exist and run (`uv run pytest -q` exercises the same
+fixture). The fastest way to see real output today needs no fetch and no
+stage at all: `data/analysis/panel_route_month.parquet` is committed
+(`DECISIONS.md` ADR-0014), so `just replicate` alone reproduces Table 2
+over the public panel in well under a second.
 
 ## Reproducing
 
@@ -53,20 +66,33 @@ Full reconstruction runs on one machine (16 GB RAM, 10 cores), processing
 the raw data year by year, never two full raw scans at once:
 
 ```bash
-uv run vra fetch      # ANAC monthly CSVs -> data/raw/, with manifest.json
-uv run vra stage      # data/raw/ -> data/staged/year=YYYY/*.parquet (zstd)
-uv run vra refs       # validates data/external/*.csv (source + URL per row)
-uv run vra features   # staged + refs -> the group x route x month fact table
-uv run vra panel      # fact table -> the replication panel
-uv run vra replicate  # Tables 2-7, public data only
-uv run vra ml         # flight-level dataset, temporal split, rolling evaluation
+just fetch      # ANAC monthly CSVs -> data/raw/, with manifest.json
+just stage      # data/raw/ -> data/staged/year=YYYY/*.parquet (zstd)
+just refs       # validates data/external/*.csv (source + URL per row)
+just features   # staged + refs -> the group x route x month fact table
+just panel      # fact table -> the replication panel, dictionary, datapackage
+just replicate           # Tables 2-7 from the public panel
+just replicate private   # Tables 2-7 from the private benchmark (needs AIRLINE_DELAYS_PRIVATE_DIR)
+just ml         # flight-level dataset, temporal split, rolling evaluation
 ```
 
-Everything runs through `uv run` on Python 3.12 (pinned in `.python-version`
-and `pyproject.toml`) — never the system `python3`, which lacks pandas.
+Every recipe is a thin wrapper over `uv run` on Python 3.12 (pinned in
+`.python-version` and `pyproject.toml`) — never the system `python3`, which
+lacks pandas; see `justfile` for the exact command each one runs, and
+`uv run vra --help` for the underlying CLI.
 
-<!-- TODO: filled in phase N -- expected wall time per phase, recorded here
-once the first full 2000-2013 run completes. -->
+Measured wall time, one machine (16 GB RAM, 10 cores), full 2000-2013
+series: `fetch` about 17 minutes for 2.17 GB over 168 files
+(`data/raw/manifest.json`); `stage` about 8.4 seconds total across the 14
+years (`data/staged/manifest.json`); `features` about 11.1 seconds
+(`data/analysis/manifest.json`); `panel` about 7.5 seconds
+(`data/analysis/panel_manifest.json`); `replicate` (public panel) about 0.3
+seconds (`reports/replication/public/tables.md`); `replicate private`
+about 38.1 seconds (`reports/replication/private/tables.md`). The
+prediction phase (`ml`) is still in progress; its headline numbers and
+wall time land in
+<!-- PREDICTION: filled after phase 5 --> `reports/prediction/results.md`
+once it does.
 
 **What does not reproduce from this repository alone.** The private
 benchmark (`proj18.dta`, the LABTAR/NECTAR laboratory bases, `vra.dta`) is
@@ -74,7 +100,7 @@ never committed and never fetched by any command above. Where a published
 number depends on it, `replication/gabarito/` reads it only from the
 `AIRLINE_DELAYS_PRIVATE_DIR` environment variable (never a path hardcoded in
 code) and commits only the resulting agreement rate
-(`replication/gabarito/taxas.csv`), not the private data itself. Tests that
+(`data/analysis/taxas.csv`), not the private data itself. Tests that
 need that directory carry the pytest marker `gabarito` and are skipped, not
 failed, when the variable is unset — see `tests/conftest.py`. See
 [Declared differences](#declared-differences) for the numbers that do not
@@ -126,21 +152,24 @@ ADR-0000 for the exact source and the licence trail.
 
 ## Data availability
 
-Data Availability Statement, source by source. Every row of
-`data/external/*.csv` additionally carries its own `source` and `url` field;
-this section is the narrative version of the same statement.
+Data Availability Statement, source by source; the full version, with the
+holder, how to obtain it, restrictions and cost/time for each, is
+[`docs/data-availability.md`](docs/data-availability.md). Every row of
+`data/external/*.csv` additionally carries its own `source` and `url`
+field; this table is the narrative summary of the same statement.
 
 | Source | Access | Redistributed here | Cost |
 |---|---|---|---|
-| VRA — Voo Regular Ativo (ANAC monthly flight-leg CSVs, 2000-2013) | Public, `https://siros.anac.gov.br/siros/registros/diversos/vra/` | Yes — raw snapshot and derived tables, under CC BY with attribution. The federal open-data catalogue declares `Licença: Creative Commons Attribution` for this exact dataset (catalogued 2019-03-01, metadata updated 2024-01-25, read 2026-09-05); see `DECISIONS.md` ADR-0000. A written confirmation has also been requested from ANAC via e-SIC in parallel (`docs/notes/esic-licenca-vra.md`); the redistribution above does not block on that reply. | Free; the time cost is the download and parse, recorded here once a full `fetch`/`stage` run completes |
-| IAC 1504 (delay-cause code taxonomy) | Public regulatory text | Yes — the derived taxonomy table (`data/external/codigos_iac1504.csv`), not the instrument's own text | Free |
-| ANAC statistical data (aggregate air-transport statistics) | Public, ANAC website | Cited for cross-checks only, not bulk-redistributed | Free |
-| ANAC tariff base | Public, ANAC website | Cited for cross-checks only (it is the source of the metropolitan-node agreement in ADR-0001) | Free |
-| BNDES/McKinsey (2010) airport-capacity study | Public PDF | Manually transcribed capacity figures only (`data/external/capacidade_bndes.csv`), not the report itself | Free; manual-transcription time cost |
+| VRA — Voo Regular Ativo (ANAC monthly flight-leg CSVs, 2000-2013) | Public, `https://siros.anac.gov.br/siros/registros/diversos/vra/` | Yes — raw snapshot and derived tables, under CC BY with attribution. The federal open-data catalogue declares `Licença: Creative Commons Attribution` for this exact dataset (catalogued 2019-03-01, metadata updated 2024-01-25, read 2026-09-05); see `DECISIONS.md` ADR-0000. A written confirmation has also been requested from ANAC via e-SIC in parallel (`docs/notes/esic-licenca-vra.md`); the redistribution above does not block on that reply. | Free; ~17 minutes to download the 168 files (2.17 GB, `data/raw/manifest.json`) |
+| IAC 1504 (delay-cause code taxonomy) | Public regulatory text | Yes — the derived taxonomy tables (`data/external/cause_codes.csv`, `di_codes.csv`, `line_types.csv`), not the instrument's own text | Free |
+| ANAC statistical data (paid passengers by airline-route-month) | Public, ANAC website | Not yet collected — needed for the article's passenger-weighted `rthhi`/`maxcthhi` (ADR-0007) | Free; not yet spent |
+| ANAC tariff microdata (`yield`, `fare`, ticket counts, 2002+) | Public, ANAC website | Not yet collected — needed for the original price question (`docs/tutorial/13-propor-melhorias.md`) | Free; not yet spent |
+| BNDES/McKinsey (2010) airport-capacity study | Public PDF | One transcribed figure only (`data/external/capacity.csv`: Congonhas, 33 movements/hour post-2007), not the report itself | Free; manual-transcription time cost |
 | CADE/ANAC merger and grouping acts | Public regulatory decisions | Cited per row of `data/external/groups.csv`, not the decisions themselves | Free |
-| REDEMET / INMET (weather records) | Public | Used only as a cross-check for weather-coded delays; not bulk-redistributed here | Free |
-| Private benchmark (`proj18.dta`) and laboratory bases (LABTAR, NECTAR, `vra.dta`) | Not public — laboratory-internal, 2019 vintage | **Not redistributed.** Read only from `AIRLINE_DELAYS_PRIVATE_DIR`, outside this repository; only the derived agreement rate (`replication/gabarito/taxas.csv`) is committed | Not applicable — declared omission, not a silent drop |
+| REDEMET / DECEA (METAR weather records) | Public via REDEMET today | Not yet integrated; the article's own weather signal comes from VRA justification codes, not METAR | Free; not yet spent |
+| Private benchmark (`proj18.dta`) and laboratory bases (LABTAR, NECTAR, `vra.dta`) | Not public — laboratory-internal, 2019 vintage | **Not redistributed.** Read only from `AIRLINE_DELAYS_PRIVATE_DIR`, outside this repository; only the derived agreement rate (`data/analysis/taxas.csv`) is committed | Not applicable — declared omission, not a silent drop |
 | Infraero connections report | Not public | **Not redistributed** and not reproduced; any figure that depends on it is marked "not reproduced" in [Declared differences](#declared-differences) | Not applicable — declared omission |
+| Published article (Elsevier) | DOI only | **Not redistributed** — no accepted manuscript exists in the archive this repository was built from either | Not applicable |
 
 **TIER Protocol.** This repository's layout maps onto the
 [TIER Protocol](https://www.projecttier.org/) documentation standard almost
@@ -150,43 +179,99 @@ panel are *Analysis Data*, `src/`, `replication/` and `ml/` are *Command
 Files*, and `docs/` together with this README are the *Documentation*
 component. What TIER additionally asks for — a Data Appendix describing
 every variable — is `src/vra/registry.py`, together with the dictionary it
-generates (`docs/dicionario.md`, <!-- TODO: filled in phase N -->, once
-`registry.py` exists).
+generates (`docs/dictionary.md`: 581 columns across six layers — staged
+flights, the fact table, city-month, airline-city-month, the replication
+panel and the flight-level modelling table).
 
 ## Declared differences
 
 Where this reconstruction does not match the original 2016 article or the
 private benchmark, the difference is stated here, not adjusted away
 (`DECISIONS.md` ADR-0010 governs how a genuine disagreement between two
-valid options gets resolved). Known differences so far:
+valid options gets resolved). Full detail, with the cause of every gap as
+far as the evidence goes, is in
+[`docs/declared-differences.md`](docs/declared-differences.md); this
+section summarises it.
 
-- **Departure- and arrival-delay-count agreement against the benchmark is
-  asymmetric.** Under the same replication universe (ADR-0002),
-  departure-delay counts reproduce the benchmark at 92.4% agreement and
-  arrival-delay counts at 59.8%. The asymmetry is declared, not resolved.
-- **`prwheather` folds in more than weather.** The article's weather-delay
-  share, reproduced at 98.5% agreement, actually merges weather with closed
-  or restricted airports — its dominant code is `AR`, "aeroporto com
-  restrições operacionais" (ADR-0005). This repository ships a second delay-
-  cause taxonomy alongside the article's original three columns, so both
-  readings are available and neither hides inside the other.
-- **`prcongested` is not yet reproduced.** The article's declared-capacity
-  congestion measure needs ANAC's seasonal capacity declarations, which have
-  not been collected yet; an internal p90-based proxy ships in the meantime
-  (ADR-0007).
-- **The outlier threshold is a named parameter, not a fixed fact.** The
-  laboratory used 313.25 minutes in one script and 117.10/111.75 minutes in
-  another; this repository defaults to 313.25 minutes and ships a
-  sensitivity table across thresholds instead of picking one silently
-  (ADR-0008).
-- **The node map changes benchmark agreement on `f` from 86.8% to 97.4%.**
-  Putting Viracopos (SBKP) inside the São Paulo metropolitan node, rather
-  than treating it as a separate "Campinas" airport the way the tariff base
-  labels it, is what closes most of that gap (ADR-0001).
+**Reconstruction (data layer).** Column by column against the private
+benchmark (`data/analysis/taxas.csv`, 24,929 comparable route-months):
+`f` (the article's flight count) agrees on 90.1% of route-months overall
+and 95.3% on the half of the series where the raw files have not changed
+since the benchmark's 2019 vintage — the earlier reconstruction from that
+same vintage reported 97.5%, so most of the shortfall is the raw files
+changing upstream, not a difference in definitions
+(`reports/reconciliation.md`). Departure- and arrival-delay-count
+agreement is asymmetric under the identical rule (realised flights more
+than 0 minutes late): this reconstruction measures 87.7% (stable vintage)
+for departures against 56.0% for arrivals (`data/analysis/taxas.csv`,
+`fl_odel`/`fl_ddel`); the earlier reconstruction, reading the 2019 vintage
+directly, reported 92.4% and 59.8% for the same two columns — both
+readings show the same asymmetry, still unexplained (`DECISIONS.md`
+ADR-0002). `prwheather`, reproduced at 91.9% (stable vintage), folds in
+more than weather — its dominant code is `AR`,
+"aeroporto com restrições operacionais" (ADR-0005). `prcongested` is not
+yet reproduced; it needs ANAC's seasonal capacity declarations, not yet
+collected (ADR-0007). The node map changes benchmark agreement on `f` from
+86.8% to 97.4%: putting Viracopos (SBKP) inside the São Paulo metropolitan
+node, rather than treating it as a separate "Campinas" airport the way the
+tariff base labels it, closes most of that gap (ADR-0001). The outlier
+threshold is a named parameter, not a fixed fact: the laboratory used
+313.25 minutes in one script and 117.10/111.75 minutes in another; this
+repository defaults to 313.25 minutes and ships a sensitivity table across
+thresholds instead of picking one silently (ADR-0008).
 
-<!-- TODO: filled in phase N -- full detail moves to
-docs/declared-differences.md once the reconstruction scripts land; this
-section will then summarise it instead of duplicating it. -->
+**Replication (Tables 2-7), against the private benchmark**
+(`reports/replication/private/tables.md`, `reports/replication/private/summary.json`).
+Across the five regression tables, 306 coefficients are compared: 302
+agree in sign, 259 (85%) sit within half a published standard error, and
+the largest single gap is 0.94 published standard errors. No conclusion of
+the article changes — the sign inversion of both HHIs between OLS and
+2SGMM, the article's central argument, replicates in all 12 comparisons.
+What does not close: **N is about 5.3% larger in every column** (20,447-
+20,630 replicated against 19,408-19,590 published — 5.31% on arrival
+columns, 5.35% on departure columns) for a reason the delivered material
+does not explain; the Hansen J, Adj. R-squared and identification
+statistics move with it but never change a verdict (22 of 24 J-statistic
+columns still fail to reject orthogonality at 5%, the same 2 still reject);
+standard errors come out systematically smaller (median ratio 0.94-0.99);
+and the `ivreg2`-convention F statistic is not reproduced at all — it is a
+different quantity under `linearmodels`, left empty rather than filled
+with a number that does not mean the same thing.
+
+**The public panel cannot yet estimate the regression tables.** Built
+purely from public VRA data, `data/analysis/panel_route_month.parquet`
+loads and filters cleanly through the same code path
+(`reports/replication/public/tables.md`: 21,936 observations, 207 routes,
+under `just replicate`, no private directory needed), but Table 2 computes
+only 7 of its 13 descriptive variables — the other 6 (congested/
+uncongested flight counts, max city delay, codeshare, both HHIs) need
+columns this panel does not carry at all. Of the 7 it does compute, three
+match closely (weather, incidents, late-connection shares) and `fsc_oddsarr`
+averages -1.3844 against the published -1.38; two do not (`LCC presence
+city-pair` 0.7767 against 0.90 published, and the `MINS` regressand, whose
+mean and spread are far off and not yet explained on this source — a gap
+declared here, not hidden). Tables 3-7 cannot be estimated at all: they
+need `maxprdel`, `cshare`, `dailyflcong`/`dailyflncong` and the seven
+Hausman-type instruments, none reconstructible from a VRA-only source,
+plus `rthhi`/`maxcthhi` (present as columns, entirely null — the
+flight-based `rthhi_flights`/`maxcthhi_flights` are a different index and
+are never substituted in under the published name). `just replicate`
+(public) prints exactly which variables each table is missing rather than
+estimating on a near-equivalent column.
+
+**Panel and feature layer**, benchmark comparison
+(`data/analysis/taxas.csv`, `replication/gabarito/compare.py`): the
+article's own FSC carrier set (excluding Avianca Brasil) reproduces
+`fsc_prdelarr` at 64.9% agreement on the stable-vintage half — matching
+the 65.1% the earlier reconstruction reported from the private raw data —
+while the class-based variant (`fscc_prdelarr`, which classes Avianca
+Brasil as FSC) reaches only 53.4%: a choice of carrier set, not a defect
+in the delay definitions (`DECISIONS.md` ADR-0013). `lcc`, `pres_glo`,
+`pres_azu` and `pres_tam`, read from VRA *operation*, agree with the
+benchmark's ticket-sales convention on 90.8%-93.7% of route-months
+(stable vintage) — a genuine source difference, not an error on either
+side; the city-level LCC dummies, which the article itself takes from
+operations rather than ticket sales, agree on 100% (`maxalccfu`).
 
 ## Use and limits
 
