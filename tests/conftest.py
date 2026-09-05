@@ -109,3 +109,79 @@ def duck():
     con = connect(memory_limit="2GB", threads=2)
     yield con
     con.close()
+
+
+# --------------------------------------------------------------------------- layers
+#
+# The feature, panel and registry tests all need the same thing: a small staged
+# tree partitioned by year, and the tables built from it. Building them once per
+# session keeps the suite well under a minute, and building them from the
+# committed fixture keeps it offline.
+
+
+@pytest.fixture(scope="session")
+def repo_root() -> Path:
+    return ROOT
+
+
+@pytest.fixture(scope="session")
+def groups_csv() -> Path:
+    return ROOT / "data" / "external" / "groups.csv"
+
+
+@pytest.fixture(scope="session")
+def external_dir() -> Path:
+    return ROOT / "data" / "external"
+
+
+@pytest.fixture(scope="session")
+def staged_tree(tmp_path_factory: pytest.TempPathFactory, staged_sample: Path) -> Path:
+    """The fixture parquet re-partitioned as ``year=YYYY/part-0.parquet``.
+
+    `vra.features.build_fact` reads one year at a time, so the fixture has to
+    look like `data/staged/` even though it is a single file on disk.
+    """
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    target = tmp_path_factory.mktemp("staged")
+    frame = pq.read_table(staged_sample).to_pandas()
+    frame = frame[frame["year"].notna()]
+    for year, part in frame.groupby(frame["year"].astype(int)):
+        directory = target / f"year={year}"
+        directory.mkdir(parents=True, exist_ok=True)
+        pq.write_table(
+            pa.Table.from_pandas(part, preserve_index=False), directory / "part-0.parquet"
+        )
+    return target
+
+
+@pytest.fixture(scope="session")
+def built(tmp_path_factory: pytest.TempPathFactory, staged_tree: Path, groups_csv: Path):
+    """Every table of the analysis layer, built once from the fixture."""
+    import pandas as pd
+
+    from vra import features, panel
+
+    root = tmp_path_factory.mktemp("built")
+    analysis, derived = root / "analysis", root / "derived"
+    result = features.build_fact(
+        staged_tree, analysis, derived, groups_path=groups_csv, verbose=False
+    )
+    fact = pd.read_parquet(analysis / "fact_group_route_month.parquet")
+    context = pd.read_parquet(derived / "route_month_context.parquet")
+    day_hour = pd.read_parquet(derived / "node_day_hour.parquet")
+    city = panel.city_month(fact, day_hour)
+    airline_city = features.add_hub(features.aggregate(fact, "airline_city_month"))
+    table = panel.assemble(fact, context, city, external_dir=ROOT / "data" / "external")
+    return {
+        "result": result,
+        "analysis": analysis,
+        "derived": derived,
+        "fact": fact,
+        "context": context,
+        "day_hour": day_hour,
+        "city": city,
+        "airline_city": airline_city,
+        "panel": table,
+    }

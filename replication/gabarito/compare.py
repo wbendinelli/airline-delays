@@ -338,6 +338,13 @@ def write_rates(rates: pd.DataFrame, path: Path) -> Path:
     return path
 
 
+def _blank(value: Any, spec: str = ".3f") -> str:
+    """A missing statistic renders as an empty cell, never as `nan`."""
+    import pandas as pd
+
+    return "" if value is None or pd.isna(value) else format(value, spec)
+
+
 def markdown_section(rates: pd.DataFrame, benchmark_rows: int) -> str:
     """The block `docs/declared-differences.md` regenerates on every run."""
     lines = [
@@ -355,11 +362,11 @@ def markdown_section(rates: pd.DataFrame, benchmark_rows: int) -> str:
         "|---|---|---|---|---|---|---|---|---|",
     ]
     for row in rates.to_dict("records"):
-        rate = "n/a" if row["rate"] is None else f"{row['rate']:.3f}"
-        stable = "" if row["rate_stable_vintage"] is None else f"{row['rate_stable_vintage']:.3f}"
-        expected = "" if row["expected_rate"] is None else f"{row['expected_rate']:.3f}"
-        median = "" if row["median_abs_diff"] is None else f"{row['median_abs_diff']:.4g}"
-        p90 = "" if row["p90_abs_diff"] is None else f"{row['p90_abs_diff']:.4g}"
+        rate = _blank(row["rate"]) or "n/a"
+        stable = _blank(row["rate_stable_vintage"])
+        expected = _blank(row["expected_rate"])
+        median = _blank(row["median_abs_diff"], ".4g")
+        p90 = _blank(row["p90_abs_diff"], ".4g")
         lines.append(
             f"| `{row['column']}` | `{row['benchmark_column']}` | {rate} | {stable} | {expected} | "
             f"{median} | {p90} | {row['n']:,d} | {row['note']} |"
@@ -392,7 +399,7 @@ def shortfalls(rates: pd.DataFrame, field: str = "rate_stable_vintage") -> list[
     out = []
     for row in rates.to_dict("records"):
         expected, measured = row["expected_rate"], row[field]
-        if expected is None or measured is None:
+        if _blank(expected) == "" or _blank(measured) == "":
             continue
         if measured < expected - 0.005:
             out.append(f"{row['column']}: {measured:.3f} against an expected {expected:.3f}")
@@ -417,14 +424,13 @@ def main(argv: list[str] | None = None) -> int:
     update_declared_differences(args.declared, markdown_section(rates, len(benchmark)))
     print(f"{'column':<20} {'rate':>6} {'stable':>7}       n  expected")
     for row in rates.to_dict("records"):
-        rate = "   n/a" if row["rate"] is None else f"{row['rate']:6.3f}"
-        stable = (
-            "      -"
-            if row["rate_stable_vintage"] is None
-            else f"{row['rate_stable_vintage']:7.3f}"
+        rate = _blank(row["rate"], "6.3f") or "   n/a"
+        stable = _blank(row["rate_stable_vintage"], "7.3f") or "      -"
+        expected = _blank(row["expected_rate"])
+        print(
+            f"{row['column']:<20} {rate} {stable}  {row['n']:>6,d}"
+            f"{'  ' + expected if expected else ''}"
         )
-        expected = "" if row["expected_rate"] is None else f"  {row['expected_rate']:.3f}"
-        print(f"{row['column']:<20} {rate} {stable}  {row['n']:>6,d}{expected}")
     headline = shortfalls(rates, "rate")
     if headline:
         print("\nBelow the earlier rate on today's raw files, vintage drift included:")

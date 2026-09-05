@@ -1,0 +1,147 @@
+{
+  "layer": "analysis",
+  "grain": "one row per group x route x month, replication universe",
+  "generated_at": "2026-09-05T05:15:37+00:00",
+  "tool_versions": {
+    "python": "3.12.13",
+    "duckdb": "1.5.5",
+    "pyarrow": "25.0.1",
+    "platform": "Darwin arm64"
+  },
+  "outlier_threshold_min": 313.25,
+  "legacy_missing_actual_as_zero": true,
+  "years": [
+    2000,
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+  ],
+  "fact_rows": 166203,
+  "route_months": 202034,
+  "node_day_hours": 4270300,
+  "seconds": 11.26,
+  "missing_actual_by_year": [
+    {
+      "year": 2000,
+      "realized": 587021,
+      "dep_missing_actual": 470281,
+      "arr_missing_actual": 470283,
+      "sh_dep_missing": 0.8011314757052984,
+      "sh_arr_missing": 0.8011348827384369
+    },
+    {
+      "year": 2001,
+      "realized": 610682,
+      "dep_missing_actual": 462923,
+      "arr_missing_actual": 462920,
+      "sh_dep_missing": 0.7580426474007749,
+      "sh_arr_missing": 0.7580377348603692
+    },
+    {
+      "year": 2002,
+      "realized": 564370,
+      "dep_missing_actual": 433937,
+      "arr_missing_actual": 433937,
+      "sh_dep_missing": 0.7688874320038273,
+      "sh_arr_missing": 0.7688874320038273
+    },
+    {
+      "year": 2003,
+      "realized": 431640,
+      "dep_missing_actual": 332426,
+      "arr_missing_actual": 332414,
+      "sh_dep_missing": 0.770146418311556,
+      "sh_arr_missing": 0.7701186173663238
+    },
+    {
+      "year": 2004,
+      "realized": 456338,
+      "dep_missing_actual": 345961,
+      "arr_missing_actual": 345963,
+      "sh_dep_missing": 0.7581244603780531,
+      "sh_arr_missing": 0.758128843094373
+    },
+    {
+      "year": 2005,
+      "realized": 476183,
+      "dep_missing_actual": 337935,
+      "arr_missing_actual": 337932,
+      "sh_dep_missing": 0.7096746418918777,
+      "sh_arr_missing": 0.7096683417929661
+    },
+    {
+      "year": 2006,
+      "realized": 493868,
+      "dep_missing_actual": 339700,
+      "arr_missing_actual": 339701,
+      "sh_dep_missing": 0.6878356159945572,
+      "sh_arr_missing": 0.6878376408271036
+    },
+    {
+      "year": 2007,
+      "realized": 513074,
+      "dep_missing_actual": 303557,
+      "arr_missing_actual": 303498,
+      "sh_dep_missing": 0.5916437005188335,
+      "sh_arr_missing": 0.591528707359952
+    },
+    {
+      "year": 2008,
+      "realized": 600121,
+      "dep_missing_actual": 420904,
+      "arr_missing_actual": 420905,
+      "sh_dep_missing": 0.7013652246796896,
+      "sh_arr_missing": 0.7013668910103129
+    },
+    {
+      "year": 2009,
+      "realized": 686264,
+      "dep_missing_actual": 533443,
+      "arr_missing_actual": 533440,
+      "sh_dep_missing": 0.7773145611601366,
+      "sh_arr_missing": 0.7773101896646188
+    },
+    {
+      "year": 2010,
+      "realized": 796889,
+      "dep_missing_actual": 83,
+      "arr_missing_actual": 83,
+      "sh_dep_missing": 0.00010415503288412815,
+      "sh_arr_missing": 0.00010415503288412815
+    },
+    {
+      "year": 2011,
+      "realized": 898907,
+      "dep_missing_actual": 143,
+      "arr_missing_actual": 145,
+      "sh_dep_missing": 0.00015908208524352354,
+      "sh_arr_missing": 0.0001613070095126637
+    },
+    {
+      "year": 2012,
+      "realized": 942590,
+      "dep_missing_actual": 115,
+      "arr_missing_actual": 115,
+      "sh_dep_missing": 0.00012200426484473632,
+      "sh_arr_missing": 0.00012200426484473632
+    },
+    {
+      "year": 2013,
+      "realized": 894658,
+      "dep_missing_actual": 11,
+      "arr_missing_actual": 11,
+      "sh_dep_missing": 1.2295201071247338e-05,
+      "sh_arr_missing": 1.2295201071247338e-05
+    }
+  ]
+}

@@ -11,6 +11,18 @@
 /data/private/*
 !/data/private/README.md
 
+# data/analysis/ is a tracked directory, but the four tables it holds are
+# 2-10 MB each -- above the "analysis tables under a few MB" rule. They are
+# rebuilt from data/staged/ by `just features && just panel` in about 25
+# seconds, and they go to Zenodo at publication (DECISIONS.md ADR-0004).
+# What stays in git is the provenance: the manifests, the agreement rates
+# against the private benchmark, and the README that says how to rebuild.
+/data/analysis/*
+!/data/analysis/README.md
+!/data/analysis/taxas.csv
+!/data/analysis/manifest.json
+!/data/analysis/panel_manifest.json
+
 .venv/
 __pycache__/
 *.py[cod]

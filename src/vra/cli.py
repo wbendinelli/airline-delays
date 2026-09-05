@@ -173,6 +173,258 @@ def manifest(raw_dir: Path = typer.Option(None, help="Source; defaults to data/r
     )
 
 
+@app.command()
+def refs(
+    external_dir: Annotated[
+        Path | None, typer.Option(help="Reference tables; defaults to data/external.")
+    ] = None,
+) -> None:
+    """Validate data/external: provenance on every row, and the ADR sets they encode."""
+    root = repo_root()
+    target = external_dir or root / "data" / "external"
+    problems: list[str] = []
+    for path in sorted(target.glob("*.csv")):
+        problems += _check_provenance(path)
+    problems += _check_reference_tables(target)
+    for line in _reference_summary(target):
+        typer.echo(line)
+    if problems:
+        for problem in problems:
+            typer.echo(f"FAIL {problem}", err=True)
+        raise typer.Exit(code=1)
+    typer.echo("refs: every row carries source, url and confidence; ADR sets agree")
+
+
+def _check_provenance(path: Path) -> list[str]:
+    """Every row of every reference table must carry its own source, url and grade."""
+    import pandas as pd
+
+    frame = pd.read_csv(path, dtype=str, keep_default_na=False)
+    problems = []
+    for column in ("source", "url", "confidence"):
+        if column not in frame.columns:
+            problems.append(f"{path.name}: no `{column}` column")
+            continue
+        blank = int((frame[column].fillna("").str.strip() == "").sum())
+        # `url` is allowed to be blank when `source` is a computation rather than
+        # a document -- observances.csv computes Easter and cites the algorithm.
+        if blank and column != "url":
+            problems.append(f"{path.name}: {blank} rows without `{column}`")
+    return problems
+
+
+def _check_reference_tables(target: Path) -> list[str]:
+    """The CSVs must agree with the ADR constants the code compiles in."""
+    from vra import codes, groups
+
+    problems = []
+    try:
+        groups.GroupTable.load(target / "groups.csv")
+    except ValueError as exc:
+        problems.append(f"groups.csv: {exc}")
+    declared = codes.sets_from_file(target / "cause_codes.csv")
+    for name, expected in codes.ARTICLE_SETS.items():
+        if declared.get(name, ()) != tuple(sorted(expected)):
+            problems.append(
+                f"cause_codes.csv: article set {name} is {declared.get(name)}, "
+                f"ADR-0005 declares {tuple(sorted(expected))}"
+            )
+    for name, expected_codes in codes.CATEGORIES.items():
+        found = codes.categories_from_file(target / "cause_codes.csv").get(name, ())
+        if found != tuple(sorted(expected_codes)):
+            problems.append(
+                f"cause_codes.csv: category {name} is {found}, ADR-0005 declares {tuple(sorted(expected_codes))}"
+            )
+    return problems
+
+
+def _reference_summary(target: Path) -> list[str]:
+    import pandas as pd
+
+    out = []
+    for path in sorted(target.glob("*.csv")):
+        frame = pd.read_csv(path, dtype=str, keep_default_na=False)
+        grades = ""
+        if "confidence" in frame.columns:
+            counts = frame["confidence"].value_counts().to_dict()
+            grades = "  " + " ".join(f"{grade}={count}" for grade, count in sorted(counts.items()))
+        out.append(f"{path.name:<20} {len(frame):>6,d} rows{grades}")
+    return out
+
+
+@app.command()
+def features(
+    staged_dir: Annotated[
+        Path | None, typer.Option(help="Source; defaults to data/staged.")
+    ] = None,
+    out_dir: Annotated[
+        Path | None, typer.Option(help="Destination; defaults to data/analysis.")
+    ] = None,
+    year_from: Annotated[int | None, typer.Option("--from", help="First year.")] = None,
+    year_to: Annotated[int | None, typer.Option("--to", help="Last year.")] = None,
+    legacy_missing_actual_as_zero: Annotated[
+        bool,
+        typer.Option(help="ADR-0012: count a realised flight with no actual time as on schedule."),
+    ] = True,
+) -> None:
+    """Build the group x route x month fact table and its city projections."""
+    from vra import features as features_mod
+    from vra import panel as panel_mod
+
+    root = repo_root()
+    analysis = out_dir or root / "data" / "analysis"
+    result = features_mod.build_fact(
+        staged_dir or root / "data" / "staged",
+        analysis,
+        root / "data" / "derived",
+        years=_years(year_from, year_to) if year_from and year_to else None,
+        groups_path=root / "data" / "external" / "groups.csv",
+        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+    )
+    typer.echo(
+        f"fact: {result.fact_rows:,d} cells over {len(result.years)} years in {result.seconds:.1f}s"
+    )
+    typer.echo("realised flights with no actual time, per year (ADR-0012):")
+    for row in result.missing_actual_by_year.to_dict("records"):
+        share = row["sh_arr_missing"]
+        typer.echo(
+            f"  {row['year']}: {row['arr_missing_actual']:>8,d} of {row['realized']:>8,d}"
+            f"  ({share:.1%})"
+            if share is not None
+            else f"  {row['year']}: n/a"
+        )
+    import pandas as pd
+
+    fact = pd.read_parquet(analysis / "fact_group_route_month.parquet")
+    city = panel_mod.city_month(
+        fact,
+        pd.read_parquet(root / "data" / "derived" / "node_day_hour.parquet"),
+        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+    )
+    airline_city = features_mod.add_hub(
+        features_mod.aggregate(
+            fact,
+            "airline_city_month",
+            legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        )
+    )
+    features_mod.write_table(features_mod.slim(city), analysis / "city_month.parquet")
+    features_mod.write_table(
+        features_mod.slim(airline_city), analysis / "airline_city_month.parquet"
+    )
+    typer.echo(f"city_month: {len(city):,d} rows; airline_city_month: {len(airline_city):,d} rows")
+    typer.echo(panel_mod.capacity_note(root / "data" / "external"))
+
+
+@app.command()
+def panel(
+    analysis_dir: Annotated[
+        Path | None, typer.Option(help="Fact table location; defaults to data/analysis.")
+    ] = None,
+    legacy_missing_actual_as_zero: Annotated[
+        bool, typer.Option(help="ADR-0012 convention; True reproduces the benchmark.")
+    ] = True,
+    panel_nodes_only: Annotated[
+        bool, typer.Option(help="Restrict to the 27 nodes of ADR-0001.")
+    ] = True,
+) -> None:
+    """Build the public route-month panel from the fact table."""
+    from vra import panel as panel_mod
+
+    root = repo_root()
+    _, result = panel_mod.build_panel(
+        analysis_dir or root / "data" / "analysis",
+        root / "data" / "derived",
+        external_dir=root / "data" / "external",
+        legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
+        panel_nodes_only=panel_nodes_only,
+    )
+    assert result is not None
+    typer.echo(
+        f"panel: {result.rows:,d} route-months x {result.columns} columns in "
+        f"{result.seconds:.1f}s -> {result.parquet.name} "
+        f"({result.parquet.stat().st_size / 1e6:.1f} MB) and "
+        f"{result.csv.name} ({result.csv.stat().st_size / 1e6:.1f} MB)"
+    )
+
+
+def _built_layers(root: Path) -> dict[str, list]:
+    """Registry entries for every table that currently exists on disk."""
+    import pandas as pd
+
+    from vra import registry
+
+    analysis = root / "data" / "analysis"
+    layers: dict[str, list] = {"staged": list(registry.STAGED)}
+    for layer, filename in (
+        ("fact", "fact_group_route_month.parquet"),
+        ("city", "city_month.parquet"),
+        ("airline_city", "airline_city_month.parquet"),
+        ("panel", "panel_route_month.parquet"),
+    ):
+        path = analysis / filename
+        if path.exists():
+            frame = pd.read_parquet(path)
+            layers[layer] = registry.describe_frame(frame, layer)
+    return layers
+
+
+@app.command()
+def dictionary(
+    out: Annotated[
+        Path | None, typer.Option(help="Destination; defaults to docs/dictionary.md.")
+    ] = None,
+) -> None:
+    """Generate docs/dictionary.md from the registry. Never edit it by hand."""
+    from vra import registry
+
+    root = repo_root()
+    layers = _built_layers(root)
+    target = out or root / "docs" / "dictionary.md"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(registry.dictionary_markdown(layers), encoding="utf-8")
+    total = sum(len(columns) for columns in layers.values())
+    typer.echo(f"dictionary: {total} columns across {len(layers)} layers -> {target}")
+
+
+@app.command()
+def datapackage(
+    out: Annotated[
+        Path | None, typer.Option(help="Destination; defaults to datapackage.json.")
+    ] = None,
+) -> None:
+    """Generate datapackage.json (Frictionless v2) from the registry."""
+    from vra import registry
+
+    root = repo_root()
+    layers = _built_layers(root)
+    paths = {
+        "fact": (
+            "fact_group_route_month",
+            "data/analysis/fact_group_route_month.parquet",
+            ["ym", "route", "group"],
+        ),
+        "city": ("city_month", "data/analysis/city_month.parquet", ["ym", "node"]),
+        "airline_city": (
+            "airline_city_month",
+            "data/analysis/airline_city_month.parquet",
+            ["ym", "node", "group"],
+        ),
+        "panel": ("panel_route_month", "data/analysis/panel_route_month.parquet", ["route", "ym"]),
+    }
+    resources = [
+        registry.resource(name, path, layers[layer], key)
+        for layer, (name, path, key) in paths.items()
+        if layer in layers
+    ]
+    target = out or root / "datapackage.json"
+    target.write_text(
+        json.dumps(registry.datapackage(resources), indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    typer.echo(f"datapackage: {len(resources)} resources -> {target}")
+
+
 def main() -> None:
     app()
 

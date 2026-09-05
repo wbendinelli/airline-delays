@@ -22,8 +22,8 @@ differences" section for what does not close yet.
    tested for additivity) and assembled into the replication panel
    (`panel.py`, the layered design of the archive's `banco_17_final.py`).
 4. **Replication** (`just replicate`) — Tables 2-7 of Bendinelli, Bettini &
-   Oliveira (2016) from public data only (`replication/tabela2.py` through
-   `tabela7.py`); `replication/gabarito/` scores the result against the
+   Oliveira (2016) from public data only (`replication/table2.py` through
+   `table7.py`); `replication/gabarito/` scores the result against the
    private benchmark locally and commits only the agreement rate.
 5. **Prediction** (`just ml`) — the flight-level dataset, a temporal split
    and a rolling-origin evaluation over 2006-2013 (ADR-0009),

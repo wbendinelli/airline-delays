@@ -517,7 +517,9 @@ def main(argv: list[str] | None = None) -> int:
             f"{values['within_half_se']}/{values['n_coefficients']} within 0.5 s.e., "
             f"median {values['median_difference_in_se']:.3f} s.e."
         )
-    print(f"wrote {args.outdir or (REPORT_DIR / args.source)} in {output['results']['meta']['seconds']} s")
+    print(
+        f"wrote {args.outdir or (REPORT_DIR / args.source)} in {output['results']['meta']['seconds']} s"
+    )
     return 0
 
 

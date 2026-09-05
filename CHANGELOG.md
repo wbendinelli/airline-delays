@@ -10,6 +10,83 @@ version numbers, mark progress.
 
 ### Added
 
+- Feature and panel layer (`src/vra/{groups,codes,hhi,congestion,hub,features,panel}.py`,
+  `sql/views.sql`): `vra features` builds the canonical fact table
+  `group x route x month` over the replication universe -- 166,203 cells, 87
+  columns, one pass per year over the 13.6 M staged legs in about 12 s -- plus
+  the city-month and airline-city-month projections; `vra panel` assembles the
+  public route-month panel (31,760 route-months x 228 columns over the 27 nodes
+  of ADR-0001) with the article's own column names, the declared variants and
+  the new feature families. `aggregate(fact, grain)` is the only path to a
+  coarser grain and is tested for additivity against a direct count from the
+  flights (ADR-0004); the same check ships as the `v_check_additivity` view and
+  returns zero rows on the full series. New definitions: dated airline groups
+  and the four classes of ADR-0011 (`groups.py`), the article's three
+  justification sets alongside the ADR-0005 taxonomy (`codes.py`), flight-share
+  concentration with a passenger-weighted placeholder that returns null until
+  ANAC's traffic data exist (`hhi.py`), the ADR-0007 p90 congestion proxy
+  (`congestion.py`), and a hub score with the volume floors that stop a
+  four-flight regional from outranking Gol in Rio (`hub.py`). `vra refs`
+  validates `data/external` row by row against the ADRs the tables encode.
+
+- `legacy_missing_actual_as_zero` (ADR-0012) in `delays.effective_delay_min` /
+  `effective_delay_sql` and threaded through `features` and `panel`: `True` for
+  the replication panel, `False` for the prediction layer. The fact table stays
+  convention-free -- it carries both the observed and the missing-actual counts
+  -- and the flag selects the **denominator** of every proportion and mean,
+  never a count and never a sum, which the test suite pins. Per-year share of
+  realised flights with no actual time, from the full series: 80.1% (2000)
+  falling to 59.2% (2007), back to 77.7% (2009), then 0.01% or less from 2010
+  on, when the raw layout changed.
+
+- Benchmark comparison (`replication/gabarito/compare.py`, the only reader of
+  `AIRLINE_DELAYS_PRIVATE_DIR`): writes `data/analysis/taxas.csv` and the
+  generated block of `docs/declared-differences.md` with agreement rates,
+  median and p90 absolute differences and row counts -- statistics only, with a
+  structural guard that refuses to write anything else. Measured on 24,929
+  comparable route-months: `maxalccfu`, `olccfu` and `dlccfu` at 1.000, `f` at
+  0.953 and `fscb_prdelarr` at 0.649 on the stable-vintage half against the
+  0.975 and 0.651 the earlier reconstruction reported from the 2019 vintage of
+  the raw files. `taxas.csv` reports both a headline rate and a
+  `rate_stable_vintage`, because the shortfall is the raw files having changed
+  since 2019, not the definitions: agreement on `f` is 0.94-0.97 in the three
+  quietest quartiles of vintage drift and 0.74 in the noisiest, correlation
+  -0.45.
+
+- Generated documentation: `docs/dictionary.md` (518 columns across five layers)
+  and `datapackage.json` (Frictionless v2, four resources) are produced from
+  `src/vra/registry.py` by `vra dictionary` and `vra datapackage` and are never
+  hand-edited. The registry gained entries for every column of the fact, city,
+  airline-city and panel layers, generated from one description resolver and
+  checked in both directions against the tables actually built.
+
+- Research note `docs/notes/features.md` (Portuguese) and the panel section of
+  `docs/declared-differences.md`: the vintage effect, the FSC class against the
+  article's FSC group set, the two delay conventions, and what the VRA cannot
+  produce.
+
+- Replication layer (`replication/`): Tables 2-7 of Bendinelli, Bettini &
+  Oliveira (2016) reproduced column by column. `common.py` holds the `Source`
+  switch (private benchmark through `AIRLINE_DELAYS_PRIVATE_DIR`, or the public
+  `data/analysis/panel_route_month.parquet` once it exists), the do-files'
+  sample filters, the regressor and instrument lists, the rebuilt route, time
+  and seasonality dummies, and the HAC settings; `kp.py` implements the
+  Kleibergen-Paap rk LM and rk Wald F and the Cragg-Donald Wald, which no Python
+  package provides; `published.py` parses the published numbers out of the
+  article text into `published.json`; `table2.py` through `table7.py` are one
+  module per published table; `sensitivity.py` is the ADR-0008 grid; `run.py`
+  writes `reports/replication/{results,summary,sensitivity}.json` and
+  `tables.md`. `just replicate [private]` runs it. Report source
+  `reports/replication.typ` (Portuguese), research note
+  `docs/notes/replication.md` (Portuguese), divergences in
+  `docs/declared-differences.md`. Tests: `tests/test_replication_kp.py` (the
+  i.i.d. collapse of rk Wald onto Cragg-Donald and of rk LM onto Anderson, plus
+  a `gabarito`-marked regression test against the published values) and
+  `tests/test_replication_public.py` (the whole public path on a synthetic panel
+  built to the published contract). Measured on the benchmark: 302 of 306
+  coefficients agree in sign, 259 sit within half a published standard error,
+  and no Hansen J changes its verdict.
+
 - Data layer (`src/vra/{io,stage,keys,universe,delays,registry,cli}.py`,
   `scripts/{fetch,make_fixture,verify_reconcile}.py`): `vra fetch` downloads
   the 168 monthly ANAC VRA CSVs for 2000-2013 from the SIROS directory
