@@ -66,9 +66,9 @@ close yet.
    `reports/README.md`.
 7. **Publication on Zenodo** (`just publish`) — **pending.** Deposit the
    raw snapshot and the prepared data, mint a DOI, update `CITATION.cff`
-   and the README badges (today's DOI badge points at a placeholder,
-   `zenodo.XXXXXXX`), and generate `datapackage.json` with `id` set to
-   that DOI. Blocked on nothing technical — the licence read of ADR-0000
+   and the README badge (which today reads "DOI pending Zenodo deposit" and
+   links here, rather than resolving a placeholder), and generate
+   `datapackage.json` with `id` set to that DOI. Blocked on nothing technical — the licence read of ADR-0000
    already supports redistribution — but not yet done. `just publish`
    itself is still the placeholder recipe.
 
@@ -114,8 +114,34 @@ close yet.
   public fixture that lets it run in CI, and building one (a small
   synthetic panel with known KP statistics) has not been attempted.
 - **Zenodo deposit** (phase 7) — see above; also the sole remaining step
-  before the README's DOI badge and `datapackage.json`'s `id` stop being
-  placeholders.
+  before the README's DOI badge stops reading "pending Zenodo deposit" and
+  `datapackage.json` gains an `id`. Neither carries a placeholder any more:
+  the descriptor omits `id` and flags `pending_doi: true`, and `CITATION.cff`
+  says in a comment why it has no `doi:` (audit 2026-09-05, M-5). Minting the
+  DOI means passing it to `registry.datapackage(doi=...)`, regenerating with
+  `uv run vra datapackage`, and adding `doi:` to `CITATION.cff`.
+- **`just replicate` writes its own wall time into its output** (audit
+  2026-09-05, m-4) — `reports/replication/<source>/results.json` and
+  `tables.md` carry `meta.seconds`, so a rerun diffs against the committed
+  artefact by that one measured value and nothing else. Either stop stamping
+  the measured time into a tracked file or move it to an untracked sidecar;
+  neither has been decided. `uv run python -m replication.run --rescore`
+  rebuilds the derived files without re-measuring, which is a workaround, not
+  the fix.
+- **Manifest commit stamps trail HEAD** (audit 2026-09-05, m-7) —
+  `data/derived/ml/manifest.json` and `reports/prediction/*.json` stamp the
+  commit that was HEAD when they were generated, which is by construction the
+  commit *before* the one that contains them; `data/staged/manifest.json`
+  additionally uses a 40-character SHA where the rest use 7. No stamp is
+  `UNCOMMITTED`, so the integrity requirement holds, but a reader cannot map an
+  artefact onto the commit that ships it. Fixing it properly needs a
+  post-commit amend step or a two-phase commit, neither of which is worth the
+  machinery yet; normalising the SHA length is a smaller, separate change.
+- **`datapackage.json` describes 5 resources against the dictionary's 6
+  layers** (audit 2026-09-05, m-9) — the staged-flights layer has no resource
+  entry. It is the one layer that is neither committed nor rebuilt by a single
+  documented command from a committed input, so what its `path` should say is a
+  real question, not an oversight; deciding it is the work.
 
 ## Didactic modules
 

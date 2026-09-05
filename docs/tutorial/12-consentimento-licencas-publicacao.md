@@ -43,12 +43,22 @@ Não obtendo as autorizações que faltavam — evitando precisar delas.
 grep -n "no-private-data" .pre-commit-config.yaml
 ```
 
-**Número esperado.** Duas ocorrências — o `id` do gancho e seu `name`
-(`.pre-commit-config.yaml`). O corpo do gancho barra qualquer arquivo
-staged que contenha `proj18`, `labtar`, `nectarbase`, termine em `.dta`,
-ou esteja sob `data/raw/`, `data/staged/`, `data/derived/` ou
-`data/private/` (exceto os `README.md` e `manifest.json` que essas pastas
-têm permissão de carregar).
+**Número esperado.** Cinco ocorrências — o `id` e o `name` de cada um dos
+**dois** ganchos, mais a mensagem de erro no corpo do primeiro
+(`.pre-commit-config.yaml`). São dois porque um só não bastou. O primeiro,
+`no-private-data`, barra qualquer arquivo *staged cujo caminho* contenha
+`proj18`, `labtar`, `nectarbase`, termine em `.dta`, ou esteja sob
+`data/raw/`, `data/staged/`, `data/derived/` ou `data/private/` (exceto os
+`README.md` e `manifest.json` que essas pastas têm permissão de carregar).
+Nomes de caminho, porém, não são o único vazamento possível: a auditoria de
+2026-09-05 (`docs/audit/2026-09-05-pre-publication.md`, achado B-2) encontrou
+30 linhas de `data/external/*.csv` publicando URLs `file:///` absolutas para o
+acervo privado do autor — caminhos dentro do *conteúdo* de arquivos cujos
+nomes eram inocentes. O segundo gancho,
+`no-private-data-content`, lê os blobs staged e roda
+[`scripts/check_no_private_paths.py`](../../scripts/check_no_private_paths.py),
+o mesmo script que `tests/test_no_private_paths.py` roda sobre toda a árvore
+versionada — de modo que gancho e teste não podem divergir.
 
 ## Exercício
 

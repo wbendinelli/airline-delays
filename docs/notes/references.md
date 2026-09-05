@@ -10,7 +10,8 @@ este trabalho; esta nota documenta a evidência por trás de cada linha, não
 repete a decisão em si.
 
 Fontes de partida, todas lidas na íntegra antes de qualquer tabela ser
-escrita: `DECISIONS.md`, `/Users/wbendinelli/Documents/pesquisa-acervo/_analises/fontes-vra-anac.md`,
+escrita: `DECISIONS.md`, `fontes-vra-anac.md` (nota de pesquisa privada, não
+redistribuída),
 o texto da IAC 1504 (`IAC1504.txt`, 30/abr/2000), e dois relatórios do
 acervo (`bases.md` e `avaliacao-vra-como-fonte.md`) para a lista de códigos
 de empresas aéreas. Convenção de grau: **A** = fonte primária lida

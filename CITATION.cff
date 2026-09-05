@@ -9,6 +9,13 @@ authors:
     given-names: "William Eduardo"
     email: "wbendinelli@gmail.com"
     affiliation: "Universidade de São Paulo"
+# No `doi:` and no `identifiers:` entry for this software: the Zenodo deposit
+# has not been made, and a placeholder DOI in machine-readable citation metadata
+# is a dead identifier that harvesters would resolve (audit 2026-09-05, M-5).
+# `datapackage.json` omits its `id` for the same reason and carries
+# `pending_doi: true`. Both flip together once Zenodo mints one -- see
+# ROADMAP.md, "Open items". The `doi:` under `preferred-citation` below is the
+# published *article*'s DOI and is real.
 url: "https://github.com/wbendinelli/airline-delays"
 repository-code: "https://github.com/wbendinelli/airline-delays"
 license: MIT

@@ -16,6 +16,25 @@ Source: **private**. HAC: Bartlett kernel, bandwidth 4 in the `linearmodels` con
 | Table 6 - Estimation results (OLS) | 60 | 59/60 | 51/60 (85%) | 0.120 | 0.941 | 0.971 |
 | Table 7 - Estimation results (departures) | 60 | 59/60 | 51/60 (85%) | 0.241 | 0.660 | 0.941 |
 
+### HHI sign inversion, OLS (Table 6) against 2SGMM (Table 3)
+
+12 comparisons (2 HHI terms x 6 columns). An inversion occurs in **4** of them in the published tables and in **4** here; the published inversion replicates in **4** (columns 1, 2). The weaker statement -- replication and article agree on *whether* the sign flips -- holds in **12** of 12.
+
+| Column | Regressand | Variable | OLS pub | 2SGMM pub | inverted pub | OLS rep | 2SGMM rep | inverted rep |
+|---|---|---|---:|---:|---|---:|---:|---|
+| (1) | ODDS | `rthhi` | -0.2086 | 0.8050 | yes | -0.2080 | 0.8843 | yes |
+| (1) | ODDS | `maxcthhi` | 0.1614 | -1.4772 | yes | 0.1540 | -1.4551 | yes |
+| (2) | ODDS | `rthhi` | -0.3126 | 0.8192 | yes | -0.2914 | 0.9028 | yes |
+| (2) | ODDS | `maxcthhi` | 0.1057 | -1.5144 | yes | 0.0938 | -1.4839 | yes |
+| (3) | MINS | `rthhi` | 3.3899 | 30.6290 | no | 3.2388 | 25.0753 | no |
+| (3) | MINS | `maxcthhi` | -2.4930 | -19.4278 | no | -1.5739 | -16.5621 | no |
+| (4) | MINS | `rthhi` | 2.4833 | 30.0753 | no | 2.3997 | 24.7541 | no |
+| (4) | MINS | `maxcthhi` | -2.9092 | -19.1045 | no | -2.0808 | -16.0126 | no |
+| (5) | MINS > 15 | `rthhi` | 3.2958 | 31.9607 | no | 3.1446 | 25.8908 | no |
+| (5) | MINS > 15 | `maxcthhi` | -2.9449 | -20.9849 | no | -2.0368 | -17.9201 | no |
+| (6) | MINS > 15 | `rthhi` | 2.3998 | 31.5567 | no | 2.3180 | 25.7167 | no |
+| (6) | MINS > 15 | `maxcthhi` | -3.3809 | -20.6986 | no | -2.5603 | -17.3922 | no |
+
 ## Table 2 - Descriptive statistics
 
 Sample: 20,630 observations, 190 routes. Correlation triangle: 91 cells compared, median absolute difference 0.002, maximum 0.012.

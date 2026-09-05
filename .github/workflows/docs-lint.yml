@@ -9,7 +9,11 @@ name: Docs lint
 on:
   push:
     branches: [main]
-    paths: ["README.md", ".sapians-repo.yml", ".sapians-doclint-baseline.json"]
+    # No .sapians-doclint-baseline.json here: this repository has none (the
+    # doclint runs clean without one), and listing a file that does not exist
+    # only makes the filter look like it covers something it cannot
+    # (audit 2026-09-05, m-11).
+    paths: ["README.md", ".sapians-repo.yml"]
   pull_request:
   workflow_dispatch:
 

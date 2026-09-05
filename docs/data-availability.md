@@ -122,7 +122,7 @@ from the VRA (which records operations, not tickets sold) — the original
 article's `yield`, `fare`, `nyield`, `nfare` and the `pax_rev` column, and
 the tariff-base–derived `lcc`/`pres_glo`/`pres_azu`/`pres_tam` presence
 dummies, come from here
-(`/Users/wbendinelli/Documents/pesquisa-acervo/01-atrasos-concentracao/_analises/avaliacao-vra-como-fonte.md`,
+(the author's research notes, private and not redistributed;
 class D). This repository's own `lcc`/`pres_*` columns are computed from
 VRA *operation* instead, and the two sources disagree on about 11% of
 route-months (`docs/declared-differences.md` §5) — a declared difference,
@@ -273,8 +273,8 @@ Christi, computed from Easter Sunday, not looked up).
 Aeronáutica), specifically Alessandro V. M. Oliveira, the original
 article's co-author, orientador and the author of the underlying `.ado`
 estimation code. Full inventory and consent map in the archive review's
-`avaliacao-8-criterios.md` §C2, §C7 (external to this repository, in
-`pesquisa-acervo/01-atrasos-concentracao/_analises/`).
+`avaliacao-8-criterios.md` §C2, §C7 (external to this repository, in the
+author's private research archive).
 
 **How to obtain.** Not public. It is the laboratory's own final-panel file
 and two of its intermediate research bases, reached in this project only

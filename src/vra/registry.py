@@ -2395,12 +2395,33 @@ SOURCES: list[dict[str, str]] = [
 ]
 
 
-def datapackage(resources: list[dict[str, Any]], doi: str = "10.5281/zenodo.PENDING") -> dict:
-    """A Frictionless v2 datapackage descriptor, generated from the registry."""
-    return {
+def datapackage(resources: list[dict[str, Any]], doi: str | None = None) -> dict:
+    """A Frictionless v2 datapackage descriptor, generated from the registry.
+
+    ``id`` is **omitted** until a DOI exists. Frictionless makes the field
+    optional, and a placeholder there is worse than nothing: harvesters read the
+    descriptor as machine-readable metadata and would resolve
+    ``10.5281/zenodo.PENDING`` as a real, dead identifier (audit 2026-09-05,
+    M-5). The custom ``pending_doi`` flag says the omission is deliberate and
+    where the deposit stands; pass ``doi=`` once Zenodo has minted one and both
+    fields flip together.
+    """
+    identity: dict[str, Any] = (
+        {"id": f"https://doi.org/{doi}"}
+        if doi
+        else {
+            "pending_doi": True,
+            "pending_doi_note": (
+                "No DOI has been minted yet; `id` is omitted rather than filled with a "
+                "placeholder that would resolve to nothing. The Zenodo deposit is "
+                "tracked in ROADMAP.md, 'Open items'."
+            ),
+        }
+    )
+    document: dict[str, Any] = {
         "profile": "data-package",
         "name": "airline-delays",
-        "id": f"https://doi.org/{doi}",
+        **identity,
         "title": "Brazilian airline delays, reconstructed from ANAC's VRA (2000-2013)",
         "description": (
             "Route-month panel and group x route x month fact table reconstructed from "
@@ -2416,6 +2437,7 @@ def datapackage(resources: list[dict[str, Any]], doi: str = "10.5281/zenodo.PEND
         ],
         "resources": resources,
     }
+    return document
 
 
 def resource(

@@ -1,7 +1,8 @@
 {
   "profile": "data-package",
   "name": "airline-delays",
-  "id": "https://doi.org/10.5281/zenodo.PENDING",
+  "pending_doi": true,
+  "pending_doi_note": "No DOI has been minted yet; `id` is omitted rather than filled with a placeholder that would resolve to nothing. The Zenodo deposit is tracked in ROADMAP.md, 'Open items'.",
   "title": "Brazilian airline delays, reconstructed from ANAC's VRA (2000-2013)",
   "description": "Route-month panel and group x route x month fact table reconstructed from ANAC's Voo Regular Ativo flight-leg records, with the columns of Bendinelli, Bettini & Oliveira (2016) reproduced under declared definitions.",
   "homepage": "https://github.com/wbendinelli/airline-delays",

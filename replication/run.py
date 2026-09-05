@@ -162,6 +162,95 @@ def score(columns: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+HHI_VARIABLES = ("rthhi", "maxcthhi")
+
+
+def hhi_sign_inversions(results: dict[str, Any]) -> dict[str, Any]:
+    """Count where OLS and 2SGMM carry opposite signs on the two HHI terms.
+
+    The article's central argument is that instrumenting flips the sign of the
+    concentration terms: OLS says concentration reduces delay, 2SGMM says the
+    opposite. Table 6 is the OLS specification, Table 3 the 2SGMM one, six
+    columns each, two HHI variables per column -- twelve comparisons.
+
+    Two different statements can be made about those twelve, and the README
+    used to conflate them (audit 2026-09-05, M-1):
+
+    ``n_inverted_published`` / ``n_inverted_replicated``
+        comparisons where an inversion actually occurs.
+    ``n_pattern_agrees``
+        comparisons where the replication reproduces the published *pattern* --
+        an inversion where the article has one, none where it has none. This is
+        the weaker claim, and it is the one that holds twelve times out of
+        twelve.
+    ``n_inversion_replicates``
+        comparisons where the article inverts **and** the replication inverts.
+        This is the strong claim, and it is what "the sign inversion
+        replicates" means.
+
+    Nothing here is a definition: the sign of a coefficient is read off
+    ``results.json`` as estimated. A coefficient that is exactly zero, or
+    missing on either side, is skipped and counted in ``n_skipped``.
+    """
+
+    def sign(value: Any) -> int | None:
+        if value is None or not np.isfinite(value) or value == 0:
+            return None
+        return 1 if value > 0 else -1
+
+    detail: list[dict[str, Any]] = []
+    skipped = 0
+    ols = results.get("table6")
+    gmm = results.get("table3")
+    if not (ols and gmm):
+        return {
+            "available": False,
+            "reason": "needs both table3 (2SGMM) and table6 (OLS)",
+            "n_comparisons": 0,
+        }
+    for key in sorted(gmm["published"]["columns"], key=int):
+        for variable in HHI_VARIABLES:
+            cell: dict[str, Any] = {"column": key, "variable": variable}
+            for side, block in (("published", "published"), ("replicated", "replicated")):
+                ols_b = ols[block]["columns"].get(key, {}).get("b", {}).get(variable)
+                gmm_b = gmm[block]["columns"].get(key, {}).get("b", {}).get(variable)
+                ols_sign, gmm_sign = sign(ols_b), sign(gmm_b)
+                cell[side] = {
+                    "ols": ols_b,
+                    "gmm": gmm_b,
+                    "inverted": None
+                    if ols_sign is None or gmm_sign is None
+                    else ols_sign != gmm_sign,
+                }
+            if cell["published"]["inverted"] is None or cell["replicated"]["inverted"] is None:
+                skipped += 1
+            cell["pattern_agrees"] = (
+                cell["published"]["inverted"] is not None
+                and cell["published"]["inverted"] == cell["replicated"]["inverted"]
+            )
+            cell["inversion_replicates"] = (
+                cell["published"]["inverted"] is True and cell["replicated"]["inverted"] is True
+            )
+            cell["regressand"] = gmm["published"]["columns"].get(key, {}).get("regressand")
+            detail.append(cell)
+    return {
+        "available": True,
+        "ols_table": "table6",
+        "gmm_table": "table3",
+        "variables": list(HHI_VARIABLES),
+        "n_comparisons": len(detail),
+        "n_skipped": skipped,
+        "n_inverted_published": sum(c["published"]["inverted"] is True for c in detail),
+        "n_inverted_replicated": sum(c["replicated"]["inverted"] is True for c in detail),
+        "n_inversion_replicates": sum(c["inversion_replicates"] for c in detail),
+        "n_pattern_agrees": sum(c["pattern_agrees"] for c in detail),
+        "columns_with_inversion": sorted(
+            {c["column"] for c in detail if c["inversion_replicates"]}, key=int
+        ),
+        "detail": detail,
+    }
+
+
 def compare_table2(published: dict[str, Any], replicated: dict[str, Any]) -> dict[str, Any]:
     """Table 2 is descriptives: compare the four univariate rows variable by variable."""
     rows: dict[str, dict[str, Any]] = {}
@@ -207,7 +296,7 @@ def _fmt(value: Any, digits: int = 4) -> str:
 
 
 def write_markdown(results: dict[str, Any], summary: dict[str, Any], grid: dict[str, Any]) -> str:
-    """`reports/replication/tables.md`: published x replicated x difference, table by table."""
+    """`reports/replication/<source>/tables.md`: published x replicated x difference."""
     meta = results["meta"]
     lines: list[str] = [
         "# Replication of Tables 2-7 -- published against replicated",
@@ -242,7 +331,7 @@ def write_markdown(results: dict[str, Any], summary: dict[str, Any], grid: dict[
         "|---|---:|---:|---:|---:|---:|---:|",
     ]
     for name, values in summary.items():
-        if name == "table2":
+        if name not in TABLE_TITLES or name == "table2":
             continue
         lines.append(
             f"| {TABLE_TITLES[name]} | {values['n_coefficients']} | "
@@ -253,6 +342,41 @@ def write_markdown(results: dict[str, Any], summary: dict[str, Any], grid: dict[
             f"{values['max_difference_in_se']:.3f} | "
             f"{values['median_se_ratio']:.3f} |"
         )
+
+    hhi = summary.get("hhi_sign_inversions", {})
+    if hhi.get("available"):
+        lines += [
+            "",
+            "### HHI sign inversion, OLS (Table 6) against 2SGMM (Table 3)",
+            "",
+            (
+                f"{hhi['n_comparisons']} comparisons "
+                f"({len(hhi['variables'])} HHI terms x "
+                f"{hhi['n_comparisons'] // len(hhi['variables'])} columns). An inversion "
+                f"occurs in **{hhi['n_inverted_published']}** of them in the published "
+                f"tables and in **{hhi['n_inverted_replicated']}** here; the published "
+                f"inversion replicates in **{hhi['n_inversion_replicates']}** "
+                f"(columns {', '.join(hhi['columns_with_inversion']) or 'none'}). "
+                f"The weaker statement -- replication and article agree on *whether* the "
+                f"sign flips -- holds in **{hhi['n_pattern_agrees']}** of "
+                f"{hhi['n_comparisons']}."
+            ),
+            "",
+            (
+                "| Column | Regressand | Variable | OLS pub | 2SGMM pub | inverted pub | "
+                "OLS rep | 2SGMM rep | inverted rep |"
+            ),
+            "|---|---|---|---:|---:|---|---:|---:|---|",
+        ]
+        for cell in hhi["detail"]:
+            lines.append(
+                f"| ({cell['column']}) | {cell['regressand']} | "
+                f"`{cell['variable']}` | "
+                f"{_fmt(cell['published']['ols'])} | {_fmt(cell['published']['gmm'])} | "
+                f"{_fmt(cell['published']['inverted'])} | "
+                f"{_fmt(cell['replicated']['ols'])} | {_fmt(cell['replicated']['gmm'])} | "
+                f"{_fmt(cell['replicated']['inverted'])} |"
+            )
 
     if meta.get("tables_not_estimated"):
         lines += ["", "### Tables this source cannot estimate", ""]
@@ -469,6 +593,10 @@ def run(
         }
         summary[name] = score(comparison)
 
+    # The article's headline: does instrumenting flip the sign of the two HHI
+    # terms, and does that flip replicate? Computed, never typed (M-1).
+    summary["hhi_sign_inversions"] = hhi_sign_inversions(results)
+
     grid = (
         sensitivity.run(source, sample=arrival_sample)
         if with_sensitivity
@@ -497,29 +625,73 @@ def run(
     return {"results": results, "summary": summary, "sensitivity": grid}
 
 
+def rescore(outdir: Path) -> dict[str, Any]:
+    """Recompute the derived scorecard from an existing ``results.json``.
+
+    Everything in ``summary.json`` and ``tables.md`` is a pure function of
+    ``results.json`` and ``sensitivity.json``, so a reader who cannot estimate
+    (no private panel) can still regenerate the derived numbers from the
+    committed estimates -- and a new derived statistic, such as
+    ``hhi_sign_inversions``, can be added to the committed artefacts without
+    re-estimating and without the measured wall time drifting. Nothing is
+    re-estimated here; ``results.json`` is read, never written.
+    """
+    results = json.loads((outdir / "results.json").read_text(encoding="utf-8"))
+    grid = json.loads((outdir / "sensitivity.json").read_text(encoding="utf-8"))
+    summary: dict[str, Any] = {}
+    for name in REGRESSION_TABLES:
+        block = results.get(name)
+        if block and "comparison" in block:
+            summary[name] = score(block["comparison"])
+    summary["hhi_sign_inversions"] = hhi_sign_inversions(results)
+    (outdir / "summary.json").write_text(_dump(summary), encoding="utf-8")
+    (outdir / "tables.md").write_text(write_markdown(results, summary, grid), encoding="utf-8")
+    return {"results": results, "summary": summary, "sensitivity": grid}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Replicate Tables 2-7 and write the report inputs")
     parser.add_argument("--source", default=Source.PRIVATE.value, choices=[s.value for s in Source])
     parser.add_argument("--tables", default=None, help="comma-separated, e.g. table2,table3")
     parser.add_argument("--outdir", default=None, help="Defaults to reports/replication/<source>/")
     parser.add_argument("--no-sensitivity", action="store_true")
+    parser.add_argument(
+        "--rescore",
+        action="store_true",
+        help="Rebuild summary.json and tables.md from the committed results.json, without "
+        "re-estimating (needs no private panel).",
+    )
     args = parser.parse_args(argv)
     tables = args.tables.split(",") if args.tables else None
-    output = run(
-        args.source,
-        tables=tables,
-        outdir=Path(args.outdir) if args.outdir else None,
-        with_sensitivity=not args.no_sensitivity,
-    )
+    outdir = Path(args.outdir) if args.outdir else REPORT_DIR / args.source
+    if args.rescore:
+        output = rescore(outdir)
+    else:
+        output = run(
+            args.source,
+            tables=tables,
+            outdir=Path(args.outdir) if args.outdir else None,
+            with_sensitivity=not args.no_sensitivity,
+        )
     for name, values in output["summary"].items():
+        if name not in TABLE_TITLES:
+            continue
         print(
             f"{name}: {values['sign_agreement']}/{values['n_coefficients']} signs, "
             f"{values['within_half_se']}/{values['n_coefficients']} within 0.5 s.e., "
             f"median {values['median_difference_in_se']:.3f} s.e."
         )
-    print(
-        f"wrote {args.outdir or (REPORT_DIR / args.source)} in {output['results']['meta']['seconds']} s"
-    )
+    hhi = output["summary"].get("hhi_sign_inversions", {})
+    if hhi.get("available"):
+        print(
+            f"hhi sign inversion: {hhi['n_inversion_replicates']}/{hhi['n_comparisons']} "
+            f"replicate (columns {', '.join(hhi['columns_with_inversion']) or 'none'}); "
+            f"pattern agrees in {hhi['n_pattern_agrees']}/{hhi['n_comparisons']}"
+        )
+    if args.rescore:
+        print(f"rescored {outdir} from results.json (nothing re-estimated)")
+    else:
+        print(f"wrote {outdir} in {output['results']['meta']['seconds']} s")
     return 0
 
 

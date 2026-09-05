@@ -21,7 +21,9 @@ reproduced for want of ANAC's seasonal capacity declarations (ADR-0007). See
 ## Replication (Tables 2-7)
 
 Produced by `uv run python -m replication.run --source private`; the full
-side-by-side is `reports/replication/tables.md` and the Portuguese discussion is
+side-by-side is `reports/replication/private/tables.md` (and
+`reports/replication/public/tables.md` for the public source) and the Portuguese
+discussion is
 `docs/notes/replication.md`.
 
 Across the five regression tables, 306 coefficients are compared: 302 agree in
@@ -37,8 +39,8 @@ changes. What does not close:
 | 4 | **F statistic** | Not reproduced in any column | `ivreg2`'s F is the joint Wald test over all ~340 regressors under its own small-sample convention; `linearmodels` computes an analogue under a different one. Reporting it would be comparing two different quantities, so the cell is left empty rather than filled with a number that does not mean what the published one means. Every other statistics row of every table is reproduced. |
 | 5 | **Identification statistics (KP, Weak KP, Weak CD)** | Always above the published value, never below. ODDS/ODDSD columns: rk LM +3.3% to +6.4%, Weak KP +5.9% to +9.3%, Weak CD +12.6% to +13.9%. MINS/MINSD columns: rk LM +18.7% to +31.0%, Weak KP +22.9% to +35.8%, Weak CD +32.3% to +46.4% (12 columns each) | Sample (row 1). The gap is larger in the MINS columns because 3 instruments against 2 endogenous regressors is nearly exact identification, where the statistic is very sensitive to N. The implementation itself is validated independently: under i.i.d. errors the rk Wald collapses exactly to Cragg-Donald and the rk LM to Anderson (`tests/test_replication_kp.py`). |
 | 6 | **Standard errors** | Systematically smaller: median ratio 0.94 (Table 3) to 0.99 (Table 4); 51 of 60 below the published value in Table 3, range 0.79 to 1.14 | Sample (row 1) — a 5.3% larger N pushes standard errors down — plus the HAC kernel, which in `linearmodels` measures lags in row order and lets autocovariances cross route boundaries in an unbalanced panel. The panel-aware alternative is implemented (`replication/kp.hac_moment_cov`) and its effect is second-order. |
-| 7 | **Four sign disagreements out of 306** | Table 4 column 5 `dailyflncong` (+0.0007 against -0.0003), Table 5 column 2 `lcc` (-0.0280 against +0.0100), Table 6 column 6 `dailyflcong` (+0.0010 against -0.0018), Table 7 column 1 `cshare` (-0.0053 against +0.0092) | All four are coefficients the article itself reports as statistically indistinguishable from zero, and all four sit within 0.52 published standard errors of the published value. A sign flip inside the noise band is not a disagreement about a result. |
-| 8 | **Seasonality dummies `sz_*`** | Moves the headline coefficients by about 0.02-0.05 in level (Table 3 column 1 `rthhi`: 0.8843 with, 0.8661 without) | Irreducible without the `gregrun` `.ado`: `dummymonthreg` creates the 60 region x month dummies and `gregcontrols` never lists them. Resolved by approximation to the published values, not by evidence, and reported both ways in the sensitivity table (`reports/replication/sensitivity.json`). |
+| 7 | **Four sign disagreements out of 306** | Replicated against published, the same order as rows 2 and 3: Table 4 column 5 `dailyflncong` (-0.0003 against +0.0007), Table 5 column 2 `lcc` (+0.0100 against -0.0280), Table 6 column 6 `dailyflcong` (-0.0018 against +0.0010), Table 7 column 1 `cshare` (+0.0092 against -0.0053) | All four are coefficients the article itself reports as statistically indistinguishable from zero, and all four sit within 0.52 published standard errors of the published value. A sign flip inside the noise band is not a disagreement about a result. |
+| 8 | **Seasonality dummies `sz_*`** | Moves the headline coefficients by about 0.02-0.05 in level (Table 3 column 1 `rthhi`: 0.8843 with, 0.8661 without) | Irreducible without the `gregrun` `.ado`: `dummymonthreg` creates the 60 region x month dummies and `gregcontrols` never lists them. Resolved by approximation to the published values, not by evidence, and reported both ways in the sensitivity table (`reports/replication/private/sensitivity.json`). |
 | 9 | **Outlier-threshold sensitivity is unavailable on the private source** | Two of the three ADR-0008 thresholds cannot be computed | The threshold applies to flight-level delays before aggregation; the benchmark panel is delivered already aggregated under a rule its authors never documented. The rows are reported as *unavailable* rather than approximated, and fill in automatically once the public panel ships the suffixed regressand variants (`replication.common.regressand_column`). |
 
 ## The public panel cannot yet estimate the regression tables
@@ -305,15 +307,22 @@ whose carrier class in `data/external/groups.csv` is FSC, LCC or regional. For
 keeps no delay target: the null rate is not one convention but many, and IAC 1504
 art. 6.6 says that in a code-share only the operating carrier reports and the
 non-operator's leg has no effect on the indices. Measured over 2000-2009 in the
-replication universe, the null actual-arrival rate is **72.9%** for the 5,106,122
-realised flights in scope and **83.0%** for the 313,368 out of it; within the
-scope it ranges from 65.5% (`GLO`) and 66.0% (`VRG`) to 75.5% (`TAM`) and 81.0%
-(`VSP`), and among the eight largest carriers out of it from 65.0% (`PEP`) to
-92.8% (`RLE`). The sceptical reviewer's own 2005 cross-section,
+flight table the models are fitted on, the null actual-arrival rate is **72.9%**
+for the **5,106,100** realised flights in scope and **83.0%** for the **313,366**
+out of it (3,720,742 and 260,188 flights without an actual arrival time). Those
+five figures, and every other population count in this section, are quoted from
+one place: the `accounting.legacy_window` block of
+`reports/prediction/dataset.json`, printed under "Dataset (ADR-0017 accounting)"
+in `reports/prediction/results.md`. Within the
+scope the rate ranges from 65.5% (`GLO`) and 66.0% (`VRG`) to 75.5% (`TAM`) and
+81.0% (`VSP`), and among the eight largest carriers out of it from 65.0% (`PEP`)
+to 92.8% (`RLE`). The sceptical reviewer's own 2005 cross-section,
 taken over *all* flights rather than this universe, found 90-100% for foreign
 carriers and code-share legs (`docs/notes/colegiado-adr0012.md`). The generated
-table at the end of this file gives the rate by carrier and year; 260,190 of the
-out-of-scope flights have no actual arrival time.
+table at the end of this file gives the rate by carrier and year, measured over
+`data/staged/` before the flight table drops the flights whose schedule is
+unusable — which is why its totals sit 24 flights above the canonical block, and
+the only reason they differ.
 
 **The direction of the residual bias.** Reading B is a **floor on punctuality**: a
 delay that the carrier never reported counts as on time, so the pre-2010 late
@@ -381,7 +390,7 @@ Generated by `replication/gabarito/compare.py` on 2026-09-05 against 24,589 benc
 
 <!-- generated: null-actual-by-carrier -->
 
-Generated by `uv run python scripts/null_actual_by_carrier.py` on 2026-09-05 over `data/staged/`. Share of **realised** flights of the replication universe with no actual arrival time, by carrier and year, for the 10 years of the legacy layout; the 25 carriers with the most realised flights in that window. From 2010 the rate is 0.0% for every carrier. Nothing here is imputed: the cell is the share the raw files carry.
+Generated by `uv run python scripts/null_actual_by_carrier.py` on 2026-09-05 over `data/staged/`. Share of **realised** flights of the replication universe with no actual arrival time, by carrier and year, for the 10 years of the legacy layout; the 25 carriers with the most realised flights in that window. From 2010 the rate is 0.0% for every carrier. Nothing here is imputed: the cell is the share the raw files carry. Where an airline changes group inside a year, the `class` shown is the one in force in its last observed month of that year.
 
 | carrier | class | realised | 2000 | 2001 | 2002 | 2003 | 2004 | 2005 | 2006 | 2007 | 2008 | 2009 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -393,7 +402,7 @@ Generated by `uv run python scripts/null_actual_by_carrier.py` on 2026-09-05 ove
 | `TIB` | regional | 165,556 | 0.749 | 0.528 | 0.744 | 0.593 | 0.955 | 0.975 | 0.971 | 0.948 | 0.963 | 0.876 |
 | `NES` | FSC | 139,894 | 0.769 | 0.821 | 0.707 | 0.660 | 0.609 | 0.105 | 0.602 | -- | -- | -- |
 | `ONE` | FSC | 126,231 | -- | -- | -- | 0.754 | 0.639 | 0.555 | 0.540 | 0.535 | 0.642 | 0.835 |
-| `PTN` | regional | 105,247 | 0.731 | 0.747 | 0.774 | 0.796 | 0.629 | 0.595 | 0.735 | 0.886 | 0.672 | 0.743 |
+| `PTN` | FSC/regional | 105,247 | 0.731 | 0.747 | 0.774 | 0.796 | 0.629 | 0.595 | 0.735 | 0.886 | 0.672 | 0.743 |
 | `RLE` | other | 84,517 | 0.948 | 0.981 | 0.981 | 0.955 | 0.904 | 0.931 | 0.881 | 0.849 | 0.829 | 0.783 |
 | `VRN` | FSC/LCC | 80,615 | -- | -- | -- | -- | -- | -- | 0.582 | 0.478 | 0.597 | 0.749 |
 | `TTL` | regional | 72,373 | 0.829 | 0.644 | 0.747 | 0.802 | 0.717 | 0.614 | 0.685 | 0.754 | -- | -- |
@@ -411,6 +420,8 @@ Generated by `uv run python scripts/null_actual_by_carrier.py` on 2026-09-05 ove
 | `TVJ` | other | 18,309 | 0.847 | 0.955 | 0.955 | 0.923 | 0.950 | 1.000 | -- | -- | -- | -- |
 | `PLY` | other | 14,225 | -- | -- | 0.960 | 0.863 | 0.903 | 0.878 | 0.894 | 0.494 | 0.673 | -- |
 
-Reading B covers **5,106,122** realised flights of 2000-2009 (class FSC, LCC or regional). It leaves **313,368** out of scope, flown by 20 carriers whose class is `other` or unlabelled; **260,190** of those have no actual arrival time and therefore no delay target under either reading. Full detail, every carrier and every year: `reports/prediction/null_actual_by_carrier.csv`.
+Out of scope for reading B: **20** carriers whose class is `other` or unlabelled, whose empty actual time therefore stays unknown and whose flights keep no delay target under either reading. Full detail, every carrier and every year: `reports/prediction/null_actual_by_carrier.csv`.
+
+**Which population this counts.** The rows above are measured over `data/staged/`, before the flight table drops the flights whose schedule is unusable, so they run a little above the canonical accounting: 5,106,122 realised in scope and 313,368 out of it here, against the counts in `reports/prediction/dataset.json` (`accounting`). The canonical population figures — the ones this document and `README.md` quote — are that block and the matching table under "Dataset (ADR-0017 accounting)" in `reports/prediction/results.md`; this table exists for the per-carrier *rate*, which nothing else publishes (**260,190** of the out-of-scope realised flights have no actual arrival time).
 
 <!-- /generated: null-actual-by-carrier -->

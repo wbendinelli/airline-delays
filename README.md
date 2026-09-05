@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/wbendinelli/airline-delays/actions/workflows/ci.yml/badge.svg)](https://github.com/wbendinelli/airline-delays/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://img.shields.io/badge/DOI-pending%20Zenodo%20deposit-lightgrey.svg)](./ROADMAP.md)
 
 > **Tier:** `C` · **Class:** `Research`
 
@@ -90,10 +90,12 @@ years (`data/staged/manifest.json`); `features` about 11.4 seconds
 (`data/analysis/panel_manifest.json`); `replicate` (public panel) about 0.3
 seconds (`reports/replication/public/tables.md`); `replicate private`
 about 38.1 seconds (`reports/replication/private/tables.md`); `ml`
-about 2,344 seconds end to end -- 25 seconds to build the
+**2,344.2 seconds** end to end -- 24.7 seconds to build the
 10,200,560-row flight table and the rest to fit 24 models over the eight
-rolling-origin folds and the fixed split
-(`reports/prediction/results.md`). The prediction phase roughly doubled in
+rolling-origin folds and the fixed split, plus permutation importance,
+calibration and I/O, which is why the total exceeds the 2,141.7 seconds the
+fold timings add up to (`runtime` in `reports/prediction/dataset.json`, written
+by `ml/run.py`). The prediction phase roughly doubled in
 cost when ADR-0017 gave 8.7 million flights an arrival target instead of
 5.0 million.
 
@@ -159,7 +161,11 @@ Data Availability Statement, source by source; the full version, with the
 holder, how to obtain it, restrictions and cost/time for each, is
 [`docs/data-availability.md`](docs/data-availability.md). Every row of
 `data/external/*.csv` additionally carries its own `source` and `url`
-field; this table is the narrative summary of the same statement.
+field; this table is the narrative summary of the same statement. It lists
+12 of the statement's 14 sources; the two it leaves out — ANAC's seasonal
+declared-capacity bulletins (not yet collected) and its slot-coordination
+acts (two transcribed rows in `data/external/slots.csv`) — are documented in
+full there.
 
 | Source | Access | Redistributed here | Cost |
 |---|---|---|---|
@@ -170,6 +176,8 @@ field; this table is the narrative summary of the same statement.
 | BNDES/McKinsey (2010) airport-capacity study | Public PDF | One transcribed figure only (`data/external/capacity.csv`: Congonhas, 33 movements/hour post-2007), not the report itself | Free; manual-transcription time cost |
 | CADE/ANAC merger and grouping acts | Public regulatory decisions | Cited per row of `data/external/groups.csv`, not the decisions themselves | Free |
 | REDEMET / DECEA (METAR weather records) | Public via REDEMET today | Not yet integrated; the article's own weather signal comes from VRA justification codes, not METAR | Free; not yet spent |
+| OurAirports (airport geography) | Public, community-maintained mirror | Yes — the filtered Brazilian subset (`data/external/airports_br.csv`, 8,035 rows), published as public domain / CC0-equivalent | Free |
+| Federal holiday laws (Lei 662/1949, Lei 10.607/2002) | Public, `planalto.gov.br` | Yes — the derived calendar table (`data/external/holidays.csv`, 92 rows) and the computed observances (`observances.csv`), not the statutes' text | Free |
 | Private benchmark (`proj18.dta`) and laboratory bases (LABTAR, NECTAR, `vra.dta`) | Not public — laboratory-internal, 2019 vintage | **Not redistributed.** Read only from `AIRLINE_DELAYS_PRIVATE_DIR`, outside this repository; only the derived agreement rate (`data/analysis/taxas.csv`) is committed | Not applicable — declared omission, not a silent drop |
 | Infraero connections report | Not public | **Not redistributed** and not reproduced; any figure that depends on it is marked "not reproduced" in [Declared differences](#declared-differences) | Not applicable — declared omission |
 | Published article (Elsevier) | DOI only | **Not redistributed** — no accepted manuscript exists in the archive this repository was built from either | Not applicable |
@@ -230,8 +238,16 @@ instead of picking one silently (ADR-0008).
 Across the five regression tables, 306 coefficients are compared: 302
 agree in sign, 259 (85%) sit within half a published standard error, and
 the largest single gap is 0.94 published standard errors. No conclusion of
-the article changes — the sign inversion of both HHIs between OLS and
-2SGMM, the article's central argument, replicates in all 12 comparisons.
+the article changes. The article's central argument — instrumenting flips
+the sign of both HHI terms between OLS and 2SGMM — is a claim about 12
+comparisons (2 HHI terms x 6 columns): an inversion actually occurs in **4**
+of them, columns (1) and (2), the `ODDS` regressand, and all 4 replicate.
+In the other 8 (`MINS`, `MINS > 15`) OLS and 2SGMM already carry the *same*
+sign in the published table and only the magnitude moves; the replication
+agrees with the article on *whether* the sign flips in **12 of 12**
+(computed by `replication/run.py` into `hhi_sign_inversions` in
+`reports/replication/private/summary.json`; the cell-by-cell table is under
+"HHI sign inversion" in `reports/replication/private/tables.md`).
 What does not close: **N is about 5.3% larger in every column** (20,447-
 20,630 replicated against 19,408-19,590 published — 5.31% on arrival
 columns, 5.35% on departure columns) for a reason the delivered material
@@ -295,11 +311,16 @@ class in `data/external/groups.csv` is FSC, LCC or regional; for `other` and
 unlabelled carriers — foreign operators and the non-operating side of a
 code-share — the empty field stays unknown and the flight keeps no delay
 target. The null rate is not one convention but many: over 2000-2009 it is
-72.9% for the 5.1 million realised flights in scope against 83.0% for the
-313,368 out of it, and the sceptical reviewer's 2005 cross-section over all
-flights, not only this universe, found 90-100% for foreign carriers and
-code-share legs (`docs/declared-differences.md` publishes the rate by carrier
-and year; `docs/notes/colegiado-adr0012.md` the reviewer's own measurement).
+**72.9%** for the **5,106,100** realised flights in scope against **83.0%** for
+the **313,366** out of it, and the sceptical reviewer's 2005 cross-section over
+all flights, not only this universe, found 90-100% for foreign carriers and
+code-share legs. Every population count in this paragraph is quoted from one
+block and computed nowhere else — `accounting` in
+`reports/prediction/dataset.json`, printed under "Dataset (ADR-0017
+accounting)" in `reports/prediction/results.md` — which is also where the
+per-year table lives (`docs/declared-differences.md` publishes the rate by
+carrier and year; `docs/notes/colegiado-adr0012.md` the reviewer's own
+measurement).
 A delay the carrier never reported therefore counts as on time, so the
 published pre-2010 late rate is a lower bound; the replication panel is
 untouched, because it has to reproduce a benchmark built under the 2019
@@ -309,7 +330,7 @@ between 0.757 and 0.824, against 0.60-0.67 for the previous month's route
 prevalence; on the 20-35% of flights with a linked inbound leg the at-gate
 horizon reaches 0.87-0.93. `reports/prediction/results.md` prints the same
 headline metrics under the superseded reading, which on the 2010-2013 folds —
-where the two readings see exactly the same data — scored 0.638-0.711 day-ahead
+where the two readings see exactly the same data — scored 0.636-0.711 day-ahead
 against 0.715-0.724 here.
 
 ## Use and limits

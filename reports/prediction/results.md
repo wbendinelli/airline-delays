@@ -116,30 +116,66 @@ differs, and the base rate says so.
 
 ## Dataset (ADR-0017 accounting)
 
-`target rows` are the realised flights whose arrival outcome is readable:
-an actual arrival time, or — before 2010, for a carrier whose `groups.csv`
-class is FSC, LCC or regional — an empty one, which under IAC 1504 means no
-alteration was reported (`no alteration`, the `on_time_no_bav` flag).
-`out of scope` are realised flights the rule does not cover: `other` and
-unlabelled carriers, mostly foreign operators and the non-operating side of
-a code-share, whose empty actual time stays unknown. `suspect` is the
-ADR-0015 exclusion: an actual timestamp a whole day or more from the
-schedule. `prev known` is the share of *linked* flights whose inbound leg's
-arrival is readable — what the H-1 horizon actually has to work with.
+The canonical population count. Everything here is read from the flight
+table the models are fitted on and written by `ml/run.py` into
+`reports/prediction/dataset.json` (`accounting`); `README.md` and
+`docs/declared-differences.md` quote this block and compute nothing of
+their own.
 
-| year | flights | realised | target rows | no alteration | share of realised | out of scope | suspect | late15 rate | cancelled rate | linked | prev known |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2000 | 659,299 | 587,005 | 553,524 | 437,035 | 0.745 | 33,239 | 242 | 0.191 | 0.110 | 0.391 | 0.836 |
-| 2001 | 691,578 | 610,672 | 581,668 | 434,010 | 0.711 | 28,903 | 101 | 0.219 | 0.117 | 0.394 | 0.841 |
-| 2002 | 678,949 | 564,375 | 535,107 | 404,732 | 0.717 | 29,215 | 53 | 0.213 | 0.169 | 0.390 | 0.796 |
-| 2003 | 565,658 | 431,632 | 410,046 | 311,863 | 0.723 | 20,554 | 1,032 | 0.180 | 0.237 | 0.383 | 0.737 |
-| 2004 | 536,553 | 456,321 | 438,565 | 328,488 | 0.720 | 17,460 | 296 | 0.199 | 0.150 | 0.381 | 0.811 |
-| 2005 | 552,055 | 476,191 | 455,094 | 317,219 | 0.666 | 20,724 | 373 | 0.256 | 0.137 | 0.367 | 0.807 |
-| 2006 | 588,640 | 493,853 | 465,175 | 311,100 | 0.630 | 28,584 | 94 | 0.302 | 0.161 | 0.356 | 0.781 |
-| 2007 | 641,630 | 513,080 | 477,330 | 268,009 | 0.522 | 35,503 | 247 | 0.411 | 0.200 | 0.348 | 0.732 |
-| 2008 | 663,781 | 600,121 | 574,534 | 395,495 | 0.659 | 25,417 | 170 | 0.286 | 0.096 | 0.307 | 0.850 |
-| 2009 | 756,194 | 686,216 | 665,407 | 512,806 | 0.747 | 20,589 | 220 | 0.202 | 0.093 | 0.295 | 0.870 |
-| 2010 | 874,236 | 796,922 | 796,359 | 0 | 0.000 | 146 | 417 | 0.243 | 0.088 | 0.292 | 0.918 |
-| 2011 | 983,054 | 898,904 | 898,116 | 0 | 0.000 | 145 | 643 | 0.245 | 0.086 | 0.285 | 0.921 |
-| 2012 | 1,023,977 | 942,587 | 942,102 | 0 | 0.000 | 115 | 370 | 0.215 | 0.079 | 0.251 | 0.914 |
-| 2013 | 984,956 | 894,671 | 893,670 | 0 | 0.000 | 11 | 990 | 0.163 | 0.092 | 0.199 | 0.911 |
+`targets available` are the realised flights whose arrival outcome is
+readable: an actual arrival time, or — before 2010, for a carrier whose
+`groups.csv` class is FSC, LCC or regional — an empty one, which under IAC
+1504 means no alteration was reported. `realised out of scope` are *all*
+realised flights the rule does not cover (`other` and unlabelled carriers,
+mostly foreign operators and the non-operating side of a code-share),
+whether or not their actual time is empty — the column that used to be
+mislabelled. `no alteration` is the `on_time_no_bav` flag, which is wider
+than a missing *arrival*: it flags a missing actual arrival **or**
+departure. `suspect` is the ADR-0015 exclusion, an actual timestamp a whole
+day or more from the schedule.
+
+| year | scheduled | realised | realised in scope | realised out of scope | no alteration | suspect | targets available | no readable arrival |
+|---|---|---|---|---|---|---|---|---|
+| 2000 | 659,299 | 587,005 | 544,920 | 42,085 | 437,035 | 242 | 553,524 | 33,239 |
+| 2001 | 691,578 | 610,672 | 577,583 | 33,089 | 434,010 | 101 | 581,668 | 28,903 |
+| 2002 | 678,949 | 564,375 | 533,006 | 31,369 | 404,732 | 53 | 535,107 | 29,215 |
+| 2003 | 565,658 | 431,632 | 409,252 | 22,380 | 311,863 | 1,032 | 410,046 | 20,554 |
+| 2004 | 536,553 | 456,321 | 436,641 | 19,680 | 328,488 | 296 | 438,565 | 17,460 |
+| 2005 | 552,055 | 476,191 | 452,774 | 23,417 | 317,219 | 373 | 455,094 | 20,724 |
+| 2006 | 588,640 | 493,853 | 458,376 | 35,477 | 311,100 | 94 | 465,175 | 28,584 |
+| 2007 | 641,630 | 513,080 | 469,282 | 43,798 | 268,009 | 247 | 477,330 | 35,503 |
+| 2008 | 663,781 | 600,121 | 566,916 | 33,205 | 395,495 | 170 | 574,534 | 25,417 |
+| 2009 | 756,194 | 686,216 | 657,350 | 28,866 | 512,806 | 220 | 665,407 | 20,589 |
+| 2010 | 874,236 | 796,922 | n/a | n/a | 0 | 417 | 796,359 | 146 |
+| 2011 | 983,054 | 898,904 | n/a | n/a | 0 | 643 | 898,116 | 145 |
+| 2012 | 1,023,977 | 942,587 | n/a | n/a | 0 | 370 | 942,102 | 115 |
+| 2013 | 984,956 | 894,671 | n/a | n/a | 0 | 990 | 893,670 | 11 |
+
+**2000-2009, the legacy layout.** 5,419,466 realised flights: 5,106,100 in scope and 313,366 out of it. The share with no actual arrival time is 72.9% in scope against 83.0% out of it (3,720,742 and 260,188 flights) — the asymmetry ADR-0017 rests on. Reading B reads that empty field as a reported zero on 3,720,757 in-scope flights (the `on_time_no_bav` flag, arrival **or** departure missing) and leaves the 260,188 out-of-scope ones unknown.
+
+Against `reports/prediction/null_actual_by_carrier.csv`: null_actual_by_carrier.csv counts the *staged* universe; this block counts the flight table built from it, which drops the flights whose schedule is unusable (a pre-departure feature set needs a scheduled departure and arrival). That is the whole difference: the CSV reports 24 more realised flights over 2000-2009. `on_time_no_bav` is also wider than the null-arrival counts beside it -- it flags a missing actual arrival *or* departure -- so the two are printed separately rather than reconciled.
+
+## Base rates and linkage, by year
+
+`late15 rate` is the share of the year's *available targets* that arrive more
+than 15 minutes late; `cancelled rate` is over every scheduled flight.
+`linked` is the share of scheduled flights with an inbound leg, and
+`prev known` the share of those whose inbound arrival is readable — what the
+H-1 horizon actually has to work with.
+
+| year | late15 rate | cancelled rate | linked | prev known |
+|---|---|---|---|---|
+| 2000 | 0.191 | 0.110 | 0.391 | 0.836 |
+| 2001 | 0.219 | 0.117 | 0.394 | 0.841 |
+| 2002 | 0.213 | 0.169 | 0.390 | 0.796 |
+| 2003 | 0.180 | 0.237 | 0.383 | 0.737 |
+| 2004 | 0.199 | 0.150 | 0.381 | 0.811 |
+| 2005 | 0.256 | 0.137 | 0.367 | 0.807 |
+| 2006 | 0.302 | 0.161 | 0.356 | 0.781 |
+| 2007 | 0.411 | 0.200 | 0.348 | 0.732 |
+| 2008 | 0.286 | 0.096 | 0.307 | 0.850 |
+| 2009 | 0.202 | 0.093 | 0.295 | 0.870 |
+| 2010 | 0.243 | 0.088 | 0.292 | 0.918 |
+| 2011 | 0.245 | 0.086 | 0.285 | 0.921 |
+| 2012 | 0.215 | 0.079 | 0.251 | 0.914 |
+| 2013 | 0.163 | 0.092 | 0.199 | 0.911 |

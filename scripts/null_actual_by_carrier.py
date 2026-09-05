@@ -58,7 +58,19 @@ BAV_CLASSES: tuple[str, ...] = ("FSC", "LCC", "regional")
 
 
 def measure(staged_dir: Path, groups_path: Path) -> pd.DataFrame:
-    """One row per airline x year: realised flights, nulls, share and class."""
+    """One row per airline x year: realised flights, nulls, share and class.
+
+    An airline can change group and class *inside* a year -- `VRN` becomes Gol
+    in 2007-04, `TTL` becomes Trip in 2007-11 -- so one label per airline-year
+    is a choice, not a fact. It used to be `any_value()`, which DuckDB is free
+    to answer differently on each parallel scan, and a tracked artefact was
+    therefore not byte-reproducible across runs. The stated convention now is
+    **the label in force in the airline's last observed month of that year**
+    (`arg_max` over `ym`). This is a determinism fix, not a redefinition: the
+    monthly mapping is untouched, and `in_bav_scope` is unaffected because both
+    sides of every transition in this window fall on the same side of the
+    scope rule.
+    """
     con = stage_mod.connect()
     try:
         groups_mod.GroupTable.load(groups_path).register(con)
@@ -68,8 +80,8 @@ def measure(staged_dir: Path, groups_path: Path) -> pd.DataFrame:
             f"""
             SELECT f.airline AS airline,
                    f.year AS year,
-                   any_value({groups_mod.resolved_group_sql("f.airline")}) AS "group",
-                   any_value({groups_mod.resolved_class_sql()}) AS "class",
+                   arg_max({groups_mod.resolved_group_sql("f.airline")}, f.ym) AS "group",
+                   arg_max({groups_mod.resolved_class_sql()}, f.ym) AS "class",
                    count(*)::BIGINT AS realized,
                    count(*) FILTER (WHERE f.actual_arr IS NULL)::BIGINT AS null_actual_arr,
                    count(*) FILTER (WHERE f.actual_dep IS NULL)::BIGINT AS null_actual_dep
@@ -126,7 +138,8 @@ def markdown(frame: pd.DataFrame, years: tuple[int, ...]) -> str:
             f"year, for the {len(years)} years of the legacy layout; the "
             f"{TOP_CARRIERS} carriers with the most realised flights in that window. From 2010 "
             "the rate is 0.0% for every carrier. Nothing here is imputed: the cell is the "
-            "share the raw files carry."
+            "share the raw files carry. Where an airline changes group inside a year, the "
+            "`class` shown is the one in force in its last observed month of that year."
         ),
         "",
         "| " + " | ".join(header) + " |",
@@ -141,12 +154,24 @@ def markdown(frame: pd.DataFrame, years: tuple[int, ...]) -> str:
     lines += [
         "",
         (
-            f"Reading B covers **{in_scope:,d}** realised flights of {years[0]}-{years[-1]} "
-            f"(class FSC, LCC or regional). It leaves **{out_scope:,d}** out of scope, flown by "
-            f"{carriers_out} carriers whose class is `other` or unlabelled; **{out_null:,d}** of "
-            "those have no actual arrival time and therefore no delay target under either "
-            "reading. Full detail, every carrier and every year: "
-            "`reports/prediction/null_actual_by_carrier.csv`."
+            f"Out of scope for reading B: **{carriers_out}** carriers whose class is `other` "
+            "or unlabelled, whose empty actual time therefore stays unknown and whose "
+            "flights keep no delay target under either reading. Full detail, every carrier "
+            "and every year: `reports/prediction/null_actual_by_carrier.csv`."
+        ),
+        "",
+        (
+            "**Which population this counts.** The rows above are measured over "
+            "`data/staged/`, before the flight table drops the flights whose schedule is "
+            "unusable, so they run a little above the canonical accounting: "
+            f"{in_scope:,d} realised in scope and {out_scope:,d} out of it here, against the "
+            "counts in `reports/prediction/dataset.json` (`accounting`). The canonical "
+            "population figures — the ones this document and `README.md` quote — are that "
+            "block and the matching table under "
+            '"Dataset (ADR-0017 accounting)" in `reports/prediction/results.md`; this '
+            "table exists for the per-carrier *rate*, which nothing else publishes "
+            f"(**{out_null:,d}** of the out-of-scope realised flights have no actual arrival "
+            "time)."
         ),
         "",
         MARKER_END,

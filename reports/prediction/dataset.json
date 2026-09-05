@@ -364,5 +364,327 @@
       "prev_arr_known_share": 0.9114680001431646,
       "prev_arr_known_h1_share": 0.05472781881690025
     }
-  ]
+  ],
+  "accounting": {
+    "definition": "Counted once, from the dataset the models are fitted on (data/derived/ml). Reading B (ADR-0017) applies to realised flights before 2010 whose groups.csv class is FSC, LCC, regional; outside that scope an empty actual time stays unknown.",
+    "bav_last_legacy_year": 2009,
+    "bav_classes": [
+      "FSC",
+      "LCC",
+      "regional"
+    ],
+    "by_year": [
+      {
+        "year": 2000,
+        "scheduled": 659299,
+        "scheduled_in_universe": 659301,
+        "dropped_no_schedule": 2,
+        "realised": 587005,
+        "bav_scope_applies": true,
+        "realised_in_scope": 544920,
+        "realised_out_of_scope": 42085,
+        "realised_no_arr_actual_in_scope": 437035,
+        "realised_no_arr_actual_out_of_scope": 33239,
+        "on_time_no_bav": 437035,
+        "actual_time_suspect": 242,
+        "targets_available": 553524,
+        "excluded": {
+          "not_realised": 72294,
+          "suspect_actual_time": 242,
+          "no_readable_arrival": 33239
+        }
+      },
+      {
+        "year": 2001,
+        "scheduled": 691578,
+        "scheduled_in_universe": 691582,
+        "dropped_no_schedule": 4,
+        "realised": 610672,
+        "bav_scope_applies": true,
+        "realised_in_scope": 577583,
+        "realised_out_of_scope": 33089,
+        "realised_no_arr_actual_in_scope": 434010,
+        "realised_no_arr_actual_out_of_scope": 28903,
+        "on_time_no_bav": 434010,
+        "actual_time_suspect": 101,
+        "targets_available": 581668,
+        "excluded": {
+          "not_realised": 80906,
+          "suspect_actual_time": 101,
+          "no_readable_arrival": 28903
+        }
+      },
+      {
+        "year": 2002,
+        "scheduled": 678949,
+        "scheduled_in_universe": 678949,
+        "dropped_no_schedule": 0,
+        "realised": 564375,
+        "bav_scope_applies": true,
+        "realised_in_scope": 533006,
+        "realised_out_of_scope": 31369,
+        "realised_no_arr_actual_in_scope": 404732,
+        "realised_no_arr_actual_out_of_scope": 29215,
+        "on_time_no_bav": 404732,
+        "actual_time_suspect": 53,
+        "targets_available": 535107,
+        "excluded": {
+          "not_realised": 114574,
+          "suspect_actual_time": 53,
+          "no_readable_arrival": 29215
+        }
+      },
+      {
+        "year": 2003,
+        "scheduled": 565658,
+        "scheduled_in_universe": 565672,
+        "dropped_no_schedule": 14,
+        "realised": 431632,
+        "bav_scope_applies": true,
+        "realised_in_scope": 409252,
+        "realised_out_of_scope": 22380,
+        "realised_no_arr_actual_in_scope": 311861,
+        "realised_no_arr_actual_out_of_scope": 20554,
+        "on_time_no_bav": 311863,
+        "actual_time_suspect": 1032,
+        "targets_available": 410046,
+        "excluded": {
+          "not_realised": 134026,
+          "suspect_actual_time": 1032,
+          "no_readable_arrival": 20554
+        }
+      },
+      {
+        "year": 2004,
+        "scheduled": 536553,
+        "scheduled_in_universe": 536555,
+        "dropped_no_schedule": 2,
+        "realised": 456321,
+        "bav_scope_applies": true,
+        "realised_in_scope": 436641,
+        "realised_out_of_scope": 19680,
+        "realised_no_arr_actual_in_scope": 328487,
+        "realised_no_arr_actual_out_of_scope": 17460,
+        "on_time_no_bav": 328488,
+        "actual_time_suspect": 296,
+        "targets_available": 438565,
+        "excluded": {
+          "not_realised": 80232,
+          "suspect_actual_time": 296,
+          "no_readable_arrival": 17460
+        }
+      },
+      {
+        "year": 2005,
+        "scheduled": 552055,
+        "scheduled_in_universe": 552056,
+        "dropped_no_schedule": 1,
+        "realised": 476191,
+        "bav_scope_applies": true,
+        "realised_in_scope": 452774,
+        "realised_out_of_scope": 23417,
+        "realised_no_arr_actual_in_scope": 317217,
+        "realised_no_arr_actual_out_of_scope": 20724,
+        "on_time_no_bav": 317219,
+        "actual_time_suspect": 373,
+        "targets_available": 455094,
+        "excluded": {
+          "not_realised": 75864,
+          "suspect_actual_time": 373,
+          "no_readable_arrival": 20724
+        }
+      },
+      {
+        "year": 2006,
+        "scheduled": 588640,
+        "scheduled_in_universe": 588640,
+        "dropped_no_schedule": 0,
+        "realised": 493853,
+        "bav_scope_applies": true,
+        "realised_in_scope": 458376,
+        "realised_out_of_scope": 35477,
+        "realised_no_arr_actual_in_scope": 311100,
+        "realised_no_arr_actual_out_of_scope": 28584,
+        "on_time_no_bav": 311100,
+        "actual_time_suspect": 94,
+        "targets_available": 465175,
+        "excluded": {
+          "not_realised": 94787,
+          "suspect_actual_time": 94,
+          "no_readable_arrival": 28584
+        }
+      },
+      {
+        "year": 2007,
+        "scheduled": 641630,
+        "scheduled_in_universe": 641635,
+        "dropped_no_schedule": 5,
+        "realised": 513080,
+        "bav_scope_applies": true,
+        "realised_in_scope": 469282,
+        "realised_out_of_scope": 43798,
+        "realised_no_arr_actual_in_scope": 268007,
+        "realised_no_arr_actual_out_of_scope": 35503,
+        "on_time_no_bav": 268009,
+        "actual_time_suspect": 247,
+        "targets_available": 477330,
+        "excluded": {
+          "not_realised": 128550,
+          "suspect_actual_time": 247,
+          "no_readable_arrival": 35503
+        }
+      },
+      {
+        "year": 2008,
+        "scheduled": 663781,
+        "scheduled_in_universe": 663781,
+        "dropped_no_schedule": 0,
+        "realised": 600121,
+        "bav_scope_applies": true,
+        "realised_in_scope": 566916,
+        "realised_out_of_scope": 33205,
+        "realised_no_arr_actual_in_scope": 395493,
+        "realised_no_arr_actual_out_of_scope": 25417,
+        "on_time_no_bav": 395495,
+        "actual_time_suspect": 170,
+        "targets_available": 574534,
+        "excluded": {
+          "not_realised": 63660,
+          "suspect_actual_time": 170,
+          "no_readable_arrival": 25417
+        }
+      },
+      {
+        "year": 2009,
+        "scheduled": 756194,
+        "scheduled_in_universe": 756194,
+        "dropped_no_schedule": 0,
+        "realised": 686216,
+        "bav_scope_applies": true,
+        "realised_in_scope": 657350,
+        "realised_out_of_scope": 28866,
+        "realised_no_arr_actual_in_scope": 512800,
+        "realised_no_arr_actual_out_of_scope": 20589,
+        "on_time_no_bav": 512806,
+        "actual_time_suspect": 220,
+        "targets_available": 665407,
+        "excluded": {
+          "not_realised": 69978,
+          "suspect_actual_time": 220,
+          "no_readable_arrival": 20589
+        }
+      },
+      {
+        "year": 2010,
+        "scheduled": 874236,
+        "scheduled_in_universe": 874236,
+        "dropped_no_schedule": 0,
+        "realised": 796922,
+        "bav_scope_applies": false,
+        "realised_in_scope": null,
+        "realised_out_of_scope": null,
+        "realised_no_arr_actual_in_scope": null,
+        "realised_no_arr_actual_out_of_scope": 146,
+        "on_time_no_bav": 0,
+        "actual_time_suspect": 417,
+        "targets_available": 796359,
+        "excluded": {
+          "not_realised": 77314,
+          "suspect_actual_time": 417,
+          "no_readable_arrival": 146
+        }
+      },
+      {
+        "year": 2011,
+        "scheduled": 983054,
+        "scheduled_in_universe": 983073,
+        "dropped_no_schedule": 19,
+        "realised": 898904,
+        "bav_scope_applies": false,
+        "realised_in_scope": null,
+        "realised_out_of_scope": null,
+        "realised_no_arr_actual_in_scope": null,
+        "realised_no_arr_actual_out_of_scope": 145,
+        "on_time_no_bav": 0,
+        "actual_time_suspect": 643,
+        "targets_available": 898116,
+        "excluded": {
+          "not_realised": 84150,
+          "suspect_actual_time": 643,
+          "no_readable_arrival": 145
+        }
+      },
+      {
+        "year": 2012,
+        "scheduled": 1023977,
+        "scheduled_in_universe": 1023977,
+        "dropped_no_schedule": 0,
+        "realised": 942587,
+        "bav_scope_applies": false,
+        "realised_in_scope": null,
+        "realised_out_of_scope": null,
+        "realised_no_arr_actual_in_scope": null,
+        "realised_no_arr_actual_out_of_scope": 115,
+        "on_time_no_bav": 0,
+        "actual_time_suspect": 370,
+        "targets_available": 942102,
+        "excluded": {
+          "not_realised": 81390,
+          "suspect_actual_time": 370,
+          "no_readable_arrival": 115
+        }
+      },
+      {
+        "year": 2013,
+        "scheduled": 984956,
+        "scheduled_in_universe": 984956,
+        "dropped_no_schedule": 0,
+        "realised": 894671,
+        "bav_scope_applies": false,
+        "realised_in_scope": null,
+        "realised_out_of_scope": null,
+        "realised_no_arr_actual_in_scope": null,
+        "realised_no_arr_actual_out_of_scope": 11,
+        "on_time_no_bav": 0,
+        "actual_time_suspect": 990,
+        "targets_available": 893670,
+        "excluded": {
+          "not_realised": 90285,
+          "suspect_actual_time": 990,
+          "no_readable_arrival": 11
+        }
+      }
+    ],
+    "legacy_window": {
+      "years": [
+        2000,
+        2009
+      ],
+      "scheduled": 6334337,
+      "realised": 5419466,
+      "realised_in_scope": 5106100,
+      "realised_out_of_scope": 313366,
+      "realised_no_arr_actual_in_scope": 3720742,
+      "realised_no_arr_actual_out_of_scope": 260188,
+      "null_arrival_rate_in_scope": 0.7286856896653023,
+      "null_arrival_rate_out_of_scope": 0.8303006707811313,
+      "on_time_no_bav": 3720757,
+      "actual_time_suspect": 2828,
+      "targets_available": 5156450
+    },
+    "reconciliation": {
+      "against": "reports/prediction/null_actual_by_carrier.csv",
+      "dropped_no_schedule": 28,
+      "note": "null_actual_by_carrier.csv counts the *staged* universe; this block counts the flight table built from it, which drops the flights whose schedule is unusable (a pre-departure feature set needs a scheduled departure and arrival). That is the whole difference: the CSV reports 24 more realised flights over 2000-2009. `on_time_no_bav` is also wider than the null-arrival counts beside it -- it flags a missing actual arrival *or* departure -- so the two are printed separately rather than reconciled."
+    }
+  },
+  "runtime": {
+    "total_seconds": 2344.2,
+    "dataset_build_seconds": 24.73,
+    "rolling_elapsed_seconds": 1142.5,
+    "rolling_fold_seconds": 1140.3,
+    "fixed_fold_seconds": 1001.4,
+    "note": "total_seconds is elapsed wall time for `uv run python -m ml.run`, measured by ml/run.py itself; it exceeds the sum of the fold fits because permutation importance, calibration and I/O are inside it and are not separately timed. dataset_build_seconds is the separate `--rebuild` step recorded in data/derived/ml/manifest.json.",
+    "measured_by": "the run that produced rolling.json and fixed.json, read back from the last `meta.seconds` those artefacts carry -- not re-measured here"
+  }
 }

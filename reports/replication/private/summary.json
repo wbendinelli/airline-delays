@@ -182,5 +182,230 @@
     "replicated": 20627
    }
   }
+ },
+ "hhi_sign_inversions": {
+  "available": true,
+  "ols_table": "table6",
+  "gmm_table": "table3",
+  "variables": [
+   "rthhi",
+   "maxcthhi"
+  ],
+  "n_comparisons": 12,
+  "n_skipped": 0,
+  "n_inverted_published": 4,
+  "n_inverted_replicated": 4,
+  "n_inversion_replicates": 4,
+  "n_pattern_agrees": 12,
+  "columns_with_inversion": [
+   "1",
+   "2"
+  ],
+  "detail": [
+   {
+    "column": "1",
+    "variable": "rthhi",
+    "published": {
+     "ols": -0.2086,
+     "gmm": 0.805,
+     "inverted": true
+    },
+    "replicated": {
+     "ols": -0.20801849895595304,
+     "gmm": 0.8842683575521733,
+     "inverted": true
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": true,
+    "regressand": "ODDS"
+   },
+   {
+    "column": "1",
+    "variable": "maxcthhi",
+    "published": {
+     "ols": 0.1614,
+     "gmm": -1.4772,
+     "inverted": true
+    },
+    "replicated": {
+     "ols": 0.15401304058809018,
+     "gmm": -1.4550587206585988,
+     "inverted": true
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": true,
+    "regressand": "ODDS"
+   },
+   {
+    "column": "2",
+    "variable": "rthhi",
+    "published": {
+     "ols": -0.3126,
+     "gmm": 0.8192,
+     "inverted": true
+    },
+    "replicated": {
+     "ols": -0.29139857921010304,
+     "gmm": 0.902761948070804,
+     "inverted": true
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": true,
+    "regressand": "ODDS"
+   },
+   {
+    "column": "2",
+    "variable": "maxcthhi",
+    "published": {
+     "ols": 0.1057,
+     "gmm": -1.5144,
+     "inverted": true
+    },
+    "replicated": {
+     "ols": 0.09381523460666585,
+     "gmm": -1.4838586107464664,
+     "inverted": true
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": true,
+    "regressand": "ODDS"
+   },
+   {
+    "column": "3",
+    "variable": "rthhi",
+    "published": {
+     "ols": 3.3899,
+     "gmm": 30.629,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": 3.2388193358944184,
+     "gmm": 25.075317081515095,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS"
+   },
+   {
+    "column": "3",
+    "variable": "maxcthhi",
+    "published": {
+     "ols": -2.493,
+     "gmm": -19.4278,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": -1.5738501965682197,
+     "gmm": -16.562148885230272,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS"
+   },
+   {
+    "column": "4",
+    "variable": "rthhi",
+    "published": {
+     "ols": 2.4833,
+     "gmm": 30.0753,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": 2.399690726108645,
+     "gmm": 24.754111674555134,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS"
+   },
+   {
+    "column": "4",
+    "variable": "maxcthhi",
+    "published": {
+     "ols": -2.9092,
+     "gmm": -19.1045,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": -2.0808210188258727,
+     "gmm": -16.012575747763776,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS"
+   },
+   {
+    "column": "5",
+    "variable": "rthhi",
+    "published": {
+     "ols": 3.2958,
+     "gmm": 31.9607,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": 3.1445559982707234,
+     "gmm": 25.890837023078348,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS > 15"
+   },
+   {
+    "column": "5",
+    "variable": "maxcthhi",
+    "published": {
+     "ols": -2.9449,
+     "gmm": -20.9849,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": -2.036766626736963,
+     "gmm": -17.920075999627443,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS > 15"
+   },
+   {
+    "column": "6",
+    "variable": "rthhi",
+    "published": {
+     "ols": 2.3998,
+     "gmm": 31.5567,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": 2.3179887512669097,
+     "gmm": 25.71668558187139,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS > 15"
+   },
+   {
+    "column": "6",
+    "variable": "maxcthhi",
+    "published": {
+     "ols": -3.3809,
+     "gmm": -20.6986,
+     "inverted": false
+    },
+    "replicated": {
+     "ols": -2.5602982399982466,
+     "gmm": -17.392151714330794,
+     "inverted": false
+    },
+    "pattern_agrees": true,
+    "inversion_replicates": false,
+    "regressand": "MINS > 15"
+   }
+  ]
  }
 }

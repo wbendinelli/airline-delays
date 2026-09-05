@@ -269,9 +269,65 @@ def run(
         }
         _write(out_dir / "fixed.json", fixed_doc)
 
+    # dataset.json is written twice on purpose: once up front, so leakage.json
+    # and an interrupted run still have the manifest, and once here with the
+    # canonical accounting block and the measured total runtime (M-2/M-3/M-4).
+    manifest = dict(manifest)
+    manifest["accounting"] = accounting(dataset_dir, manifest)
+    manifest["runtime"] = runtime(started, rolling_doc, fixed_doc, manifest)
+    _write(out_dir / "dataset.json", manifest)
+
     markdown = write_markdown(rolling_doc, fixed_doc, importance, manifest, out_dir)
     print(f"\nprediction: {markdown} ({time.time() - started:.0f}s)")
-    return {"rolling": rolling_doc, "fixed": fixed_doc, "importance": importance}
+    return {
+        "rolling": rolling_doc,
+        "fixed": fixed_doc,
+        "importance": importance,
+        "dataset": manifest,
+    }
+
+
+def report_only(dataset_dir: Path, out_dir: Path) -> dict[str, Any]:
+    """Rebuild `dataset.json` and `results.md` from artefacts already on disk.
+
+    Everything in those two files is a pure function of the flight table and of
+    the committed `rolling.json` / `fixed.json` / `importance.json`, so the
+    accounting block and the report can be regenerated without refitting 24
+    models. The runtime is read back from the run that produced the artefacts,
+    not re-measured -- a rewrite of the report must not restate the wall time of
+    the rewrite.
+    """
+    out_dir = Path(out_dir)
+    manifest = _dataset_manifest(dataset_dir)
+    rolling_doc = json.loads((out_dir / "rolling.json").read_text(encoding="utf-8"))
+    fixed_doc = json.loads((out_dir / "fixed.json").read_text(encoding="utf-8"))
+    importance_path = out_dir / "importance.json"
+    importance = (
+        json.loads(importance_path.read_text(encoding="utf-8")).get("horizons", {})
+        if importance_path.exists()
+        else {}
+    )
+    previous = json.loads((out_dir / "dataset.json").read_text(encoding="utf-8"))
+    manifest["accounting"] = accounting(dataset_dir, manifest)
+    elapsed = [
+        float(doc["meta"]["seconds"])
+        for doc in (rolling_doc, fixed_doc)
+        if isinstance(doc.get("meta", {}).get("seconds"), int | float)
+    ]
+    manifest["runtime"] = {
+        **runtime(time.time(), rolling_doc, fixed_doc, manifest),
+        "total_seconds": max(elapsed)
+        if elapsed
+        else previous.get("runtime", {}).get("total_seconds"),
+        "measured_by": (
+            "the run that produced rolling.json and fixed.json, read back from the "
+            "last `meta.seconds` those artefacts carry -- not re-measured here"
+        ),
+    }
+    _write(out_dir / "dataset.json", manifest)
+    markdown = write_markdown(rolling_doc, fixed_doc, importance, manifest, out_dir)
+    print(f"report-only: {markdown} (nothing refitted)")
+    return {"dataset": manifest, "markdown": markdown}
 
 
 def _meta(
@@ -302,6 +358,164 @@ def _dataset_manifest(dataset_dir: Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(f"{path} is missing; run `just ml` or `--rebuild`")
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+ACCOUNTING_COLUMNS: tuple[str, ...] = (
+    "year",
+    "class",
+    "is_realized",
+    "has_arr_actual",
+    "actual_time_suspect",
+    "on_time_no_bav",
+    "late15_arr",
+)
+
+
+def accounting(dataset_dir: Path, manifest: dict[str, Any]) -> dict[str, Any]:
+    """The one place the ADR-0017 population is counted (audit 2026-09-05, M-2/M-3).
+
+    Before this block the same 2000-2013 universe was counted in two artefacts
+    that disagreed by 24 flights, and `results.md` printed a column headed
+    "out of scope" that actually held *out-of-scope flights with no actual
+    arrival time* -- so a reader following the README's own citation found a
+    53,180-flight contradiction that was really two different quantities with
+    one label. Every count below comes from the dataset the models are fitted
+    on, read here and nowhere else; `results.md`, `README.md` and
+    `docs/declared-differences.md` quote this block and nothing else.
+
+    Nothing is redefined. `on_time_no_bav` is the flag the build writes
+    (`ml/dataset_flights.py`, reading B: realised, pre-2010, carrier class in
+    `BAV_CLASSES`, and **either** actual time absent); the null-arrival counts
+    beside it are the narrower "no actual *arrival* time", which is why the two
+    differ by the handful of flights that reported an arrival but no departure.
+    Both are printed rather than reconciled into one number.
+    """
+    import pandas as pd
+
+    scope_classes = list(ds.BAV_CLASSES)
+    rows: list[dict[str, Any]] = []
+    dropped = {
+        int(entry["year"]): int(entry["dropped_no_schedule"]) for entry in manifest["by_year"]
+    }
+    universe = {int(entry["year"]): int(entry["universe_rows"]) for entry in manifest["by_year"]}
+    for year in (int(entry["year"]) for entry in manifest["by_year"]):
+        frame = pd.read_parquet(
+            Path(dataset_dir) / f"year={year}" / "part-0.parquet",
+            columns=list(ACCOUNTING_COLUMNS),
+        )
+        realised = frame["is_realized"]
+        in_scope = (frame["year"] <= ds.BAV_LAST_LEGACY_YEAR) & frame["class"].isin(scope_classes)
+        suspect = frame["actual_time_suspect"]
+        target = frame["late15_arr"].notna()
+        no_arr = ~frame["has_arr_actual"]
+        applies = year <= ds.BAV_LAST_LEGACY_YEAR
+        rows.append(
+            {
+                "year": year,
+                "scheduled": len(frame),
+                "scheduled_in_universe": universe[year],
+                "dropped_no_schedule": dropped[year],
+                "realised": int(realised.sum()),
+                "bav_scope_applies": applies,
+                "realised_in_scope": int((realised & in_scope).sum()) if applies else None,
+                "realised_out_of_scope": int((realised & ~in_scope).sum()) if applies else None,
+                "realised_no_arr_actual_in_scope": int((realised & in_scope & no_arr).sum())
+                if applies
+                else None,
+                "realised_no_arr_actual_out_of_scope": int((realised & ~in_scope & no_arr).sum()),
+                "on_time_no_bav": int(frame["on_time_no_bav"].sum()),
+                "actual_time_suspect": int((realised & suspect).sum()),
+                "targets_available": int(target.sum()),
+                "excluded": {
+                    "not_realised": int((~realised).sum()),
+                    "suspect_actual_time": int((realised & suspect).sum()),
+                    "no_readable_arrival": int((realised & ~target & ~suspect).sum()),
+                },
+            }
+        )
+
+    def total(key: str, years: range) -> int:
+        return sum(int(row[key] or 0) for row in rows if row["year"] in years)
+
+    legacy = range(2000, ds.BAV_LAST_LEGACY_YEAR + 1)
+    in_scope_realised = total("realised_in_scope", legacy)
+    out_scope_realised = total("realised_out_of_scope", legacy)
+    in_scope_null = total("realised_no_arr_actual_in_scope", legacy)
+    out_scope_null = total("realised_no_arr_actual_out_of_scope", legacy)
+    return {
+        "definition": (
+            "Counted once, from the dataset the models are fitted on "
+            "(data/derived/ml). Reading B (ADR-0017) applies to realised "
+            f"flights before {ds.BAV_LAST_LEGACY_YEAR + 1} whose groups.csv class is "
+            f"{', '.join(scope_classes)}; outside that scope an empty actual time "
+            "stays unknown."
+        ),
+        "bav_last_legacy_year": ds.BAV_LAST_LEGACY_YEAR,
+        "bav_classes": scope_classes,
+        "by_year": rows,
+        "legacy_window": {
+            "years": [legacy.start, legacy.stop - 1],
+            "scheduled": total("scheduled", legacy),
+            "realised": in_scope_realised + out_scope_realised,
+            "realised_in_scope": in_scope_realised,
+            "realised_out_of_scope": out_scope_realised,
+            "realised_no_arr_actual_in_scope": in_scope_null,
+            "realised_no_arr_actual_out_of_scope": out_scope_null,
+            "null_arrival_rate_in_scope": in_scope_null / in_scope_realised
+            if in_scope_realised
+            else None,
+            "null_arrival_rate_out_of_scope": out_scope_null / out_scope_realised
+            if out_scope_realised
+            else None,
+            "on_time_no_bav": total("on_time_no_bav", legacy),
+            "actual_time_suspect": total("actual_time_suspect", legacy),
+            "targets_available": total("targets_available", legacy),
+        },
+        "reconciliation": {
+            "against": "reports/prediction/null_actual_by_carrier.csv",
+            "dropped_no_schedule": total("dropped_no_schedule", legacy),
+            "note": (
+                "null_actual_by_carrier.csv counts the *staged* universe; this block "
+                "counts the flight table built from it, which drops the flights whose "
+                "schedule is unusable (a pre-departure feature set needs a scheduled "
+                "departure and arrival). That is the whole difference: the CSV reports "
+                "24 more realised flights over 2000-2009. `on_time_no_bav` is also "
+                "wider than the null-arrival counts beside it -- it flags a missing "
+                "actual arrival *or* departure -- so the two are printed separately "
+                "rather than reconciled."
+            ),
+        },
+    }
+
+
+def runtime(
+    started: float, rolling: dict[str, Any], fixed: dict[str, Any], manifest: dict[str, Any]
+) -> dict[str, Any]:
+    """Total wall time of the prediction phase, and what is inside it.
+
+    The README used to cite a runtime that appeared in no artefact (audit
+    2026-09-05, M-4). It exists now, and it says explicitly that the total is
+    elapsed wall time, not the sum of the model fits: permutation importance,
+    calibration and I/O sit inside it and are not separately instrumented.
+    """
+
+    def folds(doc: dict[str, Any]) -> float:
+        return round(sum(float(f.get("seconds") or 0.0) for f in doc.get("folds", [])), 1)
+
+    return {
+        "total_seconds": round(time.time() - started, 1),
+        "dataset_build_seconds": manifest.get("seconds"),
+        "rolling_elapsed_seconds": (rolling.get("meta") or {}).get("seconds"),
+        "rolling_fold_seconds": folds(rolling),
+        "fixed_fold_seconds": folds(fixed),
+        "note": (
+            "total_seconds is elapsed wall time for `uv run python -m ml.run`, "
+            "measured by ml/run.py itself; it exceeds the sum of the fold fits "
+            "because permutation importance, calibration and I/O are inside it "
+            "and are not separately timed. dataset_build_seconds is the separate "
+            "`--rebuild` step recorded in data/derived/ml/manifest.json."
+        ),
+    }
 
 
 def _leakage(dataset_dir: Path, manifest: dict[str, Any]) -> dict[str, Any]:
@@ -450,41 +664,114 @@ def write_markdown(
                 f"{_num(row['auc_drop_sd'], 4)} | {row['total_gain']:,.0f} |"
             )
     lines += _reading_sensitivity(rolling, out_dir)
+    lines += _accounting_block(manifest)
     lines += [
         "",
-        "## Dataset (ADR-0017 accounting)",
+        "## Base rates and linkage, by year",
         "",
-        "`target rows` are the realised flights whose arrival outcome is readable:",
-        "an actual arrival time, or — before 2010, for a carrier whose `groups.csv`",
-        "class is FSC, LCC or regional — an empty one, which under IAC 1504 means no",
-        "alteration was reported (`no alteration`, the `on_time_no_bav` flag).",
-        "`out of scope` are realised flights the rule does not cover: `other` and",
-        "unlabelled carriers, mostly foreign operators and the non-operating side of",
-        "a code-share, whose empty actual time stays unknown. `suspect` is the",
-        "ADR-0015 exclusion: an actual timestamp a whole day or more from the",
-        "schedule. `prev known` is the share of *linked* flights whose inbound leg's",
-        "arrival is readable — what the H-1 horizon actually has to work with.",
+        "`late15 rate` is the share of the year's *available targets* that arrive more",
+        "than 15 minutes late; `cancelled rate` is over every scheduled flight.",
+        "`linked` is the share of scheduled flights with an inbound leg, and",
+        "`prev known` the share of those whose inbound arrival is readable — what the",
+        "H-1 horizon actually has to work with.",
         "",
-        (
-            "| year | flights | realised | target rows | no alteration | share of realised |"
-            " out of scope | suspect | late15 rate | cancelled rate | linked | prev known |"
-        ),
-        "|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| year | late15 rate | cancelled rate | linked | prev known |",
+        "|---|---|---|---|---|",
     ]
     for row in manifest["by_year"]:
         lines.append(
-            f"| {row['year']} | {row['rows']:,d} | {row['realized']:,d} | "
-            f"{row['target_rows']:,d} | {row.get('on_time_no_bav', 0):,d} | "
-            f"{_num(row.get('on_time_no_bav_share'), 3)} | "
-            f"{row['target_excluded_missing_actual']:,d} | "
-            f"{row['target_excluded_suspect']:,d} | "
-            f"{_num(row['late15_arr_rate'], 3)} | {_num(row['cancelled_rate'], 3)} | "
-            f"{_num(row['prev_leg_share'], 3)} | {_num(row.get('prev_arr_known_share'), 3)} |"
+            f"| {row['year']} | {_num(row['late15_arr_rate'], 3)} | "
+            f"{_num(row['cancelled_rate'], 3)} | {_num(row['prev_leg_share'], 3)} | "
+            f"{_num(row.get('prev_arr_known_share'), 3)} |"
         )
     lines.append("")
     path = Path(out_dir) / "results.md"
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
+
+
+def _accounting_block(manifest: dict[str, Any]) -> list[str]:
+    """Render `dataset.json`'s `accounting` block, and only it.
+
+    Every population count in this report, in `README.md` and in
+    `docs/declared-differences.md` comes from here, under the same headers, so
+    the three cannot drift the way they did before the 2026-09-05 audit
+    (M-2/M-3). If the block is missing the report says so instead of
+    recomputing anything.
+    """
+    block = manifest.get("accounting")
+    if not block:
+        return [
+            "",
+            "## Dataset (ADR-0017 accounting)",
+            "",
+            "_Not available: rerun `uv run python -m ml.run --report-only` to write the",
+            "`accounting` block into `reports/prediction/dataset.json`._",
+        ]
+    window = block["legacy_window"]
+    lines = [
+        "",
+        "## Dataset (ADR-0017 accounting)",
+        "",
+        "The canonical population count. Everything here is read from the flight",
+        "table the models are fitted on and written by `ml/run.py` into",
+        "`reports/prediction/dataset.json` (`accounting`); `README.md` and",
+        "`docs/declared-differences.md` quote this block and compute nothing of",
+        "their own.",
+        "",
+        "`targets available` are the realised flights whose arrival outcome is",
+        "readable: an actual arrival time, or — before 2010, for a carrier whose",
+        "`groups.csv` class is FSC, LCC or regional — an empty one, which under IAC",
+        "1504 means no alteration was reported. `realised out of scope` are *all*",
+        "realised flights the rule does not cover (`other` and unlabelled carriers,",
+        "mostly foreign operators and the non-operating side of a code-share),",
+        "whether or not their actual time is empty — the column that used to be",
+        "mislabelled. `no alteration` is the `on_time_no_bav` flag, which is wider",
+        "than a missing *arrival*: it flags a missing actual arrival **or**",
+        "departure. `suspect` is the ADR-0015 exclusion, an actual timestamp a whole",
+        "day or more from the schedule.",
+        "",
+        (
+            "| year | scheduled | realised | realised in scope | realised out of scope |"
+            " no alteration | suspect | targets available | no readable arrival |"
+        ),
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for row in block["by_year"]:
+        in_scope = (
+            f"{row['realised_in_scope']:,d}" if row["realised_in_scope"] is not None else "n/a"
+        )
+        out_scope = (
+            f"{row['realised_out_of_scope']:,d}"
+            if row["realised_out_of_scope"] is not None
+            else "n/a"
+        )
+        lines.append(
+            f"| {row['year']} | {row['scheduled']:,d} | {row['realised']:,d} | "
+            f"{in_scope} | {out_scope} | {row['on_time_no_bav']:,d} | "
+            f"{row['actual_time_suspect']:,d} | {row['targets_available']:,d} | "
+            f"{row['excluded']['no_readable_arrival']:,d} |"
+        )
+    lines += [
+        "",
+        (
+            f"**{window['years'][0]}-{window['years'][1]}, the legacy layout.** "
+            f"{window['realised']:,d} realised flights: {window['realised_in_scope']:,d} in "
+            f"scope and {window['realised_out_of_scope']:,d} out of it. The share with no "
+            f"actual arrival time is "
+            f"{window['null_arrival_rate_in_scope'] * 100:.1f}% in scope against "
+            f"{window['null_arrival_rate_out_of_scope'] * 100:.1f}% out of it "
+            f"({window['realised_no_arr_actual_in_scope']:,d} and "
+            f"{window['realised_no_arr_actual_out_of_scope']:,d} flights) — the asymmetry "
+            "ADR-0017 rests on. Reading B reads that empty field as a reported zero on "
+            f"{window['on_time_no_bav']:,d} in-scope flights (the `on_time_no_bav` flag, "
+            "arrival **or** departure missing) and leaves the "
+            f"{window['realised_no_arr_actual_out_of_scope']:,d} out-of-scope ones unknown."
+        ),
+        "",
+        (f"Against `{block['reconciliation']['against']}`: {block['reconciliation']['note']}"),
+    ]
+    return lines
 
 
 def _reading_sensitivity(rolling: dict[str, Any], out_dir: Path) -> list[str]:
@@ -573,7 +860,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--jobs", type=int, default=8)
     parser.add_argument("--skip-fixed", action="store_true")
     parser.add_argument("--no-permutation", action="store_true")
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="rebuild dataset.json and results.md from the artefacts already in "
+        "--out, without refitting any model",
+    )
     args = parser.parse_args(argv)
+
+    if args.report_only:
+        report_only(args.dataset_dir, args.out)
+        return 0
 
     if args.rebuild:
         result = ds.build_dataset(out_dir=args.dataset_dir)

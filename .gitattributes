@@ -4,6 +4,16 @@
 *.csv.gz binary
 *.csv text eol=lf
 
+# The raw ANAC fixtures are cut byte for byte from the published monthly
+# files and exist to prove the measured layout (latin-1, CRLF for
+# 2000-2009, LF from 2010) against `src/vra/io.py`'s declaration. `-text`
+# disables EOL normalisation entirely, in both directions: without it the
+# `*.csv` rule above rewrote the 2002 sample's CRLF to LF on checkout and
+# `tests/test_io.py` failed on every fresh clone. Do not fold these back
+# into the `*.csv` rule -- `tests/test_io.py::TestFixtureBytes` fails
+# loudly, naming this file, if they are.
+tests/fixtures/vra_raw_sample_*.csv -text
+
 # Deterministic script output -- GitHub should not compute language stats
 # nor a "human" diff over these. data/analysis/*.parquet and *.csv.gz are
 # tracked since DECISIONS.md ADR-0014; the blanket `*.parquet`/`*.csv.gz`

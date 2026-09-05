@@ -13,11 +13,12 @@ version numbers, mark progress.
 - Flight-level delay prediction (`ml/`, `just ml`, `reports/prediction/`,
   `reports/prediction.typ`, `docs/notes/prediction.md`). `ml/dataset_flights.py`
   makes one DuckDB scan per staged year and writes
-  `data/derived/ml/year=YYYY/part-0.parquet`: 10,200,578 rows, one per
+  `data/derived/ml/year=YYYY/part-0.parquet`: 10,200,560 rows, one per
   **scheduled** flight of the replication universe (ADR-0002), 46 pre-departure
   features for the D-1 horizon plus 3 inbound-leg features for H-1, five
-  targets, 313 MB in about 33 seconds. The delay targets are null where
-  ADR-0012 leaves no actual timestamp (4.97 M of the 10.2 M rows keep one) and
+  targets, 313 MB in 24.73 seconds (`data/derived/ml/manifest.json`). The delay
+  targets were null where ADR-0012 left no actual timestamp (4,965,966 of the
+  10.2 M rows kept one; ADR-0017 below raised that to 8,686,697) and
   where ADR-0015 marks the timestamp suspect (|delay| >= 1,440 minutes: 5,349
   flights, 0.1%); `cancelled` is defined on every row, because the table is the
   scheduled universe. Every column is registered under the new
@@ -181,7 +182,7 @@ version numbers, mark progress.
   Arrival targets go from 4,965,966 to 8,686,697 of 10,200,560 rows; the pre-2010
   late rate falls from 75-94% to 18-41% and the 2009-to-2010 discontinuity
   disappears. On the 2010-2013 folds, where the two readings see exactly the same
-  data, the rolling-origin day-ahead AUC rises from 0.638-0.711 to 0.715-0.724
+  data, the rolling-origin day-ahead AUC rises from 0.636-0.711 to 0.715-0.724
   and the 2010 Brier from 0.250 to 0.162: the gain is in the training data, not
   the test set. `reports/prediction/results.md` prints both readings side by
   side from the preserved `reports/prediction/rolling_reading_A.json`, and
@@ -192,6 +193,110 @@ version numbers, mark progress.
 
 ### Fixed
 
+Everything under this heading down to "Duplicated route-month keys" closes a
+finding of the independent pre-publication audit,
+[`docs/audit/2026-09-05-pre-publication.md`](docs/audit/2026-09-05-pre-publication.md),
+whose "Fixes applied" section lists the same changes finding by finding. What
+stays open is in `ROADMAP.md`, "Open items, by phase".
+
+- **The 2002 fixture lost its CRLF on every fresh clone, so `uv run pytest -q`
+  failed for everyone but the author** (audit B-1). `.gitattributes`'s
+  `*.csv text eol=lf` normalised the one property the legacy fixture exists to
+  prove; the blob stored in git already carried LF, so `actions/checkout` would
+  have made the first CI run on GitHub red. The fixtures are now
+  `tests/fixtures/vra_raw_sample_*.csv -text` and were re-added so the stored
+  blob carries the bytes on disk (`git ls-files --eol tests/fixtures/` shows
+  `i/crlf w/crlf`). `tests/test_io.py` asserts on the bytes of the file it
+  reads, and a new `TestFixtureBytes` fails with a message naming
+  `.gitattributes` if a fixture ever arrives normalised again.
+- **Absolute paths into the author's private research archive were committed
+  in `data/external/`** (audit B-2). 30 rows of `groups.csv` and `events.csv`
+  carried absolute `file://` URLs naming four files inside the author's private
+  research archive, and `data/external/README.md` named two private research
+  bases -- a leak that
+  contradicted the repository's own confidentiality statement and that both
+  existing guards structurally missed (one matched staged *path names*, the
+  other one module's contents). Those rows now cite `author's research notes
+  (private, not redistributed)` with the public URL where the fact has one and
+  an empty `url` where it does not; the 13 rows that pointed at the author's
+  own checkout of this repository now cite `DECISIONS.md` relatively. The same
+  clean-up removed absolute archive paths from `docs/data-availability.md` and
+  `docs/notes/references.md`. New `scripts/check_no_private_paths.py` scans
+  file *content* in two tiers -- the archive's layout, forbidden everywhere;
+  the private benchmark's file names, allowlisted per file with a reason and
+  never under `data/` -- and is run both by a new `no-private-data-content`
+  pre-commit hook (over staged blobs) and by `tests/test_no_private_paths.py`
+  (over every tracked text file, unmarked so it runs in CI). The allowlist is
+  checked for rot: an entry that no longer allows anything is an error.
+- **The README generalised the article's central result** (audit M-1). It said
+  the OLS-to-2SGMM sign inversion of both HHIs "replicates in all 12
+  comparisons"; an inversion actually occurs in **4** of the 12 -- columns (1)
+  and (2), the `ODDS` regressand -- and all 4 replicate. What holds 12 times
+  out of 12 is the weaker statement that replication and article agree on
+  *whether* the sign flips. The number was hand-derived, which this repository
+  forbids: `replication.run.hhi_sign_inversions` now computes both statements
+  from `results.json` and writes them to `summary.json` with per-column detail,
+  `tables.md` prints the cell-by-cell table, and `README.md` and
+  `docs/notes/replication.md` quote that file. `uv run python -m replication.run
+  --rescore` rebuilds `summary.json` and `tables.md` from a committed
+  `results.json` without re-estimating.
+- **The ADR-0017 accounting was counted twice, differently, and one column was
+  mislabelled** (audit M-2, M-3). `reports/prediction/results.md` headed a
+  column "out of scope" while printing `target_excluded_missing_actual`
+  (out-of-scope flights *that also have no actual arrival time*), so a reader
+  following the README's citation found an apparent 53,180-flight
+  contradiction; separately, `null_actual_by_carrier.csv` and `results.md`
+  disagreed by 24 realised flights on the same population. `ml/run.py` now
+  writes one canonical `accounting` block into
+  `reports/prediction/dataset.json` -- per year: scheduled, realised, realised
+  in and out of scope, `on_time_no_bav`, `actual_time_suspect`, targets
+  available and exclusions by reason -- and `results.md`, `README.md` and
+  `docs/declared-differences.md` quote that block under matching headers and
+  compute nothing themselves. The residual 24-flight difference is explained
+  where it appears: the CSV counts the staged universe, the block counts the
+  flight table built from it, which drops flights whose schedule is unusable.
+  `on_time_no_bav` is likewise printed beside, not merged into, the
+  null-*arrival* counts, because the flag covers a missing arrival **or**
+  departure.
+- **The `ml` runtime in the README was printed by nothing** (audit M-4).
+  `ml/run.py` now writes a `runtime` block into
+  `reports/prediction/dataset.json` -- total wall time, the dataset build, the
+  rolling and fixed fold sums -- and states that the total exceeds the fold
+  sums because permutation importance, calibration and I/O sit inside it and
+  are not separately timed. The README cites that block (2,344.2 s total
+  against 2,141.7 s of fold fits). `uv run python -m ml.run --report-only`
+  rebuilds `dataset.json` and `results.md` from artefacts already on disk,
+  without refitting a model.
+- **Two placeholder DOIs would have shipped** (audit M-5). The README badge no
+  longer renders a dead `zenodo.XXXXXXX` link; it reads "DOI pending Zenodo
+  deposit" and points at `ROADMAP.md`. `registry.datapackage()` now **omits**
+  `id` until a DOI is passed -- Frictionless makes it optional, and a
+  placeholder there is metadata a harvester would resolve -- and carries
+  `pending_doi: true` with a note instead. `CITATION.cff` explains in a comment
+  why it has no `doi:` of its own.
+- **Smaller corrections from the same audit.** Dead internal paths in
+  `docs/declared-differences.md` (m-1: `reports/replication/tables.md` and
+  `sensitivity.json` now carry their `public/`/`private/` segment); the
+  reading-A day-ahead range in the README and the CHANGELOG, 0.636 not 0.638
+  (m-2); `data/analysis/panel_route_month.csv.gz` is now byte-reproducible,
+  because `to_csv` writes the gzip header with `mtime=0` and the payload was
+  already deterministic (m-3); the superseded row count, target count and
+  build time in this file's own "Added" section (m-5); the expected
+  `no-private-data` grep count in `docs/tutorial/12`, now five and describing
+  both hooks (m-6); the README's data-availability summary gains OurAirports
+  and the federal holiday laws, the two sources it redistributes but did not
+  list, and says how many of the 14 it covers (m-8); `ruff-pre-commit` pinned
+  to `v0.16.6`, the version `uv.lock` resolves (m-10); the non-existent
+  `.sapians-doclint-baseline.json` dropped from the `docs-lint` path filter
+  (m-11); and the four sign disagreements in
+  `docs/declared-differences.md` row 7 now read replicated-against-published,
+  the same order as rows 2 and 3 (m-12). Found while verifying the above, not
+  in the audit: `scripts/null_actual_by_carrier.py` labelled each airline-year
+  with DuckDB's `any_value()`, which is free to answer differently on each
+  parallel scan, so five transition-year rows of a tracked CSV flipped between
+  runs. The convention is now stated and deterministic -- the group and class
+  in force in the airline's last observed month of that year -- and the file is
+  byte-reproducible. No total moves: `in_bav_scope` is identical on every row.
 - **Duplicated route-month keys, fixed at the source** (`DECISIONS.md`
   ADR-0016). `data/staged/` is partitioned by the year of the *source file*
   while `year` and `ym` come from `flight_date`, so 3,723 rows sit in a

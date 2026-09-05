@@ -18,7 +18,9 @@ repos:
         args: ["--maxkb=51200"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.4
+    # Kept in step with the version uv.lock resolves (audit 2026-09-05, m-10):
+    # a hook and a CI run on different ruff versions can disagree about a file.
+    rev: v0.16.6
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -36,3 +38,14 @@ repos:
         # scalar cannot hold without heavy escaping.
         entry: |-
           bash -c 'm=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei "proj18|labtar|nectarbase|\.dta$|^data/(raw|staged|derived|private)/" | grep -Ev "^data/(raw|staged|derived|private)/(README\.md|manifest\.json)$" || true); if [ -n "$m" ]; then echo "no-private-data: staged path(s) not allowed in git:"; echo "$m"; exit 1; fi'
+
+      - id: no-private-data-content
+        name: "no-private-data: the private archive's paths and base names stay out of file CONTENT"
+        language: system
+        pass_filenames: false
+        # The hook above matches staged path *names* only, which is why 30 rows
+        # of data/external/*.csv shipped absolute file:/// URLs into the private
+        # archive for fourteen commits (audit 2026-09-05, B-2). This one reads
+        # the staged blobs. Patterns and allowlist live in the script, shared
+        # with tests/test_no_private_paths.py so the two cannot drift.
+        entry: uv run python scripts/check_no_private_paths.py --staged

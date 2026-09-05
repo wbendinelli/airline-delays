@@ -55,11 +55,55 @@ class TestMeasuredAgainstDeclared:
         assert measured["line_ending"] == declared.line_ending
         assert not measured["has_quotes"]
 
-    def test_the_two_layouts_differ_in_line_ending(self) -> None:
-        # Measured, not assumed: the legacy files are CRLF and the 2010-2013
-        # files are LF. Declaring CRLF for both was wrong.
+    def test_the_two_layouts_differ_in_line_ending(self, raw_2002: Path, raw_2012: Path) -> None:
+        # Measured on the bytes of the files this test reads, not assumed: the
+        # legacy files are CRLF and the 2010-2013 files are LF. Declaring CRLF
+        # for both was wrong.
         assert io.LAYOUT_LEGACY.line_ending == "crlf"
         assert io.LAYOUT_2010.line_ending == "lf"
+        assert b"\r\n" in raw_2002.read_bytes()
+        assert b"\r\n" not in raw_2012.read_bytes()
+
+
+class TestFixtureBytes:
+    """The fixtures must reach the test as bytes, not as git's idea of them.
+
+    `tests/fixtures/vra_raw_sample_*.csv` are cut byte for byte from the
+    published ANAC files precisely so that `src/vra/io.py`'s declared layout is
+    checked against a real file. A `text`/`eol` attribute in `.gitattributes`
+    rewrites line endings on checkout, which silently turns the 2002 sample
+    into an LF file in every fresh clone and makes
+    `TestMeasuredAgainstDeclared` fail there while passing in the author's tree
+    (audit 2026-09-05, B-1). These two tests exist to name that cause instead
+    of letting the failure look like a bug in the layout constants.
+    """
+
+    NORMALISED = (
+        "{path} arrived with {found} line endings but the layout declares "
+        "{declared}: git normalised the fixture. `.gitattributes` must keep "
+        "`tests/fixtures/vra_raw_sample_*.csv -text` so these bytes survive "
+        "checkout -- see audit finding B-1 in "
+        "docs/audit/2026-09-05-pre-publication.md."
+    )
+
+    @pytest.mark.parametrize("year", [2002, 2012])
+    def test_the_fixture_is_not_eol_normalised(self, request, year: int) -> None:
+        path: Path = request.getfixturevalue(f"raw_{year}")
+        declared = io.layout_for(year).line_ending
+        found = "crlf" if b"\r\n" in path.read_bytes() else "lf"
+        assert found == declared, self.NORMALISED.format(
+            path=path.name, found=found, declared=declared
+        )
+
+    def test_gitattributes_exempts_the_raw_fixtures_from_eol_normalisation(self) -> None:
+        rule = "tests/fixtures/vra_raw_sample_*.csv -text"
+        attributes = Path(__file__).resolve().parents[1] / ".gitattributes"
+        assert rule in attributes.read_text(encoding="utf-8").splitlines(), (
+            f"`.gitattributes` no longer carries `{rule}`; without it the "
+            "`*.csv text eol=lf` rule above rewrites the 2002 sample's CRLF on "
+            "checkout and every fresh clone fails TestMeasuredAgainstDeclared "
+            "-- see audit finding B-1 in docs/audit/2026-09-05-pre-publication.md."
+        )
 
     @pytest.mark.parametrize("year", [2002, 2012])
     def test_header_reads_back_as_the_declared_columns(self, request, year: int) -> None:

@@ -194,7 +194,13 @@ sinais iguais**, 259 (85%) a menos de meio erro-padrão publicado, maior desvio
 isolado 0,94 erro-padrão. Nas 24 colunas que reportam J de Hansen, **nenhuma
 muda de veredito** a 5%: as mesmas 22 não rejeitam ortogonalidade e as mesmas 2
 rejeitam. A inversão de sinal dos HHIs entre OLS e 2SGMM — o argumento central do
-artigo — replica nas 12 comparações.
+artigo — é uma afirmação sobre 12 comparações (2 termos HHI x 6 colunas): a
+inversão de fato ocorre em **4** delas, as colunas (1) e (2), regressando
+`ODDS`, e as 4 replicam. Nas outras 8 (`MINS`, `MINS > 15`) OLS e 2SGMM já
+saem com o **mesmo** sinal na tabela publicada, e só a magnitude muda; a
+réplica concorda com o artigo sobre *haver ou não* inversão em **12 de 12**
+(calculado por `replication/run.py` no campo `hhi_sign_inversions` de
+`reports/replication/private/summary.json`).
 
 **Não bate**, e está declarado em
 [`docs/declared-differences.md`](../declared-differences.md): o N (+5,31% nas

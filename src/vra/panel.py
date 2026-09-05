@@ -241,7 +241,11 @@ def build_panel(
     parquet = analysis_dir / "panel_route_month.parquet"
     csv = analysis_dir / "panel_route_month.csv.gz"
     features_mod.write_table(panel, parquet)
-    panel.to_csv(csv, index=False, compression="gzip", float_format="%.6g")
+    # mtime=0: the gzip *header* embeds the write time, so without this a tracked
+    # file whose payload is byte-identical still changes on every rebuild
+    # (audit 2026-09-05, m-3). The payload was already deterministic; now the
+    # whole file is.
+    panel.to_csv(csv, index=False, compression={"method": "gzip", "mtime": 0}, float_format="%.6g")
     result = PanelResult(
         rows=len(panel),
         columns=panel.shape[1],
