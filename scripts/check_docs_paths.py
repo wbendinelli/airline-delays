@@ -8,7 +8,7 @@ error -- it strands someone mid-exercise. This script scans them for three
 things and fails on
 any miss:
 
-1. Backticked or fenced-code filesystem paths (``src/airline_delays/schema.py``,
+1. Backticked or fenced-code filesystem paths (``src/airline_delays/schema/columns.py``,
    ``data/analysis/manifest.json``, brace groups like ``src/airline_delays/definitions/{carriers,cause_codes}.py``).
 2. ``just <target>`` invocations, checked against the recipe names actually
    defined in ``justfile``.

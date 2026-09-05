@@ -31,123 +31,38 @@ idempotent: a file whose sha256 already matches the manifest is skipped.
 
 from __future__ import annotations
 
-import hashlib
-import json
 import re
 import time
 from collections.abc import Iterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import requests
+from airline_delays.ingest.manifest import (
+    BASE_URL,
+    CHUNK_BYTES,
+    Manifest,
+    ManifestEntry,
+    sha256_file,
+)
 
-BASE_URL = "https://siros.anac.gov.br/siros/registros/diversos/vra"
 YEARS = tuple(range(2000, 2014))
 
 USER_AGENT = "airline-delays/0.1 (research; https://github.com/wbendinelli/airline-delays)"
+
 REQUEST_DELAY_S = 0.5
+
 """Politeness delay between two requests to the same host."""
 
 MAX_RETRIES = 4
+
 RETRY_BACKOFF_S = 3.0
-CHUNK_BYTES = 1 << 20
-
-
-# --------------------------------------------------------------------------- layouts
-
-
-@dataclass(frozen=True)
-class RawLayout:
-    """A raw CSV layout: how to read the file and where each field sits."""
-
-    name: str
-    years: tuple[int, ...]
-    separator: str
-    encoding: str
-    n_columns: int
-    columns: tuple[str, ...]
-    datetime_format: str
-    cause_is_code: bool
-    """True when the justification column holds the two-letter IAC 1504 code."""
-
-    quoting: str = "none"
-    line_ending: str = "crlf"
-
-
-LAYOUT_LEGACY = RawLayout(
-    name="legacy_12col",
-    years=tuple(range(2000, 2010)),
-    separator=",",
-    encoding="latin-1",
-    n_columns=12,
-    columns=(
-        "ICAO Empresa Aérea",
-        "Número Voo",
-        "Código Autorização (DI)",
-        "Código Tipo Linha",
-        "ICAO Aeródromo Origem",
-        "ICAO Aeródromoo Destino",  # the typo is in the source file
-        "Partida Prevista",
-        "Partida Real",
-        "Chegada Prevista",
-        "Chegada Real",
-        "Situação Voo",
-        "Código Justificativa",
-    ),
-    datetime_format="%d/%m/%Y %H:%M",
-    cause_is_code=True,
-)
-
-LAYOUT_2010 = RawLayout(
-    name="wide_20col",
-    years=tuple(range(2010, 2014)),
-    separator=";",
-    encoding="utf-8",
-    n_columns=20,
-    columns=(
-        "Sigla ICAO Empresa Aérea",
-        "Empresa Aérea",
-        "Número Voo",
-        "Código DI",
-        "Código Tipo Linha",
-        "Modelo Equipamento",
-        "Número de Assentos",
-        "Sigla ICAO Aeroporto Origem",
-        "Descrição Aeroporto Origem",
-        "Partida Prevista",
-        "Partida Real",
-        "Sigla ICAO Aeroporto Destino",
-        "Descrição Aeroporto Destino",
-        "Chegada Prevista",
-        "Chegada Real",
-        "Situação Voo",
-        "Justificativa",
-        "Referência",
-        "Situação Partida",
-        "Situação Chegada",
-    ),
-    datetime_format="%d/%m/%Y %H:%M",
-    cause_is_code=False,
-    line_ending="lf",
-)
-
-LAYOUTS: tuple[RawLayout, ...] = (LAYOUT_LEGACY, LAYOUT_2010)
-
-
-def layout_for(year: int) -> RawLayout:
-    """Return the raw layout that applies to `year`."""
-    for layout in LAYOUTS:
-        if year in layout.years:
-            return layout
-    raise ValueError(f"no known raw layout for year {year}")
-
-
-# --------------------------------------------------------------------------- discovery
 
 _HREF_RE = re.compile(r'HREF="(/siros/registros/diversos/vra/\d{4}/[^"]+\.csv)"', re.IGNORECASE)
+
 _MONTH_RE = re.compile(r"VRA_(\d{4})_?(\d{1,2})\.csv$", re.IGNORECASE)
 
 
@@ -196,88 +111,6 @@ def list_year(year: int, session: requests.Session | None = None) -> list[Remote
         month = int(match.group(2)) if match and int(match.group(1)) == year else 0
         out.append(RemoteFile(year=year, month=month, name=name, url=f"{BASE_URL}/{year}/{name}"))
     return sorted(out, key=lambda f: (f.month, f.name))
-
-
-# --------------------------------------------------------------------------- manifest
-
-
-@dataclass
-class ManifestEntry:
-    url: str
-    file: str
-    bytes: int
-    sha256: str
-    retrieved_at: str
-    http_status: int
-    year: int = 0
-    month: int = 0
-
-    def as_dict(self) -> dict:
-        return {
-            "url": self.url,
-            "file": self.file,
-            "bytes": self.bytes,
-            "sha256": self.sha256,
-            "retrieved_at": self.retrieved_at,
-            "http_status": self.http_status,
-            "year": self.year,
-            "month": self.month,
-        }
-
-
-@dataclass
-class Manifest:
-    """The `data/raw/manifest.json` document, keyed by repository-relative path."""
-
-    path: Path
-    entries: dict[str, ManifestEntry] = field(default_factory=dict)
-    source: str = BASE_URL
-
-    @classmethod
-    def load(cls, path: Path) -> Manifest:
-        manifest = cls(path=path)
-        if path.exists():
-            raw = json.loads(path.read_text(encoding="utf-8"))
-            for item in raw.get("files", []):
-                entry = ManifestEntry(
-                    url=item["url"],
-                    file=item["file"],
-                    bytes=item["bytes"],
-                    sha256=item["sha256"],
-                    retrieved_at=item["retrieved_at"],
-                    http_status=item["http_status"],
-                    year=item.get("year", 0),
-                    month=item.get("month", 0),
-                )
-                manifest.entries[entry.file] = entry
-        return manifest
-
-    def save(self) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        files = [self.entries[key].as_dict() for key in sorted(self.entries)]
-        document = {
-            "dataset": "ANAC Voo Regular Ativo (VRA)",
-            "source": self.source,
-            "attribution": "ANAC, Voo Regular Ativo (VRA), via dados.gov.br",
-            "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
-            "n_files": len(files),
-            "total_bytes": sum(item["bytes"] for item in files),
-            "files": files,
-        }
-        self.path.write_text(
-            json.dumps(document, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-
-
-def sha256_file(path: Path, chunk: int = CHUNK_BYTES) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while block := handle.read(chunk):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-# --------------------------------------------------------------------------- fetch
 
 
 def _session() -> requests.Session:
@@ -366,51 +199,3 @@ def fetch(
             time.sleep(delay_s)
     manifest.save()
     yield f"manifest: {len(manifest.entries)} files, {sum(e.bytes for e in manifest.entries.values()):,} bytes"
-
-
-# --------------------------------------------------------------------------- inspection
-
-
-def read_header(path: Path, layout: RawLayout | None = None) -> list[str]:
-    """Read the header line of a raw file and split it on its separator."""
-    path = Path(path)
-    if layout is None:
-        year = int(path.parent.name) if path.parent.name.isdigit() else 2002
-        layout = layout_for(year)
-    with path.open("rb") as handle:
-        first = handle.readline()
-    return first.decode(layout.encoding).strip("\r\n").split(layout.separator)
-
-
-def inspect_file(path: Path, sample_lines: int = 5000) -> dict:
-    """Measure a raw file instead of assuming: separator, encoding, columns, quirks.
-
-    Returns a dictionary that `docs/notes/staging.md` and the tests consume.
-    """
-    path = Path(path)
-    with path.open("rb") as handle:
-        head = handle.read(1 << 20)
-    encoding = "utf-8"
-    try:
-        head.decode("utf-8")
-    except UnicodeDecodeError:
-        encoding = "latin-1"
-    text = head.decode(encoding, errors="replace")
-    lines = text.splitlines()[: sample_lines + 1]
-    header = lines[0] if lines else ""
-    separator = ";" if header.count(";") > header.count(",") else ","
-    columns = header.split(separator)
-    widths: dict[int, int] = {}
-    for line in lines[1:-1]:
-        widths[line.count(separator) + 1] = widths.get(line.count(separator) + 1, 0) + 1
-    return {
-        "file": path.name,
-        "encoding": encoding,
-        "separator": separator,
-        "n_columns": len(columns),
-        "columns": columns,
-        "line_ending": "crlf" if "\r\n" in text[:4096] else "lf",
-        "has_quotes": '"' in text,
-        "field_count_histogram": dict(sorted(widths.items())),
-        "bytes": path.stat().st_size,
-    }

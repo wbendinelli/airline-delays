@@ -22,13 +22,13 @@ coarser grain:
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     import pandas as pd
 
 Aggregation = Literal["sum", "mean", "recompute", "none"]
+
 Layer = Literal["staged", "fact", "city", "airline_city", "panel", "derived", "ml"]
 
 
@@ -51,8 +51,11 @@ class Column:
 
 
 _RAW_LEGACY = "ANAC VRA raw CSV 2000-2009 (12 columns, comma, latin-1)"
+
 _RAW_2010 = "ANAC VRA raw CSV 2010-2013 (20 columns, semicolon, UTF-8)"
+
 _RAW_BOTH = "ANAC VRA raw CSV (both layouts)"
+
 _DERIVED = "derived in airline_delays.staging"
 
 STAGED: list[Column] = [
@@ -509,23 +512,11 @@ def _schema_of(table: Any) -> tuple[list[str], dict[str, str]]:
     return names, {}
 
 
-# =========================================================================== layers
-#
-# Everything below describes the tables built on top of the staged flights: the
-# fact table (`airline_delays.fact`), its city projections and the public route-month
-# panel (`airline_delays.panel`). The entries are *generated* from one description
-# resolver rather than typed out one by one, because most of them are genuinely
-# parametric — "flights whose scheduled departure hour is 07" differs from its
-# 23 siblings only in the number, and a hand-typed copy of each is a copy that
-# drifts. `tests/test_registry.py` closes the loop the other way: it builds the
-# real tables from the fixture and fails if any column has no entry, or any
-# entry no column. A generated definition that is wrong is a bug; a definition
-# that is missing cannot happen.
-
 _SIDES: dict[str, tuple[str, str]] = {
     "dep": ("departure", "partida"),
     "arr": ("arrival", "chegada"),
 }
+
 _CUTS: dict[str, tuple[str, str]] = {
     "gt0": ("more than 0 minutes late", "com mais de 0 minutos de atraso"),
     "gt15": ("more than 15 minutes late", "com mais de 15 minutos de atraso"),
@@ -533,6 +524,7 @@ _CUTS: dict[str, tuple[str, str]] = {
     "gt60": ("more than 60 minutes late", "com mais de 60 minutos de atraso"),
     "1530": ("between 15 and 30 minutes late", "com atraso entre 15 e 30 minutos"),
 }
+
 _CATEGORY_PT: dict[str, str] = {
     "weather": "meteorologia",
     "airport_restricted": "aeroporto interditado ou com restrição",
@@ -542,12 +534,14 @@ _CATEGORY_PT: dict[str, str] = {
     "authorised": "autorizada",
     "other": "outras",
 }
+
 _CLASS_PT: dict[str, str] = {
     "fsc": "das empresas de serviço completo (FSC)",
     "lcc": "das empresas de baixo custo (LCC)",
     "regional": "das regionais",
     "other": "das demais empresas",
 }
+
 _SLICES: dict[str, tuple[str, str]] = {
     "fsc": (
         "the article's FSC group set (TAM, Varig, Transbrasil, Vasp), which excludes Avianca Brasil",
@@ -565,7 +559,9 @@ _SLICES: dict[str, tuple[str, str]] = {
 }
 
 _ANALYSIS = "derived in airline_delays.fact from data/staged"
+
 _PANEL_SRC = "derived in airline_delays.panel from the fact table"
+
 _EXTERNAL = "data/external"
 
 
@@ -923,6 +919,7 @@ _ARTICLE_SETS_FOR_DOCS: dict[str, tuple[str, ...]] = {
     "princident": ("DF", "DG", "HB", "MA", "TD"),
     "pr_connc": ("RA",),
 }
+
 _CANCEL_CODES_FOR_DOCS: dict[str, tuple[str, ...]] = {
     "cancel_technical": ("XN",),
     "cancel_weather": ("XO", "XT", "XS", "XI", "XJ", "XM"),
@@ -1309,7 +1306,6 @@ _PLAIN_DOCS: dict[str, _Doc] = {
         "recompute",
     ),
 }
-
 
 _ARTICLE_DOCS: dict[str, _Doc] = {
     "f": _Doc(
@@ -1798,6 +1794,7 @@ ML_NAMES: tuple[str, ...] = (
     "late15_dep",
     "cancelled",
 )
+
 """Column order of `data/derived/ml/year=YYYY/part-0.parquet`.
 
 Kept here rather than imported from `airline_delays.prediction.dataset` so that `airline_delays.schema`
@@ -2282,7 +2279,6 @@ def ml_columns() -> list[Column]:
 
 ML: list[Column] = ml_columns()
 
-
 _BY_NAME_ALL: dict[str, Column] = {column.name: column for column in (*STAGED, *FACT, *ML)}
 
 
@@ -2304,181 +2300,3 @@ def describe_frame(frame: Any, layer: Layer, source: str | None = None) -> list[
     names, _ = _schema_of(frame)
     chosen = source or {"fact": _ANALYSIS, "staged": _DERIVED, "ml": _ML_SRC}.get(layer, _PANEL_SRC)
     return [_column(name, _resolver(layer)(name), layer, chosen) for name in names]
-
-
-# ------------------------------------------------------------------ generated docs
-
-LAYER_TITLES: dict[str, str] = {
-    "staged": "Staged flights (`data/staged/year=YYYY/part-0.parquet`)",
-    "fact": "Fact table, group x route x month (`data/analysis/fact_group_route_month.parquet`)",
-    "city": "City-month (`data/analysis/city_month.parquet`)",
-    "airline_city": "Airline x city x month (`data/analysis/airline_city_month.parquet`)",
-    "panel": "Route-month panel (`data/analysis/panel_route_month.parquet`)",
-    "ml": "Flight-level modelling table (`data/derived/ml/year=YYYY/part-0.parquet`)",
-}
-
-
-def dictionary_markdown(layers: dict[str, list[Column]]) -> str:
-    """The data dictionary, generated. Never hand-edited (rule 5 of the brief)."""
-    lines = [
-        "# Data dictionary",
-        "",
-        "Generated from `src/airline_delays/schema.py` by `airline-delays dictionary`. Do not edit by",
-        "hand: the registry is the source of truth, and this file is a rendering of it.",
-        "Definitions are given in English and Portuguese; `aggregation` says what happens",
-        "to the column when rows are rolled up to a coarser grain (`sum` adds, `recompute`",
-        "must be rebuilt from the flights, `none` is a key or label).",
-        "",
-    ]
-    for layer, columns in layers.items():
-        if not columns:
-            continue
-        lines += [
-            f"## {LAYER_TITLES.get(layer, layer)}",
-            "",
-            f"{len(columns)} columns.",
-            "",
-            "| column | type | unit | aggregation | definition (en) | definição (pt) |",
-            "|---|---|---|---|---|---|",
-        ]
-        for column in columns:
-            lines.append(
-                f"| `{column.name}` | {column.dtype} | {column.unit} | {column.aggregation} | "
-                f"{_escape(column.definition_en)} | {_escape(column.definition_pt)} |"
-            )
-        lines.append("")
-    return "\n".join(lines)
-
-
-def _escape(text: str) -> str:
-    return text.replace("|", "\\|").replace("\n", " ")
-
-
-_FRICTIONLESS_TYPES: dict[str, tuple[str, str | None]] = {
-    "date32": ("date", None),
-    "int8": ("integer", None),
-    "int16": ("integer", None),
-    "int32": ("integer", None),
-    "int64": ("integer", None),
-    "float32": ("number", None),
-    "float64": ("number", None),
-    "string": ("string", None),
-    "bool": ("boolean", None),
-    "timestamp[s]": ("datetime", None),
-}
-
-LICENCES: dict[str, dict[str, str]] = {
-    "data": {
-        "name": "CC-BY-4.0",
-        "title": "Creative Commons Attribution 4.0",
-        "path": "https://creativecommons.org/licenses/by/4.0/",
-    },
-    "code": {
-        "name": "MIT",
-        "title": "MIT License",
-        "path": "https://opensource.org/licenses/MIT",
-    },
-}
-
-SOURCES: list[dict[str, str]] = [
-    {
-        "title": "ANAC, Voo Regular Ativo (VRA), via dados.gov.br",
-        "path": "https://dados.gov.br/dados/conjuntos-dados/dadosabertos-areas-de-atuacao-voos-e-operacoes-aereas-voo-regular-ativo-vra",
-    },
-    {
-        "title": "ANAC, IAC 1504 (justification codes, DI codes, line types)",
-        "path": "https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf",
-    },
-    {
-        "title": "OurAirports (airport coordinates behind the node map)",
-        "path": "https://davidmegginson.github.io/ourairports-data/airports.csv",
-    },
-]
-
-
-def datapackage(resources: list[dict[str, Any]], doi: str | None = None) -> dict:
-    """A Frictionless v2 datapackage descriptor, generated from the registry.
-
-    ``id`` is **omitted** until a DOI exists. Frictionless makes the field
-    optional, and a placeholder there is worse than nothing: harvesters read the
-    descriptor as machine-readable metadata and would resolve
-    ``10.5281/zenodo.PENDING`` as a real, dead identifier (audit 2026-09-05,
-    M-5). The custom ``pending_doi`` flag says the omission is deliberate and
-    where the deposit stands; pass ``doi=`` once Zenodo has minted one and both
-    fields flip together.
-    """
-    identity: dict[str, Any] = (
-        {"id": f"https://doi.org/{doi}"}
-        if doi
-        else {
-            "pending_doi": True,
-            "pending_doi_note": (
-                "No DOI has been minted yet; `id` is omitted rather than filled with a "
-                "placeholder that would resolve to nothing. The Zenodo deposit is "
-                "tracked in ROADMAP.md, 'Open items'."
-            ),
-        }
-    )
-    document: dict[str, Any] = {
-        "profile": "data-package",
-        "name": "airline-delays",
-        **identity,
-        "title": "Brazilian airline delays, reconstructed from ANAC's VRA (2000-2013)",
-        "description": (
-            "Route-month panel and group x route x month fact table reconstructed from "
-            "ANAC's Voo Regular Ativo flight-leg records, with the columns of "
-            "Bendinelli, Bettini & Oliveira (2016) reproduced under declared definitions."
-        ),
-        "homepage": "https://github.com/wbendinelli/airline-delays",
-        "version": "0.1.0",
-        "licenses": [LICENCES["data"]],
-        "sources": SOURCES,
-        "contributors": [
-            {"title": "William Eduardo Bendinelli", "role": "author"},
-        ],
-        "resources": resources,
-    }
-    return document
-
-
-def resource(
-    name: str,
-    path: str,
-    columns: list[Column],
-    primary_key: list[str],
-    description: str | None = None,
-) -> dict:
-    """One Frictionless resource whose schema is the registry's own entries.
-
-    `primary_key` may be empty: the flight-level table has no key that is unique
-    in the source data (the raw VRA repeats rows), and declaring one that is not
-    would be a claim, not a schema.
-    """
-    fields = []
-    for column in columns:
-        field_type, field_format = _FRICTIONLESS_TYPES.get(column.dtype, ("any", None))
-        field: dict[str, Any] = {
-            "name": column.name,
-            "type": field_type,
-            "title": column.unit,
-            "description": column.definition_en,
-        }
-        if field_format:
-            field["format"] = field_format
-        field["x-definition-pt"] = column.definition_pt
-        field["x-aggregation"] = column.aggregation
-        field["x-source"] = column.source
-        fields.append(field)
-    schema: dict[str, Any] = {"fields": fields}
-    if primary_key:
-        schema["primaryKey"] = primary_key
-    out = {
-        "name": name,
-        "path": path,
-        "format": Path(path).suffix.lstrip("."),
-        "mediatype": "application/vnd.apache.parquet" if path.endswith(".parquet") else "text/csv",
-        "schema": schema,
-    }
-    if description:
-        out["description"] = description
-    return out

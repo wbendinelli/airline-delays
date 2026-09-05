@@ -274,7 +274,7 @@ def fact(
     import pandas as pd
 
     fact = pd.read_parquet(analysis / "fact_group_route_month.parquet")
-    city = panel_mod.city_month(
+    city = fact_mod.city_month(
         fact,
         pd.read_parquet(root / "data" / "derived" / "node_day_hour.parquet"),
         legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
@@ -324,41 +324,6 @@ def panel(
     )
 
 
-RESOURCE_NOTES: dict[str, str] = {
-    "ml": (
-        "Flight-level modelling table for delay prediction: one row per scheduled "
-        "flight of the replication universe (ADR-0002), pre-departure features only "
-        "(ADR-0009), targets null where ADR-0012 leaves no actual timestamp. "
-        "Partitioned by year, about 313 MB, rebuilt in 33 seconds by `just predict-dataset` and "
-        "therefore not tracked in git (ADR-0004)."
-    ),
-}
-
-
-def _built_layers(root: Path) -> dict[str, list]:
-    """Registry entries for every table that currently exists on disk."""
-    import pandas as pd
-
-    analysis = root / "data" / "analysis"
-    layers: dict[str, list] = {"staged": list(schema.STAGED)}
-    for layer, filename in (
-        ("fact", "fact_group_route_month.parquet"),
-        ("city", "city_month.parquet"),
-        ("airline_city", "airline_city_month.parquet"),
-        ("panel", "panel_route_month.parquet"),
-    ):
-        path = analysis / filename
-        if path.exists():
-            frame = pd.read_parquet(path)
-            layers[layer] = schema.describe_frame(frame, layer)
-    # The flight-level modelling table is 313 MB and never enters git (ADR-0004),
-    # so its entry is the registry's declared list rather than a built file --
-    # a reader of the dictionary must be able to see the columns of a table they
-    # will rebuild, not only of the tables that ship.
-    layers["ml"] = list(schema.ML)
-    return layers
-
-
 @app.command()
 def dictionary(
     out: Annotated[
@@ -368,7 +333,7 @@ def dictionary(
     """Generate docs/dictionary.md from the schema. Never edit it by hand."""
 
     root = repo_root()
-    layers = _built_layers(root)
+    layers = schema.built_layers(root)
     target = out or root / "docs" / "dictionary.md"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(schema.dictionary_markdown(layers), encoding="utf-8")
@@ -385,33 +350,10 @@ def datapackage(
     """Generate datapackage.json (Frictionless v2) from the schema."""
 
     root = repo_root()
-    layers = _built_layers(root)
-    paths = {
-        "fact": (
-            "fact_group_route_month",
-            "data/analysis/fact_group_route_month.parquet",
-            ["ym", "route", "group"],
-        ),
-        "city": ("city_month", "data/analysis/city_month.parquet", ["ym", "node"]),
-        "airline_city": (
-            "airline_city_month",
-            "data/analysis/airline_city_month.parquet",
-            ["ym", "node", "group"],
-        ),
-        "panel": ("panel_route_month", "data/analysis/panel_route_month.parquet", ["route", "ym"]),
-        "ml": ("flights_features", "data/derived/ml/year=*/part-0.parquet", []),
-    }
-    resources = [
-        schema.resource(name, path, layers[layer], key, description=RESOURCE_NOTES.get(layer))
-        for layer, (name, path, key) in paths.items()
-        if layer in layers
-    ]
+    descriptor = schema.build_datapackage(root)
     target = out or root / "datapackage.json"
-    target.write_text(
-        json.dumps(schema.datapackage(resources), indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
-    typer.echo(f"datapackage: {len(resources)} resources -> {target}")
+    target.write_text(json.dumps(descriptor, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    typer.echo(f"datapackage: {len(descriptor['resources'])} resources -> {target}")
 
 
 def _passthrough(module_main, ctx: typer.Context) -> None:

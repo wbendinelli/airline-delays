@@ -225,6 +225,17 @@ version numbers, mark progress.
 
 ### Changed
 
+- One stage-ordered package. `src/vra/`, `replication/`, `ml/` and `theory/` become
+  `src/airline_delays/` with subpackages `ingest/` (layouts, manifest, download), `staging/`
+  (clean, select, build), `fact/` (measures, build, projections -- `city_month` now lives here),
+  `panel/` (columns, build), `schema/` (columns, dictionary, datapackage), `estimation/`,
+  `prediction/` (dataset, split, train, evaluate, leakage, run) and `theory/`, plus the
+  cross-cutting `definitions/` (nodes, universe, delays, cause_codes, carriers, concentration,
+  hubs, congestion) and `paths.py`. The console script is `airline-delays`, one command per
+  stage in pipeline order (`fetch`, `stage`, `reference`, `fact`, `panel`, `dictionary`,
+  `datapackage`, `estimate`, `predict-dataset`, `predict`, `theory`); `just` recipes follow the
+  same names. Tests are renamed with their modules; `sys.path` hacks are gone.
+
 - `docs/data-availability.md` sources 1 (the VRA is HOTRAN plus BAV, and ANAC's
   published percentages used 30- and 60-minute cuts), 3, 9, 12 and 13 (the RPE
   reliability caveat of Resolução ANAC 8/2007 and the 2013 gap, stated by the author
