@@ -39,7 +39,7 @@ request.
 | `lint` | `ruff check` e `ruff format --check` sobre toda a árvore |
 | `test` | `pytest` contra a amostra de teste e as tabelas versionadas; sem rede, sem `data/raw/` |
 | `citation` | `CITATION.cff` é válido segundo o esquema |
-| `docs-paths` | todo caminho entre crases e todo comando `just` ou `airline-delays` nos READMEs, em `docs/` e nos guias de dados resolve para algo real (`scripts/check_docs_paths.py`) |
+| `docs-paths` | todo caminho entre crases e todo comando `just` ou `airline-delays` nos READMEs, em `docs/` e nos guias de dados resolve para algo real (`scripts/check_docs_paths.py`), e o Markdown renderiza no GitHub: delimitadores de matemática, tabelas, cercas (`scripts/check_markdown_math.py`) |
 | `metadata` | `docs/dictionary.md`, `datapackage.json`, `.zenodo.json` e `reports/summary.json` são reconstruções do registro e das tabelas, e o Data Package valida |
 | `docs-lint` | `README.md` segue o perfil de documentação declarado em `.sapians-repo.yml` |
 | `security` | `gitleaks` varre todo o histórico em busca de segredos |
@@ -72,17 +72,20 @@ Um job vermelho é corrigido na causa, nunca enfraquecendo a checagem.
 (`docs/editorial/readme-outline.md`) e mudam juntos;
 `scripts/check_readme_parity.py` falha quando citam números, caminhos ou
 receitas diferentes. A prosa segue `docs/editorial/style-guide.md`. Antes de
-abrir um pull request que toque a prosa, rode as três checagens:
+abrir um pull request que toque a prosa, rode as quatro checagens:
 
 ```bash
 uv run python scripts/check_docs_paths.py
+uv run python scripts/check_markdown_math.py
 uv run python scripts/check_prose_numbers.py
 uv run python scripts/check_readme_parity.py
 ```
 
-Os relatórios Typst, o tutorial, as notas e os capítulos de teoria são
-escritos em português por decisão (`DECISIONS.md`, ADR-0006); tudo o mais é em
-inglês.
+Os relatórios Typst, o estudo (`docs/study/`) e as notas são escritos em
+português por decisão (`DECISIONS.md`, ADR-0006); tudo o mais é em inglês. A
+matemática em Markdown é escrita para o renderizador do GitHub -- inline como
+$`...`$, em display dentro de uma cerca ```math -- e
+`scripts/check_markdown_math.py` rejeita qualquer outra forma.
 
 ## Estilo
 

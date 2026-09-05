@@ -108,7 +108,7 @@ year at a time. Each recipe wraps one command of `uv run airline-delays --help`;
 | Estimation | `just estimate` | article panel -> `reports/replication/` | under a minute |
 | Prediction | `just predict-dataset`, `just predict` | staged legs -> `data/derived/ml/` -> `reports/prediction/` | 25 s, then 2,344 s |
 | Theory | `just theory` | `src/airline_delays/theory/` -> `reports/theory/` | about a second |
-| Reporting | `just summary`, `just report` | the artefacts -> `reports/summary.json`; the Typst sources -> PDFs | seconds |
+| Reporting | `just summary`, `just report` | the artefacts -> `reports/summary.json`; the Typst sources -> `reports/pdf/` | seconds |
 
 ## Results at a glance
 
@@ -192,7 +192,7 @@ which mints the DOI; until it exists, the badge above is the article's.
 | Airport capacity, slot coordination, mergers | BNDES, ANAC, CADE | Transcribed rows in `data/external/capacity.csv`, `slots.csv`, `groups.csv` and `events.csv` |
 | METAR weather | DECEA, via REDEMET | Not integrated; the article's weather signal is the VRA's own justification codes |
 | The article | Elsevier | Cited by DOI; its published cells parsed into `src/airline_delays/estimation/published.json` |
-| The author's 2013 undergraduate monograph (USP/ESALQ) | The author | Cited as an outside document; its airport list in `data/external/monograph_airports.csv` |
+| The author's 2013 undergraduate monograph (USP) | The author | Cited as an outside document; its airport list in `data/external/monograph_airports.csv` |
 
 The full statement, holder by holder, is `docs/data-availability.md`. Licences
 follow the layer: MIT for code, CC BY 4.0 for text and curated data, and the
@@ -203,12 +203,13 @@ files, and `docs/dictionary.md` the data appendix.
 
 ## Learn more
 
-Each of these is written in Portuguese, and each index page carries an English
-summary: `docs/tutorial/` (fifteen modules, M0-M14, from the 2013 proposal to
-the article's reception), `docs/theory/` (four chapters, from the economics of
-airport congestion to the article's reception), `docs/notes/` (the research
-notes behind the decisions) and `reports/` (three Typst reports: replication,
-prediction, theory). Sibling repositories:
+The study -- the final work that joins the economics of airport congestion,
+the game-theory model derived step by step, and the article's hypotheses, data,
+specification, results and replication -- is `docs/study/`, written in
+Portuguese with an English summary on its index page, and compiles to
+`reports/pdf/study.pdf`. The research notes behind the decisions are in
+`docs/notes/`, and the three Typst reports (study, replication, prediction)
+with their PDFs in `reports/`. Sibling repositories:
 [citation-audit](https://github.com/wbendinelli/citation-audit) and
 [sapians-research](https://github.com/wbendinelli/sapians-research).
 

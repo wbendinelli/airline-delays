@@ -34,7 +34,7 @@ This page is the practical guide; CI checks most of it on every pull request.
 | `lint` | `ruff check` and `ruff format --check` over the whole tree |
 | `test` | `pytest` against the committed fixture and the committed tables; no network, no `data/raw/` |
 | `citation` | `CITATION.cff` is schema-valid |
-| `docs-paths` | every backticked path and every `just` or `airline-delays` command in the READMEs, `docs/` and the data guides resolves to something real (`scripts/check_docs_paths.py`) |
+| `docs-paths` | every backticked path and every `just` or `airline-delays` command in the READMEs, `docs/` and the data guides resolves to something real (`scripts/check_docs_paths.py`), and the Markdown renders on GitHub: math delimiters, tables, fences (`scripts/check_markdown_math.py`) |
 | `metadata` | `docs/dictionary.md`, `datapackage.json`, `.zenodo.json` and `reports/summary.json` are rebuilds of the registry and the tables, and the Data Package validates |
 | `docs-lint` | `README.md` matches the documentation profile declared in `.sapians-repo.yml` |
 | `security` | `gitleaks` scans the full history for secrets |
@@ -67,16 +67,20 @@ A red job is fixed at its cause, never by weakening the check.
 and change together; `scripts/check_readme_parity.py` fails when they quote
 different numbers, paths or recipes. The prose follows
 `docs/editorial/style-guide.md`. Before opening a pull request that touches
-prose, run the three checks:
+prose, run the four checks:
 
 ```bash
 uv run python scripts/check_docs_paths.py
+uv run python scripts/check_markdown_math.py
 uv run python scripts/check_prose_numbers.py
 uv run python scripts/check_readme_parity.py
 ```
 
-The Typst reports, the tutorial, the notes and the theory chapters are written
-in Portuguese by decision (`DECISIONS.md`, ADR-0006); everything else is English.
+The Typst reports, the study (`docs/study/`) and the notes are written in
+Portuguese by decision (`DECISIONS.md`, ADR-0006); everything else is English.
+Mathematics in Markdown is written for GitHub's renderer -- inline as $`...`$,
+display inside a ```math fence -- and `scripts/check_markdown_math.py` rejects
+anything else.
 
 ## Style
 

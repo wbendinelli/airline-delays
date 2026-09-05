@@ -2,7 +2,9 @@
 # committed tables, no network), citation (CITATION.cff stays schema-valid),
 # docs-paths (every backticked path and `just`/`airline-delays` command in the
 # READMEs, docs/ and the data guides resolves to something real --
-# scripts/check_docs_paths.py), metadata (datapackage.json, docs/dictionary.md,
+# scripts/check_docs_paths.py -- and the Markdown renders on GitHub: math
+# delimiters, tables, fences -- scripts/check_markdown_math.py),
+# metadata (datapackage.json, docs/dictionary.md,
 # .zenodo.json and reports/summary.json are rebuilds of the registry and the
 # tables, and the Data Package validates with frictionless).
 #
@@ -66,6 +68,8 @@ jobs:
       - run: uv sync --locked --group dev
       - name: Every path and command quoted in the READMEs and docs must exist
         run: uv run python scripts/check_docs_paths.py
+      - name: Math delimiters, tables and fences render on GitHub
+        run: uv run python scripts/check_markdown_math.py
 
   metadata:
     runs-on: ubuntu-latest

@@ -76,7 +76,7 @@ summary:
     uv run airline-delays summary
 
 [group('9-reporting')]
-[doc('Compile the three Typst reports into reports/build/')]
+[doc('Compile the three Typst reports (study, replication, prediction) into reports/pdf/, tracked')]
 report:
     uv run airline-delays report
 
@@ -114,3 +114,4 @@ lint:
 check:
     uv run pre-commit run --all-files
     uv run python scripts/check_docs_paths.py
+    uv run python scripts/check_markdown_math.py

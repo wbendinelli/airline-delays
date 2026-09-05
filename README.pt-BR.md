@@ -121,7 +121,7 @@ leitura dos arquivos brutos e a previsão.
 | Estimação | `just estimate` | painel do artigo -> `reports/replication/` | menos de um minuto |
 | Previsão | `just predict-dataset`, `just predict` | etapas *staged* -> `data/derived/ml/` -> `reports/prediction/` | 25 s, depois 2.344 s |
 | Teoria | `just theory` | `src/airline_delays/theory/` -> `reports/theory/` | cerca de um segundo |
-| Relatórios | `just summary`, `just report` | os artefatos -> `reports/summary.json`; as fontes Typst -> PDFs | segundos |
+| Relatórios | `just summary`, `just report` | os artefatos -> `reports/summary.json`; as fontes Typst -> `reports/pdf/` | segundos |
 
 ## Resultados em resumo
 
@@ -207,7 +207,7 @@ acima é o do artigo.
 | Capacidade aeroportuária, coordenação de slots, fusões | BNDES, ANAC, CADE | Linhas transcritas em `data/external/capacity.csv`, `slots.csv`, `groups.csv` e `events.csv` |
 | Meteorologia METAR | DECEA, via REDEMET | Não integrada; o sinal meteorológico do artigo são os próprios códigos de justificativa do VRA |
 | O artigo | Elsevier | Citado pelo DOI; suas células publicadas transcritas em `src/airline_delays/estimation/published.json` |
-| A monografia de graduação do autor, de 2013 (USP/ESALQ) | O autor | Citada como documento externo; sua lista de aeroportos em `data/external/monograph_airports.csv` |
+| A monografia de graduação do autor, de 2013 (USP) | O autor | Citada como documento externo; sua lista de aeroportos em `data/external/monograph_airports.csv` |
 
 A declaração completa, detentor por detentor, é `docs/data-availability.md`. As
 licenças seguem a camada: MIT para o código, CC BY 4.0 para texto e dados
@@ -219,12 +219,13 @@ dados.
 
 ## Para saber mais
 
-Todo o material abaixo é escrito em português, e cada página de índice traz um
-resumo em inglês: `docs/tutorial/` (quinze módulos, M0-M14, da proposta de
-2013 à recepção do artigo), `docs/theory/` (quatro capítulos, da economia do
-congestionamento aeroportuário à recepção do artigo), `docs/notes/` (as notas
-de pesquisa por trás das decisões) e `reports/` (três relatórios Typst:
-replicação, previsão, teoria). Repositórios irmãos:
+O estudo -- o trabalho final que junta a economia do congestionamento
+aeroportuário, o modelo de teoria dos jogos derivado passo a passo e as
+hipóteses, os dados, a especificação, os resultados e a replicação do artigo --
+está em `docs/study/`, escrito em português com resumo em inglês na página de
+índice, e compila para `reports/pdf/study.pdf`. As notas de pesquisa por trás
+das decisões estão em `docs/notes/`, e os três relatórios Typst (estudo,
+replicação, previsão) com seus PDFs em `reports/`. Repositórios irmãos:
 [citation-audit](https://github.com/wbendinelli/citation-audit) e
 [sapians-research](https://github.com/wbendinelli/sapians-research).
 
