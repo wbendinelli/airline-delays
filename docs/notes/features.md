@@ -168,7 +168,11 @@ O HHI de passageiros do artigo (`rthhi`, `maxcthhi`, `gmchhi`) não sai do VRA,
 que é um arquivo de operação sem tráfego. As colunas existem e são inteiramente
 nulas; as versões por voo vão ao lado com outro nome (`rthhi_flights`, …).
 `hhi.passenger_weighted_hhi` é a função com a assinatura certa que devolve
-`None` até os dados estatísticos da ANAC serem coletados.
+`None` até os dados estatísticos da ANAC serem coletados. Os nomes `gmchhi` e
+`maxcthhi` têm antecedente documentado de 2013: a monografia de graduação do
+autor já compunha os dois extremos da rota por uma média geométrica
+**ponderada** pelos voos planejados de cada ponta, enquanto aqui a média é a
+não ponderada — ver `docs/notes/monografia-2013.md` seção 3.
 
 **Congestionamento (ADR-0007).** `data/external/capacity.csv` tem **um**
 aeroporto, e uma linha não é um painel: `prcongested` fica nulo e declarado como

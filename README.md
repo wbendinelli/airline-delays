@@ -166,10 +166,11 @@ holder, how to obtain it, restrictions and cost/time for each, is
 [`docs/data-availability.md`](docs/data-availability.md). Every row of
 `data/external/*.csv` additionally carries its own `source` and `url`
 field; this table is the narrative summary of the same statement. It lists
-12 of the statement's 14 sources; the two it leaves out — ANAC's seasonal
-declared-capacity bulletins (not yet collected) and its slot-coordination
-acts (two transcribed rows in `data/external/slots.csv`) — are documented in
-full there.
+12 of the statement's 15 sources; the three it leaves out — ANAC's seasonal
+declared-capacity bulletins (not yet collected), its slot-coordination
+acts (two transcribed rows in `data/external/slots.csv`) and the author's
+2013 undergraduate monograph (one derived table,
+`data/external/monograph_airports.csv`) — are documented in full there.
 
 | Source | Access | Redistributed here | Cost |
 |---|---|---|---|

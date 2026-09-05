@@ -104,6 +104,24 @@ code changes when the panel gains those variables.
 - **`_tab7.do`.** It swaps a passenger-weighted city HHI in for `maxcthhi` and
   corresponds to no published table — the article mentions the check in one
   sentence and never tabulates it.
+- **Table 5 of the author's 2013 undergraduate monograph (five weighted
+  fixed-effects specifications).** Not re-estimated, privately or publicly.
+  (i) the regression base is a LABTAR/NECTAR laboratory file that never enters
+  this repository and could be read only by `replication/gabarito/` through
+  `AIRLINE_DELAYS_PRIVATE_DIR`; (ii) the dependent variable `prdeltot` is not
+  constructed anywhere in the material read: the only surviving do-file
+  regresses `prdel30 = fdel30/fplan` with analytic weights by planned flights
+  on `rhhi`, `ahhi`, `acrat2` and five weather means — not the `hhi` + `cr2`
+  of the published table — so it is a preliminary variant, not the script
+  behind Table 5; (iii) the econometrics of reference here is the 2016
+  article's (Tables 2-7); the monograph's estimator answers a different
+  question on a different unit (airline x route x month, N = 87,237,
+  2000-2012, 30-minute cut). What the public panel offers instead is
+  documented in `docs/notes/monografia-2013.md`: `rthhi_flights` uses the same
+  construction as the monograph's route `hhi` over planned flights, and
+  `fsc_prdelarr30m` its 30-minute cut. If the script behind Table 5 is ever
+  located, its place is a `gabarito`-marked module under
+  `replication/gabarito/`, writing agreement statistics only.
 
 ## Panel and feature layer
 

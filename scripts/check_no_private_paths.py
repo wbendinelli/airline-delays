@@ -82,6 +82,7 @@ TIER2_ALLOWED = {
     "docs/data-availability.md": "source 12 of the availability statement",
     "docs/declared-differences.md": "names the vintage a difference is against",
     "docs/notes/features.md": "research-evidence note on the reconciliation",
+    "docs/notes/monografia-2013.md": "names the 2013 do-file and its laboratory base as outside documents, never redistributed",
     "docs/notes/references.md": "research-evidence note on the reference tables",
     "docs/notes/staging.md": "research-evidence note on the staging comparison",
     "docs/tutorial/06-dados-fonte-ao-painel.md": "teaches the reconciliation",

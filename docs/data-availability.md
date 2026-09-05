@@ -32,6 +32,7 @@ is documented as unavailable rather than filled with a substitute
 | 12 | Private benchmark (`proj18.dta`, LABTAR/NECTAR, `vra.dta` 2019) | ITA/LABTAR laboratory | **Not redistributed** — only the derived agreement rate | Not applicable — declared omission |
 | 13 | Infraero connections report | Infraero | **Not redistributed, not reproduced** | Not applicable — declared omission |
 | 14 | Published article (Elsevier) | Elsevier Ltd | **Not redistributed** — DOI link only | Not applicable |
+| 15 | Undergraduate monograph (Bendinelli 2013, USP/ESALQ) | The author | One derived table (`data/external/monograph_airports.csv`, 38 rows) and quoted passages; the document itself is not redistributed | Not applicable |
 
 ## 1. VRA — Voo Regular Ativo
 
@@ -43,6 +44,19 @@ catalogued at `dados.gov.br`.
 (2000-2013) directly from the SIROS listing; `data/raw/manifest.json`
 records the source URL, retrieval timestamp and sha256 of every file. No
 authentication, no request form.
+
+**Composition.** The clearest statement of what the VRA *is* comes from the
+author's own 2013 undergraduate monograph (source 15): the VRA is built from
+the **HOTRAN** — the approved schedule document, normed by IAC 1223 and
+Portaria DGAC nº 33/2000 — plus the **Boletins de Alteração de Voo** the
+airlines file under IAC 1504. ANAC's published delay and cancellation
+percentages are computed from it under Resolução ANAC nº 218, following the
+models of Portaria ANAC nº 464/SER, and are published in **two cuts**: 30
+minutes or more, and 60 minutes or more (cancellations over *scheduled* legs,
+delays over *realised* legs). The panel's `fsc_prdelarr30m` is that 30-minute
+cut under this repository's own naming; the 15-minute cut the 2016 article
+uses is the United States convention, which the monograph contrasts
+explicitly with Brazil's 30 minutes. See `docs/notes/monografia-2013.md` §2.
 
 **Restrictions.** The ANAC website's own footer states "Creative Commons
 Atribuição-SemDerivações 3.0" (CC BY-ND) for "todo o conteúdo deste sítio",
@@ -106,6 +120,16 @@ it has not yet been spent. This is what `rthhi`, `maxcthhi` and `gmchhi`
 `src/vra/hhi.passenger_weighted_hhi` already has the right signature and
 returns `None` until this source is collected (`DECISIONS.md` ADR-0007;
 `docs/declared-differences.md` §6).
+
+**Lineage.** The 2013 undergraduate monograph (source 15) did *not* use this
+source for its passenger variables: its `prconex` (connecting passengers) and
+`amovtot` (total aircraft movements) came from Infraero's RPE report (source
+13), read at each endpoint airport and combined into a geometric mean weighted
+by the airline's planned flights on the route-month. What *this* source would
+supply here is a different quantity — paid passengers by airline-route-month,
+the traffic `rthhi` and `maxcthhi` need — so the 2013 construction is a
+precedent for the shape, not a substitute for the data
+(`docs/notes/monografia-2013.md` §3).
 
 **Redistributed here.** Not applicable yet — nothing has been collected.
 
@@ -228,6 +252,15 @@ but the same records are independently obtainable from REDEMET today).
 
 **Cost and time.** Free to obtain from REDEMET today; not yet spent.
 
+**Historical precedent.** The author's 2013 undergraduate monograph (source
+15) already carried weather, from ICEA, as **monthly means per airport**:
+temperature, wind, precipitation, visibility and ceiling, at origin and at
+destination. That is a coarser grain than anything this repository would want:
+a METAR integration here would be **station x hour**, which is the grain the
+flight-level layer needs and the one `docs/tutorial/13-propor-melhorias.md` §4
+proposes. The 2013 series is therefore a precedent for the source, not a
+substitute for the fetch.
+
 **Redistributed here.** Not applicable yet — this is one of the extensions
 listed in `docs/tutorial/13-propor-melhorias.md`.
 
@@ -293,6 +326,10 @@ ever produces on disk is `data/analysis/taxas.csv` — a table of agreement
 rates, medians and percentiles, with a structural guard
 (`replication.gabarito.compare.assert_no_values`) that refuses to write
 anything else, tested in `tests/test_gabarito.py::test_only_agreement_statistics_may_be_written`.
+The same laboratory family holds the monograph's laboratory base — the
+regression file behind the author's 2013 undergraduate monograph (source 15)
+— equally never committed, equally reachable only through
+`AIRLINE_DELAYS_PRIVATE_DIR`, and read by nothing in this repository at all.
 
 **Cost and time.** Not applicable — this is a declared omission, not a
 priced acquisition. A prospective reader cannot obtain this source through
@@ -316,6 +353,18 @@ this repository has access to. It fed the original article's `o_percon`,
 hub measure (`src/vra/hub.py`) is a structural substitute built from VRA
 movement shares, published under its own name — never presented as a
 reconstruction of Infraero's figure (`DECISIONS.md`; `docs/declared-differences.md`).
+
+**Reliability caveat, stated by the author in 2013.** The figures this source
+produces rest on **RPE** forms (*Relatório de Passageiros Embarcados*) filled
+in by the airlines themselves and sent to each airport. The author's 2013
+undergraduate monograph (source 15) already declared the consequence:
+**Resolução ANAC nº 8, of 2007-03-13**, revoked the obligation to send the RPE
+that art. 7 of **Portaria 602-GC5, of 2000-09-22**, had established, so the
+series' reliability is not uniform across the window; and from 2013 the
+airports conceded to private operators stopped reporting at all, which is why
+the monograph dropped 2013 entirely and ran 2000-01 to 2012-12. The caveat
+applies to any figure derived from this source, the article's `o_percon` and
+`d_percon` included. The monograph's Table 1 dates the series 1990-2012.
 
 **Cost and time.** Not applicable — declared omission.
 
@@ -345,6 +394,36 @@ article itself, published or accepted).
 **Redistributed here.** No. `CITATION.cff`'s `preferred-citation` and the
 README's BibTeX block point to the DOI; no PDF, typeset or accepted, is
 in this repository.
+
+## 15. The author's 2013 undergraduate monograph
+
+**Holder.** The author. *Efeitos da entrada de uma empresa aérea de baixo
+custo na internalização das externalidades do congestionamento*, monograph
+for the Bachelor's degree in Economics, USP/ESALQ, Piracicaba, 2013 (advisors
+Márcia Azanha Ferraz Dias de Moraes and Alessandro Vinícius Marques de
+Oliveira). It is the document in which the congestion-internalisation theory
+behind the 2016 article was first worked out, and the earliest description of
+the VRA's own composition anywhere in this project's material.
+
+**How to obtain.** Not yet obtainable: a Zenodo deposit is pending, and its
+DOI is carried as the placeholder `[DOI-MONOGRAFIA]` until it exists. Until
+then the monograph is **cited, not redistributed** — a prospective reader
+cannot download it from any channel this repository documents.
+
+**Restrictions.** The author holds the rights and intends to deposit the
+document openly; nothing bars quotation now, and nothing licenses
+redistribution of the document itself before the deposit. The regression base
+behind its Tables 5 and 6 is a separate matter and is source 12: never
+committed, never read here.
+
+**Redistributed here.** One derived table,
+`data/external/monograph_airports.csv` (38 rows, confidence grade A: the
+verbatim transcription of the monograph's Lista de Siglas, plus a flag for the
+37 that also appear in its Tables 3 and 4), and quoted passages in
+`docs/notes/monografia-2013.md` and `docs/theory/`. Not the document.
+
+**Cost and time.** Not applicable — the derived table already exists and the
+deposit costs nothing but the author's own time.
 
 ## What is not in git, and why
 

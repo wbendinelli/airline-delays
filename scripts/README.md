@@ -16,6 +16,11 @@ entry points, not library code:
 - `null_actual_by_carrier.py` — private: the null actual-arrival rate by
   carrier and year that `docs/declared-differences.md` publishes
   (ADR-0017).
+- `monograph_airports.py` — joins `data/external/monograph_airports.csv`
+  (the 38 airports of the author's 2013 undergraduate monograph) to
+  `data/external/nodes.csv` and prints the three counts that
+  `docs/notes/monografia-2013.md` quotes: 38 listed, 37 in the document's
+  Tables 3-4, and 31 in the ADR-0001 map covering all 27 nodes.
 - `check_docs_paths.py` and `check_no_private_paths.py` — CI and
   pre-commit guards: every path and `just` target quoted in the docs
   exists, and no absolute path into a private directory is committed.
