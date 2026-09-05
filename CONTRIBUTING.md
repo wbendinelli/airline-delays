@@ -20,12 +20,14 @@ wrong.
    uv run pre-commit install
    ```
 
-3. **Run the smallest reproduction.** `just demo` is meant to run
-   end to end over the fixture committed in `tests/fixtures/`, no network
-   and no `data/raw/`; as of this writing it is still the placeholder
-   recipe in `justfile`. `just replicate` already works today without any
-   of that: `data/analysis/panel_route_month.parquet` is committed
-   (`DECISIONS.md` ADR-0014), so it reproduces Table 2 in under a second.
+3. **Run the smallest reproduction.** `just demo` runs the pipeline end
+   to end over the fixture committed in `tests/fixtures/` — staged legs to
+   fact table to route-month panel to Table 2 — in about a second, with no
+   network, no `data/raw/` and no private directory, writing only under
+   the git-ignored `data/derived/demo/` (`scripts/demo.py`).
+   `just replicate` then reproduces Table 2 over the full public panel,
+   which is committed (`data/analysis/panel_route_month.parquet`,
+   `DECISIONS.md` ADR-0014), also in under a second.
 4. **Branch, change, open a pull request.** CI runs `ruff` (lint),
    `pytest` against the fixture (test), validates `CITATION.cff`
    (citation), checks the README against the `research` doclint profile

@@ -49,17 +49,20 @@ uv sync
 just demo
 ```
 
-`just demo` is meant to run the smallest end-to-end reproduction over the
-committed fixture in `tests/fixtures/` (a deterministic, few-MB slice of the
-flight table) — no network access, no ANAC download, no private directory.
-As of this writing `just demo` itself is still the placeholder recipe in
-`justfile` (it prints "not implemented yet" and exits 0, the convention for
-every unimplemented target here); the fixture and the pipeline it would
-wire together already exist and run (`uv run pytest -q` exercises the same
-fixture). The fastest way to see real output today needs no fetch and no
-stage at all: `data/analysis/panel_route_month.parquet` is committed
-(`DECISIONS.md` ADR-0014), so `just replicate` alone reproduces Table 2
-over the public panel in well under a second.
+`just demo` runs the smallest end-to-end reproduction over the committed
+fixture in `tests/fixtures/` (three routes cut from the 2004, 2009 and 2012
+files, about 20,000 staged legs): the same code path as the full pipeline,
+from staged legs to the group x route x month fact table, to the route-month
+panel, to Table 2 — no network access, no ANAC download, no private
+directory, about one second on a laptop (`scripts/demo.py`, which writes
+only under the git-ignored `data/derived/demo/` and prints what each layer
+produced; `tests/test_demo.py` runs the same thing in CI). Table 2 on that
+panel computes 7 of its 13 variables and prints the other 6 as absent or
+entirely null, which is the honest shape of a VRA-only reconstruction (see
+[Declared differences](#declared-differences)). The full public panel needs
+no fetch and no stage either: `data/analysis/panel_route_month.parquet` is
+committed (`DECISIONS.md` ADR-0014), so `just replicate` alone reproduces
+Table 2 over all 31,313 route-months in well under a second.
 
 ## Reproducing
 

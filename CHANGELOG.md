@@ -10,6 +10,16 @@ version numbers, mark progress.
 
 ### Added
 
+- `just demo` is real (`scripts/demo.py`, `tests/test_demo.py`): the committed
+  fixture (three routes cut from the 2004, 2009 and 2012 files, 19,907 staged
+  legs) runs through the same code path as the full pipeline -- staged legs,
+  the group x route x month fact table, the route-month panel (101 rows x 228
+  columns) and Table 2 (7 of 13 variables computed, 4 absent and 2 entirely
+  null, declared) -- in about one second, offline, writing only under the
+  git-ignored `data/derived/demo/` and a `summary.json` with the counts and
+  the wall time. The README Quickstart, `CONTRIBUTING.md`, `scripts/README.md`
+  and `tests/fixtures/README.md` (which still said the fixture "does not
+  exist yet") describe what actually runs.
 - Flight-level delay prediction (`ml/`, `just ml`, `reports/prediction/`,
   `reports/prediction.typ`, `docs/notes/prediction.md`). `ml/dataset_flights.py`
   makes one DuckDB scan per staged year and writes

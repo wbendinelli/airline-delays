@@ -89,5 +89,9 @@ lint:
 check:
     uv run pre-commit run --all-files
 
+# The smallest end-to-end reproduction: the committed fixture (three routes,
+# 2004/2009/2012, about 20,000 staged legs) through features, panel and Table 2,
+# offline, in about a second, into the git-ignored data/derived/demo/. It never
+# touches data/analysis/ or reports/ -- see scripts/demo.py.
 demo:
-    @echo "demo: not implemented yet"
+    uv run python scripts/demo.py

@@ -629,6 +629,7 @@ list in the repository's own voice.
 | m-10 ruff drift | fixed | `v0.16.6`, the version `uv.lock` resolves. |
 | m-11 missing doclint baseline | fixed | Dropped from the `docs-lint` path filter. |
 | m-12 comparison order | fixed | Row 7 reads replicated-against-published. |
+| *(not in the audit)* `just demo` placeholder (§4, §6e) | fixed | Implemented after the remediation pass: `scripts/demo.py` runs the fixture through `build_fact`, `build_panel` and `replication.run` (Table 2, public source, `AIRLINE_DELAYS_PANEL` pointed at the demo panel) into the git-ignored `data/derived/demo/`, about one second; `tests/test_demo.py` runs it in CI and asserts the committed tables are untouched. The README Quickstart no longer describes a placeholder. |
 | *(not in the audit)* non-deterministic carrier labels | fixed | Found while checking that the regenerated artefacts are idempotent: `scripts/null_actual_by_carrier.py` picked each airline-year's group and class with DuckDB's `any_value()`, so five transition-year rows of the tracked CSV flipped between runs. The convention is now stated and deterministic (the label in force in the airline's last observed month of that year) and the file reproduces byte for byte. No total moves — `in_bav_scope` is identical on every row, so the 72.9% / 83.0% / 313,368 / 20-carrier figures of §5 still hold. |
 
 **One deviation from the remediation brief, deliberate.** The brief asked that
