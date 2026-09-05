@@ -34,11 +34,11 @@ documento original é privado e não está aqui (M12).
 
 ## A mesma inversão, dentro deste repositório
 
-`replication/table6.py` reproduz exatamente essa comparação, e o arquivo
+`src/airline_delays/estimation/table6.py` reproduz exatamente essa comparação, e o arquivo
 já commitado neste repositório carrega os dois lados lado a lado:
 
 ```bash
-grep -c "^| HHI city-pair" reports/replication/private/tables.md
+grep -c "^| HHI city-pair" reports/replication/tables.md
 ```
 
 **Número esperado.** `6` — uma linha "HHI city-pair" por tabela onde a
@@ -54,13 +54,13 @@ célula a célula, não parafraseada (`docs/notes/replication.md`, seção 4).
 
 ## Exercício
 
-Abra `reports/replication/private/tables.md` você mesmo e localize as
+Abra `reports/replication/tables.md` você mesmo e localize as
 quatro linhas (Tabela 3 e Tabela 6, `HHI city-pair` e `HHI max endpoint
 cities`, coluna 1). Sem olhar o texto acima, escreva qual sinal cada uma
 tem em cada tabela, e se o sinal replicado bate com o publicado (coluna
 `diff/s.e.` ao lado de cada par). As quatro concordam?
 
-## Nota honesta
+## Limites e próximos passos
 
 O segundo desenho não tem em si nenhum "erro" — é um passo intermediário
 legítimo, e o próprio autor já sabia, em março de 2015, que faltava

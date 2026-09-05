@@ -3,7 +3,7 @@
 Nota de pesquisa em português (ADR-0006: código e nomes de coluna em inglês,
 notas e relatórios em português). Registra o que a monografia de graduação
 do autor, de 2013, diz sobre os dados, os grupos de empresas e as variáveis
-do modelo, e o que dela é comparável — e o que não é — com o painel público
+do modelo, e o que dela é comparável — e o que não é — com o painel reconstruído
 deste repositório. Todo número aqui ou vem de um script versionado
 (`scripts/monograph_airports.py`), ou de uma tabela versionada
 (`data/external/monograph_airports.csv`), ou está marcado como lido do
@@ -20,7 +20,7 @@ obtenção do título de Bacharel em Ciências Econômicas, USP/ESALQ,
 Piracicaba, 2013. Orientadores: Prof.ª Dra. Márcia Azanha Ferraz Dias de
 Moraes e Prof. Dr. Alessandro Vinícius Marques de Oliveira — o segundo é
 também orientador do mestrado e coautor do artigo de 2016 que este
-repositório replica (`docs/data-availability.md`, fonte 12).
+repositório replica (`CITATION.cff`, `preferred-citation`).
 
 Nove seções, na ordem do sumário: 1 Introdução; 2 Princípios econômicos dos
 atrasos em aeroportos; 3 Revisão de literatura; 4 Modelo econômico para um
@@ -106,7 +106,7 @@ são argumentados no texto: vento pode adiantar ou atrasar, e a literatura
 não tem consenso sobre internalização (monografia, seção 5.3 — documento
 externo).
 
-**A lista de laboratório.** A base de regressão da monografia traz 46
+**A base de regressão.** Ela traz 46
 variáveis descritas por famílias, não copiadas aqui uma a uma: frequências
 planejadas, canceladas, realizadas, atrasadas em 30 e atrasadas em 60
 minutos (ANAC, nos níveis de rota e de aeroporto, 2000-2012); HHI e CR1/CR2
@@ -127,8 +127,8 @@ Esta seção existe porque o repositório tem uma coluna chamada `gmchhi` e a
 monografia tem uma construção parecida com outro nome, e as duas **não são a
 mesma coisa**. Três camadas, separadas de propósito.
 
-**Documentado.** O único do-file sobrevivente da monografia,
-`nectarbase_delays.do` (documento externo, nunca redistribuído), define
+**Documentado.** O único do-file sobrevivente da monografia (documento
+externo) define
 `aplantot = ofplantot + dfplantot`, `sofplantot = ofplantot/aplantot` e
 `sdfplantot = dfplantot/aplantot` e, sobre isso, a **média geométrica
 ponderada** dos dois extremos da rota:
@@ -142,9 +142,10 @@ E a mesma forma para `acrat1`, `acrat2` e as cinco médias climáticas
 prosa: `cr2`, `amovtot`, `prconex`, `precip` e `wind` são descritas como
 "média geométrica … ponderada pela frequência total de voos planejados da
 empresa aérea *j* no par origem e destino *h* no mês *t*". Do outro lado,
-`src/vra/hhi.py` define `gmchhi` como a média geométrica **não ponderada**,
-`sqrt(origem * destino)`, e `maxcthhi` como o **máximo** dos dois extremos —
-é o que `src/vra/registry.py` documenta e o que os testes cobram.
+`src/airline_delays/definitions/concentration.py` define `gmchhi` como a média
+geométrica **não ponderada**, `sqrt(origem * destino)`, e `maxcthhi` como o
+**máximo** dos dois extremos — é o que `src/airline_delays/schema/columns.py`
+documenta e o que os testes cobram.
 
 **Inferência.** É razoável ler `gmchhi` como descendente de `ahhi` com os
 pesos retirados: mesma operação sobre os mesmos dois extremos, sem os
@@ -161,9 +162,9 @@ seria comparar unidades diferentes.
 **A quase-identidade que é documentável.** O que *é* a mesma construção é o
 `hhi` de rota da monografia — soma dos quadrados das participações de cada
 empresa nos voos planejados do par origem-destino no mês — e a coluna
-`rthhi_flights` do painel público, que `src/vra/panel.py` define como igual
-a `hhi_flights`, isto é, Σ (participação)² sobre as etapas **programadas**
-(`src/vra/registry.py`). Mesma operação, mesma unidade, nomes diferentes
+`rthhi_flights` do painel reconstruído, que `src/airline_delays/panel/build.py`
+define como igual a `hhi_flights`, isto é, Σ (participação)² sobre as etapas
+**programadas** (`src/airline_delays/schema/columns.py`). Mesma operação, mesma unidade, nomes diferentes
 porque o artigo reservou `rthhi` para a versão de passageiros.
 
 ## 4. Texto contra código
@@ -236,12 +237,8 @@ econômico.
 ## 6. Não tentado
 
 A Tabela 5 da monografia — cinco especificações de efeitos fixos ponderadas
-— **não foi reestimada**, nem publicamente nem em modo privado. Três
-motivos, os mesmos que `docs/declared-differences.md` registra em inglês na
-seção "Not attempted, and why": (i) a base de regressão é um arquivo de
-laboratório, `nectarbase_delays.dta` (documento externo), que nunca entra
-neste repositório e só poderia ser lido por `replication/gabarito/` através
-da variável de ambiente `AIRLINE_DELAYS_PRIVATE_DIR`; (ii) a variável
+— **não foi reestimada**. Três motivos: (i) a base de regressão da
+monografia é um arquivo externo que não integra este repositório; (ii) a variável
 dependente `prdeltot` não é construída em nenhum lugar do material lido, e o
 do-file sobrevivente é uma variante preliminar (seção 4 acima), não o script
 da tabela publicada; (iii) a econometria de referência deste repositório é a
@@ -249,18 +246,17 @@ do artigo de 2016 (Tabelas 2-7), e o estimador da monografia responde a
 outra pergunta em outra unidade — empresa x rota x mês, N = 87.237,
 2000-2012, corte de 30 minutos.
 
-O que o painel público oferece no lugar está na seção 3: `rthhi_flights` usa
-a mesma construção que o `hhi` de rota da monografia sobre voos planejados,
-e `fsc_prdelarr30m` carrega o mesmo corte de 30 minutos. Se o script da
-Tabela 5 for algum dia localizado, o lugar dele é um módulo marcado
-`gabarito` sob `replication/gabarito/`, escrevendo apenas estatísticas de
-concordância.
+O que o painel reconstruído oferece no lugar está na seção 3: `rthhi_flights`
+usa a mesma construção que o `hhi` de rota da monografia sobre voos
+planejados, e `fsc_prdelarr30m` carrega o mesmo corte de 30 minutos. Se o
+script da Tabela 5 for algum dia localizado, reestimá-la é uma decisão
+própria — um ADR —, não uma edição desta nota.
 
 ## 7. Como conferir
 
 ```bash
 uv run python scripts/monograph_airports.py
-uv run vra refs
+uv run airline-delays reference
 ```
 
 O primeiro comando imprime exatamente três linhas:

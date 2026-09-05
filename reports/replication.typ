@@ -100,12 +100,13 @@
 #v(0.6em)
 
 #block(fill: luma(96%), inset: 8pt, radius: 3pt, width: 100%)[
-  *Nada foi ajustado para bater com o publicado.* Toda divergência é medida e
-  declarada — aqui, em `docs/declared-differences.md` e em
-  `docs/notes/replication.md`. Todos os números deste relatório são lidos de
-  `reports/replication/*.json`, escritos por `uv run python -m replication.run`;
-  os valores publicados vêm de `replication/published.json`, extraídos do texto
-  do artigo por `replication/published.py`.
+  *As Tabelas 2–7 são reestimadas sobre o painel de estimação dos autores,
+  publicado neste repositório (ADR-0020).* Todos os números deste relatório
+  são lidos de `reports/replication/*.json`, escritos por
+  `airline-delays estimate`; os valores publicados vêm de
+  `src/airline_delays/estimation/published.json`, extraídos do texto do
+  artigo por `src/airline_delays/estimation/published.py`. O raciocínio de
+  cada decisão está em `docs/notes/replication.md`.
 ]
 
 = 1. Placar: publicado × replicado
@@ -135,9 +136,11 @@ seriam materialmente diferentes; o máximo observado em todo o conjunto é
 )
 
 A razão mediana de erros-padrão abaixo de 1 em todas as tabelas diz que os
-erros-padrão replicados são sistematicamente *menores* que os publicados — o que
-é coerente com uma amostra #pct(meta.sample.n_after_singleton_cut / 19590 - 1)
-maior (ver §5).
+erros-padrão reestimados são sistematicamente *menores* que os publicados.
+*Nota sobre a amostra:* a amostra reestimada das colunas de chegada tem
+#pct(meta.sample.n_after_singleton_cut / summary.table3.n_obs.at("3").published - 1)
+mais observações que a publicada; os dois N estão lado a lado em cada coluna
+da §4 e na §7.
 
 = 2. Amostra e decisões de implementação
 
@@ -166,7 +169,7 @@ maior (ver §5).
   [Dummies sazonais `sz_*`],
   [#if meta.with_seasonality [entram] else [não entram] — o `dummymonthreg` as
    cria e o `gregcontrols` não as menciona; o `.ado` que decidiria não foi
-   entregue. O artigo fala em _seasonality controls_, e a §4 mede as duas
+   entregue. O artigo fala em _seasonality controls_, e a §5 mede as duas
    variantes.],
   [Efeitos fixos],
   [Dummies de rota e de mês entram *explicitamente* (o do-file não usa
@@ -286,14 +289,14 @@ parâmetro vive no pipeline de reconstrução.
 = 6. Kleibergen–Paap
 
 Nenhum pacote Python implementa a estatística `rk` de Kleibergen e Paap (2006);
-`replication/kp.py` a escreve a partir do artigo. A validação não depende de
+`src/airline_delays/estimation/kp.py` a escreve a partir do artigo. A validação não depende de
 outra implementação da mesma coisa: com a covariância dos coeficientes da forma
 reduzida na forma i.i.d., a matriz de ponderação do meio da forma quadrática
 vira a identidade e, na hipótese de subidentificação $q = k_2 - 1$, a versão
 *Wald* tem de colapsar na estatística de Cragg–Donald $N lambda slash (1 - lambda)$
 e a versão *LM* na estatística de correlação canônica de Anderson $N lambda$.
 As duas identidades valem até a precisão de máquina
-(`tests/test_replication_kp.py`), contra uma implementação que não compartilha
+(`tests/test_estimation_kp.py`), contra uma implementação que não compartilha
 código com a primeira.
 
 Contra os valores publicados, nas colunas ODDS a implementação acerta o nível
@@ -301,19 +304,29 @@ _e_ a estrutura interna; nas colunas MINS, com 3 instrumentos e 2 endógenas, o
 sistema é quase exatamente identificado e a estatística fica muito mais sensível
 ao tamanho da amostra. Os números estão nas tabelas da §4.
 
-= 7. Divergências declaradas
+= 7. Nota sobre a amostra e estatísticas não comparáveis
 
-A lista completa, com causas, está em `docs/declared-differences.md`; o raciocínio
-em português está em `docs/notes/replication.md`. As quatro que dominam:
+#let n_pub = tabelas_reg.map(t => summary.at(t).n_obs.values().map(v => v.published)).flatten()
+#let n_rep = tabelas_reg.map(t => summary.at(t).n_obs.values().map(v => v.replicated)).flatten()
+#let j_cols = tabelas_reg.map(t => results.at(t).comparison.values().filter(c =>
+  "j_p" in c.stats and c.stats.j_p.at("published", default: none) != none
+  and c.stats.j_p.at("replicated", default: none) != none
+)).flatten()
+#let j_same = j_cols.filter(c => (c.stats.j_p.published < 0.05) == (c.stats.j_p.replicated < 0.05)).len()
+#let j_rej = j_cols.filter(c => c.stats.j_p.published < 0.05).len()
 
-+ *N* — a amostra replicada é #pct(meta.sample.n_after_singleton_cut / 19590 - 1)
-  maior que a publicada, em todas as tabelas e nos dois lados (chegadas e
-  partidas). Nenhum filtro visível nos do-files produz os números publicados. É
-  a causa dominante de tudo o que segue.
-+ *J de Hansen* — muda de tamanho porque é uma forma quadrática com 1 ou 3 graus
-  de liberdade; em nenhuma coluna a *conclusão* muda.
-+ *R² e RMSE nas colunas MINS* — a réplica ajusta melhor, o que aponta para uma
-  amostra publicada com mais linhas difíceis.
-+ *Estatística F* — não reproduzida: o F do `ivreg2` é o Wald conjunto de ~340
-  regressores com convenção própria; comparar contra o análogo do `linearmodels`
-  seria comparar coisas diferentes.
+O raciocínio de cada decisão está em `docs/notes/replication.md`. Três
+registros, todos lidos dos JSON:
+
++ *N* — as tabelas publicadas reportam entre #miles(calc.min(..n_pub)) e
+  #miles(calc.max(..n_pub)) observações; a reestimação sobre o painel
+  publicado, com os filtros da §2, dá entre #miles(calc.min(..n_rep)) e
+  #miles(calc.max(..n_rep)). Os dois valores estão lado a lado em cada coluna
+  da §4; nenhum filtro é reconstruído para aproximá-los (ADR-0020).
++ *J de Hansen* — nas #j_cols.len() colunas que o reportam, o veredito a 5% é o
+  mesmo no publicado e no reestimado em #j_same delas: #j_rej rejeitam
+  ortogonalidade nos dois casos, e as demais não rejeitam nos dois.
++ *Estatística F* — não reproduzida: o F do `ivreg2` é o Wald conjunto de cerca
+  de 340 regressores com convenção própria; o análogo do `linearmodels` não mede
+  a mesma coisa, e a célula fica vazia de propósito. O R² ajustado, o RMSE e o J
+  de cada coluna estão na §4, publicado e reestimado lado a lado.

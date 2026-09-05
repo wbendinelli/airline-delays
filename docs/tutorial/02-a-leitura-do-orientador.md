@@ -5,7 +5,7 @@ achado empírico — foi um exercício de literatura imposto pelo orientador,
 e o único registro dele é incompleto por desenho: sobrevivem as
 respostas, não as perguntas. E olhar, dentro deste repositório, para um
 caso do mesmo formato — um julgamento apoiado em fonte convergente, não
-em documento primário — e o modo honesto de o marcar.
+em documento primário — e o modo correto de o marcar.
 
 ## Contexto (fora deste repositório)
 
@@ -43,10 +43,10 @@ a maior parte das datas de fusão vem de "a regra usada pelo laboratório"
 diferença é que aqui isso é **declarado por linha**, não perdido:
 
 ```bash
-just refs
+just reference
 ```
 
-**Número esperado.** `just refs` roda sem erro — toda linha de
+**Número esperado.** `just reference` roda sem erro — toda linha de
 `data/external/groups.csv` tem `source`, `url` e `confidence` preenchidos
 (a validação que `docs/notes/references.md` descreve). Nenhuma linha do
 arquivo é grau A puro: mesmo as datas mais concretas (Gol 2001-01, Azul
@@ -69,7 +69,7 @@ essa também é uma resposta válida: documente a busca e o motivo, do mesmo
 jeito que `docs/notes/references.md` já documenta as buscas que não
 fecharam (ex.: Congonhas sem data de início de coordenação, seção 6).
 
-## Nota honesta
+## Limites e próximos passos
 
 O enunciado das perguntas do orientador não está no acervo original — só
 as respostas sobreviveram, e as respostas 4 e 5 nem essas. Neste

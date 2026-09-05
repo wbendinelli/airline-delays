@@ -16,13 +16,13 @@ cada um preso a arquivos que existem e a números que um script imprime.
 | [`03-primeiro-desenho.md`](03-primeiro-desenho.md) | O primeiro desenho (jul/2014): nível aeroporto, capacidade de pátio construída e abandonada |
 | [`04-segundo-desenho.md`](04-segundo-desenho.md) | O segundo desenho (mar/2015): OLS com efeitos fixos, 38 aeroportos, instrumentação adiada |
 | [`05-caminho-nao-tomado.md`](05-caminho-nao-tomado.md) | O projeto irmão sobre preços (jun/2015): descrito, não incluído neste repositório |
-| [`06-dados-fonte-ao-painel.md`](06-dados-fonte-ao-painel.md) | Do VRA bruto ao painel público, com a reconciliação contra o gabarito |
+| [`06-dados-fonte-ao-painel.md`](06-dados-fonte-ao-painel.md) | Dados: do CSV bruto da ANAC ao painel reconstruído — *staged*, tabela-fato, painel — com os números medidos |
 | [`07-especificacao-e-estimacao.md`](07-especificacao-e-estimacao.md) | Especificação e estimação: 2SGMM, HAC, Kleibergen–Paap escrito do zero |
-| [`08-o-que-reproduz.md`](08-o-que-reproduz.md) | O que reproduz e o que não, número a número, com a causa até onde a evidência vai |
+| [`08-o-que-reproduz.md`](08-o-que-reproduz.md) | A replicação: as Tabelas 2–7 reestimadas sobre o painel de estimação do artigo, publicado aqui, e o placar contra as tabelas publicadas |
 | [`09-da-dissertacao-ao-artigo.md`](09-da-dissertacao-ao-artigo.md) | Da dissertação ao artigo: datas, título, autoria, a promessa removida |
 | [`10-revisao-por-pares.md`](10-revisao-por-pares.md) | A revisão por pares, o buraco: o que não sobreviveu, e o que registrar da próxima vez |
 | [`11-recepcao.md`](11-recepcao.md) | Recepção: quem citou, o que deturpou, quem adotou o método |
-| [`12-consentimento-licencas-publicacao.md`](12-consentimento-licencas-publicacao.md) | Consentimento, licenças e o que fica de fora de um repositório público |
+| [`12-consentimento-licencas-publicacao.md`](12-consentimento-licencas-publicacao.md) | Direitos, licenças e o que se publica onde: MIT, CC BY 4.0, a atribuição à ANAC, o painel do artigo, o depósito no Zenodo |
 | [`13-propor-melhorias.md`](13-propor-melhorias.md) | Propor melhorias: as extensões que este repositório já sustenta |
 | [`14-a-teoria-por-tras-do-artigo.md`](14-a-teoria-por-tras-do-artigo.md) | A teoria por trás do artigo: a porta para `docs/theory/` — a economia do congestionamento, o jogo derivado e verificado, a ponte para o artigo de 2016 e o seu impacto |
 
@@ -35,7 +35,7 @@ documental, na ordem em que os documentos existiram.
 ## Convenções
 
 - **Backticks marcam arquivo real.** Todo caminho entre crases
-  (`README.md`, `data/analysis/taxas.csv`) existe neste repositório neste
+  (`README.md`, `data/analysis/manifest.json`) existe neste repositório neste
   momento — `scripts/check_docs_paths.py` prova isso, rodando em CI a cada
   mudança. *Itálico* marca um documento **fora** deste repositório (a
   monografia de 2013, a dissertação, os slides, as análises do acervo de pesquisa que
@@ -49,14 +49,13 @@ documental, na ordem em que os documentos existiram.
   que o produz está no módulo.
 - **Fórmulas.** Equações em `$…$` seguem a numeração da monografia de
   2013, (1)–(12); toda desigualdade ou constante afirmada em prosa é
-  verificada por `theory/model.py` e impressa em
+  verificada por `src/airline_delays/theory/model.py` e impressa em
   `reports/theory/model.json` — "nenhum número solto", aplicado à
   álgebra.
-- **A honestidade é a pedagogia.** Cada módulo termina numa nota do que não
-  fecha, não foi tentado, ou permanece em aberto. Isso não é uma falha de
-  redação — é o ponto central de `CLAUDE.md`: *"Fixing" a divergence
-  against the benchmark by adjusting a definition until the numbers
-  match* é a única coisa proibida; declarar a divergência é o trabalho.
+- **Limites e próximos passos.** Cada módulo termina numa seção com esse
+  nome, que diz o que o módulo cobre e qual é o próximo passo — a fonte
+  ainda não coletada, a função ainda não escrita, o depósito ainda não
+  feito. Limite é escopo, não confissão.
 - **Nenhum fato sobre a pesquisa original é inventado.** Tudo que este
   tutorial afirma sobre a proposta de 2013, os seminários, a dissertação,
   a revisão por pares ou a recepção do artigo vem de uma análise já

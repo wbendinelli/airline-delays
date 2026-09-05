@@ -44,18 +44,18 @@ para aviação comercial a partir de 2007-08, grau de confiança B
 tem capacidade declarada transcrita ainda — ver a linha correspondente em
 [`docs/data-availability.md`](../data-availability.md).
 
-Como uma linha não é um painel, `src/vra/congestion.py` define um
+Como uma linha não é um painel, `src/airline_delays/definitions/congestion.py` define um
 **proxy interno**, que não depende de nenhuma tabela externa: dentro de um
 nó e um ano, toda dia-hora com movimentos programados no p90 ou acima da
 distribuição do próprio nó naquele ano é "congestionada". A leitura do
-módulo (`src/vra/congestion.py`, docstring) explica por que o limiar é
+módulo (`src/airline_delays/definitions/congestion.py`, docstring) explica por que o limiar é
 relativo à escala do próprio aeroporto e fixo no ano — as mesmas
 propriedades, noutra forma, que a ideia de capacidade de pátio também
 tentava capturar (uso relativo à capacidade instalada).
 
 ## Exercício
 
-Leia a docstring de `src/vra/congestion.py` e a linha "BNDES/McKinsey
+Leia a docstring de `src/airline_delays/definitions/congestion.py` e a linha "BNDES/McKinsey
 (2010)" de [`docs/data-availability.md`](../data-availability.md). A
 proposta original de capacidade de pátio precisava de dados de
 posições de estacionamento por aeroporto (não públicos, tanto quanto se
@@ -64,7 +64,7 @@ duas frases: qual das duas definições um pesquisador sem acesso a dados de
 infraestrutura aeroportuária conseguiria calcular para os 27 nós do
 painel hoje, e por quê.
 
-## Nota honesta
+## Limites e próximos passos
 
 A capacidade de pátio nunca foi reconstruída nem no acervo original nem
 aqui — não há dado público conhecido de posições de estacionamento por

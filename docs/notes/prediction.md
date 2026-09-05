@@ -1,9 +1,9 @@
 # Previsão de atrasos no nível do voo — desenho, vazamento, resultados e limites
 
 Nota de pesquisa, em português (ADR-0006: código e nomes de coluna em inglês, notas
-e relatórios em português). Descreve o que a camada `ml/` faz, por que faz assim, e
-o que os números querem e não querem dizer. Todos os valores foram medidos pelo
-`uv run python -m ml.run` sobre a série completa; os arquivos de origem estão em
+e relatórios em português). Descreve o que a camada `src/airline_delays/prediction/`
+faz, por que faz assim, e o que os números querem e não querem dizer. Todos os
+valores foram medidos por `uv run airline-delays predict` sobre a série completa; os arquivos de origem estão em
 `reports/prediction/` e nenhum número aqui foi digitado à mão.
 
 O relatório compilado é `reports/prediction.typ`; esta nota é o registro de
@@ -18,7 +18,7 @@ contagem de movimentos programados por aeroporto-dia-hora — que é o que um
 aeroporto realmente tem na véspera — ficaria enviesada para baixo justamente nos
 dias em que houve cancelamento.
 
-Cinco alvos, todos declarados em `src/vra/registry.py` (camada `ml`):
+Cinco alvos, todos declarados em `src/airline_delays/schema/columns.py` (camada `ml`):
 
 | alvo | definição | onde existe |
 |---|---|---|
@@ -42,7 +42,8 @@ Três regras decidem se um voo tem alvo de atraso, e as três são registradas:
    90% a 100% no corte de 2005 do revisor cético sobre todos os voos — o vazio
    continua desconhecido e o voo **fica sem alvo**. O colegiado que decidiu isso está em
    `docs/notes/colegiado-adr0012.md`; a taxa de nulo por empresa e ano está em
-   `docs/declared-differences.md`.
+   `reports/prediction/null_actual_by_carrier.csv`, escrita por
+   `scripts/null_actual_by_carrier.py`.
 2. **ADR-0015.** Um horário real a um dia ou mais do previsto
    (|atraso| ≥ 1.440 min) é erro de digitação de mês nos arquivos, não operação.
    O voo continua sendo uma linha da tabela — foi programado e ocupou o slot —
@@ -132,10 +133,10 @@ etapa anterior é de portão.
 
 ## 3. A regra de vazamento, e as nove checagens que a impõem
 
-A regra foi escrita antes da primeira variável (ADR-0009). Em `ml/leakage_tests.py`
-ela é executável: as nove checagens rodam sobre a amostra versionada em
+A regra foi escrita antes da primeira variável (ADR-0009). Em
+`src/airline_delays/prediction/leakage.py` ela é executável: as nove checagens rodam sobre a amostra versionada em
 `tests/fixtures/` a cada `pytest` (2 a 4 segundos) e sobre a base real a cada
-`just ml`, com o resultado gravado em `reports/prediction/leakage.json`.
+`just predict`, com o resultado gravado em `reports/prediction/leakage.json`.
 
 | checagem | resultado |
 |---|---|
@@ -152,10 +153,10 @@ ela é executável: as nove checagens rodam sobre a amostra versionada em
 Duas merecem explicação.
 
 **`movements_from_schedule`.** A camada staged tem `dep_hour` e `arr_hour`, e é
-tentador reusá-las. Elas não servem: `vra.stage` as calcula sobre
+tentador reusá-las. Elas não servem: `src/airline_delays/staging/build.py` as calcula sobre
 `coalesce(sched_dep, actual_dep)`, ou seja, **recorrem ao horário real** quando o
 previsto falta. Um voo sem partida prevista entraria na base com uma hora
-pós-decolagem e nada quebraria. `ml/dataset_flights.py` recalcula as horas só a
+pós-decolagem e nada quebraria. `src/airline_delays/prediction/dataset.py` recalcula as horas só a
 partir de `sched_dep`/`sched_arr` e descarta as linhas que ficam sem hora; a
 checagem reconta os movimentos por aeroporto-dia-hora a partir do horário previsto
 no `data/staged/` e exige concordância total.
@@ -369,7 +370,7 @@ sozinha não mostra. As faixas do H−1 estão em
 
 Uma varredura DuckDB por **ano civil** de `data/staged/` constrói a base inteira
 — o diretório `year=AAAA` é o ano do arquivo de origem e não o do voo (ADR-0016,
-`vra.features.year_source_sql`); cada ano é materializado uma vez em tabela temporária e todos os agregados daquele ano —
+`year_source_sql()` de `src/airline_delays/fact/build.py`); cada ano é materializado uma vez em tabela temporária e todos os agregados daquele ano —
 movimentos por aeroporto-dia-hora, taxas mensais por número de voo, a ligação de
 rotação — saem dessa mesma materialização. As taxas mensais que precisam de anos
 anteriores vêm da tabela de fatos já versionada
@@ -382,13 +383,13 @@ meses carregado de uma iteração para a seguinte. Nenhum ano é lido duas vezes
 | origem rolante, 8 folds x 2 horizontes | 1.140 s | `reports/prediction/rolling.json` |
 | importâncias por permutação (2 horizontes) | 175 s | `reports/prediction/importance.json` |
 | split fixo, 4 alvos x 2 horizontes | 1.001 s | `reports/prediction/fixed.json` |
-| **total `uv run python -m ml.run`** | **2.344 s** | 39 min em 8 threads, 16 GB |
+| **total `uv run airline-delays predict`** | **2.344 s** | 39 min em 8 threads, 16 GB |
 
 Ficou mais lento que a rodada anterior (1.427 s) por um motivo só: a leitura B da
 ADR-0017 dá alvo a 8.686.697 voos em vez de 4.965.966, então cada fold treina em
 quase o dobro das linhas. O fold mais caro é o de 2013 (444 s): treina em
 5.715.733 voos com alvo, valida em 942.102 e testa em 893.670. O pico de memória
-fica em 1,8 GB porque `ml/split.py` lê e filtra um ano por vez.
+fica em 1,8 GB porque `src/airline_delays/prediction/split.py` lê e filtra um ano por vez.
 
 ## 7. Limites declarados
 
@@ -435,14 +436,14 @@ fica em 1,8 GB porque `ml/split.py` lê e filtra um ano por vez.
 ## 8. Como reproduzir
 
 ```bash
-just ml-dataset   # a tabela de voos, uma varredura por ano de data/staged
-just ml           # reconstrói a tabela e roda a avaliação completa
-uv run pytest -q  # inclui as nove checagens de vazamento sobre o fixture
-typst compile reports/prediction.typ reports/build/prediction.pdf
+just predict-dataset   # a tabela de voos, uma varredura por ano de data/staged
+just predict           # reconstrói a tabela e roda a avaliação completa
+uv run pytest -q       # inclui as nove checagens de vazamento sobre o fixture
+typst compile --root . reports/prediction.typ reports/build/prediction.pdf
 ```
 
 `data/derived/ml/` é git-ignorado (ADR-0004): 320 MB de tabela de voos não entram
-no repositório. As 65 colunas estão declaradas em `src/vra/registry.py`,
+no repositório. As 65 colunas estão declaradas em `src/airline_delays/schema/columns.py`,
 renderizadas em `docs/dictionary.md` e descritas como recurso em
 `datapackage.json` — quem clonar reconstrói a tabela em 25 segundos e sabe
 exatamente o que vai encontrar.

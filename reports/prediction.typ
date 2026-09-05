@@ -3,9 +3,9 @@
 // Português (exceção deliberada ao inglês do repositório: CLAUDE.md, ADR-0006).
 // NENHUM número deste relatório é digitado à mão: tudo vem de
 // `reports/prediction/{rolling,fixed,importance,calibration,dataset,leakage}.json`,
-// escritos por `uv run python -m ml.run`.
+// escritos por `airline-delays predict` (`just predict`).
 //
-// Compilar:  typst compile reports/prediction.typ reports/build/prediction.pdf
+// Compilar:  typst compile --root . reports/prediction.typ reports/build/prediction.pdf
 
 #let rolling = json("prediction/rolling.json")
 #let fixed = json("prediction/fixed.json")
@@ -104,11 +104,14 @@ desfecho desconhecido. Um colegiado de três revisores (ADR-0010, pareceres em
 `docs/notes/colegiado-adr0012.md`) adotou essa leitura; o atraso vale 0 e a linha
 recebe a marca `on_time_no_bav`.
 
+#let lw = dataset.accounting.legacy_window
 O escopo não é o arquivo inteiro. A taxa de nulo não é uma convenção só: de 2000
-a 2009 é de 72,9% nos 5,1 milhões de voos realizados dentro do escopo e de 83,0%
-nos 313.368 fora dele, e o revisor cético mediu 90–100% em estrangeiras e trechos
-de code-share num corte de 2005 sobre todos os voos (tabela por empresa e ano em
-`docs/declared-differences.md`). A IAC 1504 art. 6.6 diz que em code-share só a
+a 2009 é de #pct(lw.null_arrival_rate_in_scope) nos #miles(lw.realised_in_scope)
+voos realizados dentro do escopo e de #pct(lw.null_arrival_rate_out_of_scope) nos
+#miles(lw.realised_out_of_scope) fora dele, e o revisor cético mediu 90–100% em
+estrangeiras e trechos de code-share num corte de 2005 sobre todos os voos
+(tabela por empresa e ano em `reports/prediction/null_actual_by_carrier.csv`;
+`docs/notes/prediction.md`). A IAC 1504 art. 6.6 diz que em code-share só a
 operadora presta a informação. A leitura vale, então, apenas para voos
 realizados de empresas de classe FSC, LCC ou regional em `groups.csv`; para
 `other` e não rotuladas o vazio continua desconhecido e o voo fica #emph[fora de
@@ -366,7 +369,7 @@ horizonte, a comparação das duas tabelas da seção anterior é a medida certa
 A regra foi escrita antes da primeira variável (ADR-0009): nada do próprio voo
 posterior à decolagem; nenhum agregado do mesmo mês que contenha o voo;
 janelas históricas fechadas antes da data do voo. As nove checagens de
-`ml/leakage_tests.py` rodam sobre a base real (anos
+`src/airline_delays/prediction/leakage.py` rodam sobre a base real (anos
 #leakage.years.map(y => str(y)).join(" e ")) e, no `pytest`, sobre a amostra
 versionada em `tests/fixtures/`.
 
@@ -425,6 +428,6 @@ para 0,82.
   parada antecipada em #meta.early_stopping_rounds rodadas, `max_bin`
   #meta.params.max_bin, subamostra #nf(meta.params.subsample, d: 1). A base tem
   #miles(dataset.rows) linhas e é reconstruída em
-  #nf(dataset.seconds, d: 0) segundos por `just ml-dataset`. Reprodução completa:
-  `just ml`.
+  #nf(dataset.seconds, d: 0) segundos por `just predict-dataset`. Reprodução completa:
+  `just predict`.
 ]

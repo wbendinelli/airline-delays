@@ -1,84 +1,84 @@
-# M12 — Consentimento, licenças e o que fica de fora
+# M12 — Direitos, licenças e o que se publica onde
 
-**Objetivo.** Ver o mapa completo de quem precisaria autorizar o quê para
-publicar o acervo de pesquisa original — e comparar com a solução deste
-repositório, que evita a maior parte dessas autorizações escolhendo, desde
-o início, uma trilha (VRA público + artigo citado só por DOI) que não
-depende de ninguém conceder nada.
+**Objetivo.** Saber, para cada camada deste repositório, quem detém os
+direitos, sob qual licença ela é publicada e onde ela vai parar: o código,
+o texto e as tabelas curadas, o VRA bruto, o painel de estimação do
+artigo, e os documentos que são só citados.
 
-## Contexto (fora deste repositório): um mapa completo, zero autorizações
+## A licença por camada
 
-O acervo original tem um mapa de consentimento completo — sai inteiro dos
-próprios metadados, notas de tabela e cabeçalhos de do-file — e o número
-de autorizações **de fato obtidas** é zero. Três titulares seriam
-bloqueantes: o orientador e coautor (dono dos comandos `.ado` de
-estimação e da base de laboratório), o co-autor externo, e a Elsevier
-(o PDF editorado nunca é redistribuível; nenhuma versão aceita do
-manuscrito, que a política da própria Elsevier permitiria depositar sob
-embargo, existe no acervo). A aritmética de tamanho também não ajuda: o
-GitHub bloqueia arquivo acima de 100 MiB sem LFS, e três das quatro bases
-brutas do acervo ultrapassam isso — a base final sozinha carrega colunas
-derivadas do relatório não publicado da Infraero e de microdados
-tarifários cuja redistribuição nunca foi verificada.
+Três licenças, uma por natureza de conteúdo, e nenhuma delas relicencia o
+que é de outro titular.
 
-Esta descrição vem de uma análise de acervo produzida antes deste
-repositório existir (*avaliação em oito critérios*, seções C7 e C8) — os
-arquivos citados são privados e não estão aqui.
+| Camada | O que é | Titular | Licença |
+|---|---|---|---|
+| código | `src/`, `scripts/`, `tests/`, `.github/`, `justfile` | o primeiro autor do artigo | MIT (`LICENSE`) |
+| texto e dados curados | `README.md`, `docs/`, a prosa de `reports/`, `data/external/*.csv`, os dois painéis e as tabelas de `data/analysis/` | o primeiro autor do artigo | CC BY 4.0 (`LICENSE-CC-BY-4.0.md`) |
+| VRA bruto | os 168 CSV mensais e o que deles deriva | ANAC | CC BY, atribuído como "ANAC, Voo Regular Ativo (VRA), via dados.gov.br" (ADR-0000) |
 
-## O que este repositório resolveu, e como
+O `datapackage.json` repete a licença em cada recurso e a fonte de cada
+tabela; `CITATION.cff` e `.zenodo.json` saem da mesma origem
+(`src/airline_delays/schema/metadata.py`), para que título, autores e
+licenças não divirjam entre os quatro arquivos.
 
-Não obtendo as autorizações que faltavam — evitando precisar delas.
+## O que o autor publica como autor
 
-- **A fonte de dados é diferente.** O VRA é público
-  (`DECISIONS.md` ADR-0000); nenhum dado da Infraero, do laboratório, ou
-  microdados tarifários entra em qualquer tabela redistribuída aqui.
-- **O artigo é citado, nunca redistribuído.** `CITATION.cff` e o README
-  apontam para o DOI; nenhum PDF, editorado ou aceito, está neste
-  repositório.
-- **O benchmark privado nunca sai da máquina de quem o possui.** É lido
-  só via `AIRLINE_DELAYS_PRIVATE_DIR`, e um gancho de pre-commit garante
-  isso na prática, não só na intenção:
+O painel de estimação do artigo — Bendinelli, Bettini e Oliveira (2016,
+*Transportation Research Part A* 85, 39-52, doi 10.1016/j.tra.2016.01.001)
+— é publicado em `data/analysis/article_panel_route_month.parquet` sob
+CC BY 4.0 (ADR-0020). A citação do dataset credita os três autores dos
+dados: Bendinelli, W. E.; Bettini, H. F. A. J.; Oliveira, A. V. M. (dados
+de 2016; publicação 2026), curado e publicado por W. E. Bendinelli. O
+`datapackage.json` lista as fontes a montante do painel — o VRA, os dados
+estatísticos e tarifários da ANAC e o próprio artigo — no recurso
+`article_panel_route_month`.
 
-```bash
-grep -n "no-private-data" .pre-commit-config.yaml
-```
+## O que é só citado
 
-**Número esperado.** Cinco ocorrências — o `id` e o `name` de cada um dos
-**dois** ganchos, mais a mensagem de erro no corpo do primeiro
-(`.pre-commit-config.yaml`). São dois porque um só não bastou. O primeiro,
-`no-private-data`, barra qualquer arquivo *staged cujo caminho* contenha
-`proj18`, `labtar`, `nectarbase`, termine em `.dta`, ou esteja sob
-`data/raw/`, `data/staged/`, `data/derived/` ou `data/private/` (exceto os
-`README.md` e `manifest.json` que essas pastas têm permissão de carregar).
-Nomes de caminho, porém, não são o único vazamento possível: a auditoria de
-2026-09-05 (`docs/audit/2026-09-05-pre-publication.md`, achado B-2) encontrou
-30 linhas de `data/external/*.csv` publicando URLs `file:///` absolutas para o
-acervo privado do autor — caminhos dentro do *conteúdo* de arquivos cujos
-nomes eram inocentes. O segundo gancho,
-`no-private-data-content`, lê os blobs staged e roda
-[`scripts/check_no_private_paths.py`](../../scripts/check_no_private_paths.py),
-o mesmo script que `tests/test_no_private_paths.py` roda sobre toda a árvore
-versionada — de modo que gancho e teste não podem divergir.
+- **O artigo.** Citado por DOI em `CITATION.cff` (`preferred-citation`) e
+  no README; nenhum PDF, editorado ou aceito, está aqui. O titular do texto
+  publicado é a Elsevier (`docs/data-availability.md`).
+- **A monografia de 2013.** Documento do autor (USP/ESALQ), citado com o
+  marcador `[DOI-MONOGRAFIA]` até o depósito no Zenodo; dela entram aqui uma
+  tabela derivada (`data/external/monograph_airports.csv`) e passagens
+  curtas (`docs/notes/monografia-2013.md`), não o documento.
+
+## O que a licença da ANAC permite
+
+O catálogo federal de dados abertos declara "Creative Commons Attribution"
+para o conjunto Voo Regular Ativo; o rodapé do sítio da ANAC declara CC
+BY-ND para o conteúdo do sítio. A ADR-0000 adota a declaração mais
+específica, a do catálogo: redistribuir dados derivados com atribuição.
+Um pedido de confirmação escrita via e-SIC está redigido em
+`docs/notes/esic-licenca-vra.md` e ainda não foi protocolado; a publicação
+não espera por ele.
+
+## O que vai para o Zenodo
+
+O depósito arquiva o repositório com as tabelas curadas: os dois painéis,
+a tabela-fato, as duas projeções, as tabelas de `data/external/` e os
+manifestos — o que `datapackage.json` descreve como recurso. As camadas
+pesadas — os CSV brutos, o *staged* e a tabela de modelagem por voo — não
+vão: são regeneradas pelos comandos de M6 e de `docs/notes/prediction.md`,
+com o sha256 de cada arquivo bruto em `data/raw/manifest.json`
+(`.zenodo.json`, campo `notes`).
 
 ## Exercício
 
-Abra [`docs/data-availability.md`](../data-availability.md) e conte
-quantas das 15 linhas da tabela-resumo têm "Not redistributed" em
-negrito. Compare esse número com o "zero autorizações obtidas" do acervo
-original: este repositório chegou a um número pequeno de fontes não
-redistribuídas (três) sem precisar pedir permissão a ninguém — porque
-optou por não depender delas desde o desenho, não porque negociou
-melhor. Qual das três linhas você acha que teria a maior chance de virar
-redistribuível um dia, e o que precisaria acontecer para isso (a resposta
-de cada uma está na própria linha)?
+Abra a tabela-resumo de [`docs/data-availability.md`](../data-availability.md)
+e, para cada fonte, escreva em uma linha quem detém os direitos e qual
+licença permite redistribuir o que este repositório redistribui dela —
+ou por que nada é redistribuído. Depois responda: quais fontes são
+redistribuídas sob CC BY com atribuição a um terceiro, quais sob a CC BY
+4.0 do próprio repositório, e quais são apenas citadas? Confira contra a
+seção de licenças do mesmo arquivo.
 
-## Nota honesta
+## Limites e próximos passos
 
-A comparação privada contra o gabarito (`data/analysis/taxas.csv`) só
-existe porque o autor deste repositório tem acesso pessoal ao mesmo
-acervo que gerou o `proj18.dta` — não porque algum titular concedeu uma
-licença nova. Um terceiro sem esse acesso pode rodar todo o resto deste
-repositório (`just fetch` até `just replicate`, sem `private`), mas não
-pode reproduzir a comparação da seção "Panel and feature layer" do
-README nem as tabelas da fonte `private` — exatamente o mesmo limite que
-`docs/data-availability.md`, fonte 12, declara.
+O depósito no Zenodo é o próximo marco: ele cunha o DOI do repositório,
+que entra em `CITATION.cff`, no README e no `id` de `datapackage.json`
+(`ROADMAP.md`, "Next milestone: publication"). O da monografia substitui `[DOI-MONOGRAFIA]` nos
+capítulos de `docs/theory/` e entra em `CITATION.cff` como referência. A
+resposta do e-SIC, quando chegar, é registrada em
+`docs/notes/esic-licenca-vra.md`; a leitura CC BY da ADR-0000 já sustenta
+a redistribuição feita aqui.
