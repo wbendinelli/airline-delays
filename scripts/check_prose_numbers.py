@@ -51,31 +51,42 @@ SKIP_RE = re.compile(
 )
 
 
-def _renderings(value: float) -> set[str]:
+def _renderings(value: float, *, share_like: bool = False) -> set[str]:
+    """The strings a prose token may take for one numeric leaf (signs are compared apart).
+
+    Integers render plain and with thousands separators in both languages; floats
+    with 0-4 decimals in both languages; a share-like leaf (0-1, under a key that
+    names a share, rate or percentage) also as a percentage.
+    """
     out: set[str] = set()
     if isinstance(value, bool):
         return out
+    value = abs(value)
     if isinstance(value, int):
-        out.update({str(value), f"{value:,}", f"{value:,}".replace(",", ".")})
+        text = f"{value:,}"
+        out.update({str(value), text, text.replace(",", "."), str(value) + "%", text + "%"})
         return out
     for digits in range(5):
         text = f"{value:,.{digits}f}"
-        out.add(text)
-        out.add(text.replace(",", "@").replace(".", ",").replace("@", "."))
-    if 0 <= value <= 1:
+        pt = text.replace(",", "@").replace(".", ",").replace("@", ".")
+        out.update({text, pt, text + "%", pt + "%"})
+    if share_like and 0 <= value <= 1:
         for digits in range(3):
             pct = f"{100 * value:.{digits}f}"
             out.update({pct, pct.replace(".", ","), pct + "%", pct.replace(".", ",") + "%"})
     return out
 
 
-def _leaves(node) -> list[float | int]:
+SHARE_KEYS = ("share", "rate", "pct", "excess", "linked")
+
+
+def _leaves(node, path: str = "") -> list[tuple[str, float | int]]:
     if isinstance(node, dict):
-        return [leaf for value in node.values() for leaf in _leaves(value)]
+        return [leaf for key, value in node.items() for leaf in _leaves(value, f"{path}.{key}")]
     if isinstance(node, list):
-        return [leaf for value in node for leaf in _leaves(value)]
+        return [leaf for value in node for leaf in _leaves(value, path)]
     if isinstance(node, int | float) and not isinstance(node, bool):
-        return [node]
+        return [(path, node)]
     return []
 
 
@@ -83,8 +94,9 @@ def accepted_values() -> set[str]:
     summary = json.loads(SUMMARY.read_text(encoding="utf-8"))
     summary.pop("meta", None)
     accepted: set[str] = set()
-    for leaf in _leaves(summary):
-        accepted |= _renderings(leaf)
+    for path, leaf in _leaves(summary):
+        share_like = any(key in path.lower() for key in SHARE_KEYS)
+        accepted |= _renderings(leaf, share_like=share_like)
     return accepted
 
 

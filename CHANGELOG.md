@@ -3,511 +3,126 @@
 All notable changes to this repository are documented here. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). This
 project does not follow semantic-version releases (tier C, no package
-consumed by another repository — see `.sapians-repo.yml`); dates, not
-version numbers, mark progress.
+consumed by another repository -- see `.sapians-repo.yml`); the first
+publication is tagged v1.0.0 and archived on Zenodo (`ROADMAP.md`), and
+dates mark progress until then.
 
 ## [Unreleased]
 
+The restructure: the article's estimation panel published, one stage-ordered
+package, one narrative in two languages (`DECISIONS.md` ADR-0020, ADR-0021).
+
 ### Added
 
-- **Publication metadata at the Data Package v2 standard.** `datapackage.json` now describes 24
-  resources -- the article panel and the reconstruction panel in parquet and csv.gz, the fact
-  table, the two projections, the 13 curated `data/external/` tables and the four provenance
-  manifests -- each with sha256, size, row count, licence, sources and field constraints, and
-  lists the two regenerated layers (staged flights, the modelling table) under `x-regenerated`
-  with the command that rebuilds them. `.zenodo.json` is generated (`airline-delays zenodo-json`)
-  from `schema/metadata.py`, the single source of title, version, keywords, creators, licences
-  and related identifiers that `CITATION.cff` and `pyproject.toml` are tested against. A CI job
-  `metadata` rebuilds the four generated files and validates the package with frictionless;
-  `just validate` runs the full validation.
+- **The article's estimation panel** (ADR-0020): `data/analysis/article_panel_route_month.parquet`
+  and `.csv.gz`, 24,589 route-months x 52 columns, curated once from the authors' final base
+  (Stata, header timestamp 3 Dec 2015, 1,829 variables) by `airline-delays article-panel` --
+  keys and geography, the flight counts, the six regressands, the nine exogenous regressors,
+  the concentration terms, the seven instruments and the components of the two low-cost
+  dummies. The generated dummies are rebuilt by `src/airline_delays/estimation/loader.py`; no
+  column from a non-open source ships. `data/analysis/article_panel_manifest.json` records the
+  sha256 of the source and of both files, the header timestamp and the per-column null counts,
+  never a path. Registry layer `article_panel` with bilingual definitions; `tests/test_article_panel.py`.
+- **Publication metadata at the Data Package v2 standard.** `datapackage.json` describes every
+  published table -- both panels, the fact table, the two projections, the curated
+  `data/external/` tables and the manifests -- with sha256, size, row count, licence, sources
+  and field constraints, and lists the regenerated layers under `x-regenerated` with the command
+  that rebuilds them. `.zenodo.json` is generated (`airline-delays zenodo-json`) from
+  `src/airline_delays/schema/metadata.py`, the single source of title, version, keywords,
+  creators, licences and related identifiers that `CITATION.cff` and `pyproject.toml` are
+  tested against. A CI job `metadata` rebuilds the four generated files and validates the
+  package with frictionless; `just validate` runs the full validation.
 - **`reports/summary.json`, the numbers manifest** (`airline-delays summary`): every headline
-  number the READMEs quote, read from the committed manifests, tables and reports -- the
-  reconstruction's counts and flights by year, the article panel's shape, the published Table 3
-  and Table 6 cells the README discusses, the replication scorecard and HHI sign-inversion
-  count, the prediction AUC ranges and baselines, the theory's identities, the registry and
-  external-table sizes. No timestamp; `tests/test_summary.py` fails when it is stale.
-  `airline-delays report` compiles the three Typst reports; `dictionary`, `datapackage` and
-  `summary` gain `--check`.
-- **The article's estimation panel is published** (ADR-0020):
-  `data/analysis/article_panel_route_month.parquet` (canonical, zstd) and `.csv.gz`, 24,589
-  route-months x 52 columns curated once from the authors' final base (December 2015) by
-  `airline-delays article-panel`, with `article_panel_manifest.json` (sha256 of the source and
-  of both files, Stata header timestamp, per-column null counts; no path). Registry layer
-  `article_panel` with bilingual definitions; a sixth `datapackage.json` resource;
-  `tests/test_article_panel.py`.
-
-- The theory layer in the SAPIANS standard: the eleven figures of `reports/theory/figures/`
-  are now drawn with matplotlib in the SAPIANS scientific style vendored with attribution
-  in `theory/sapians_style.py` (an active insight title, a subtitle with the parameters,
-  direct labels, the SAPIANS palette, Inter when installed) -- the five diagrams of the
-  monograph's section 2 keep their geometry and numbers, and six new figures show the
-  follower's reaction function, the tolls by market structure, the comparative statics in
-  cost curvature and demand slope, the low-cost entrant and the OLS-to-2SGMM sign
-  inversion of the published coefficients; `reports/theory.typ` is rewritten as a
-  SAPIANS report (design package vendored under `reports/sapians/`, MIT copy of
-  `sapians-latex` v0.1.0), a complete study that formulates the game from players,
-  strategies and timing and derives every equation step by step, with intuition boxes,
-  tables read from `model.json` and the figures with captions; `matplotlib` joins the
-  dependencies.
-- Theory layer (`theory/`, `just theory`, `reports/theory/`, `tests/test_theory.py`;
-  `DECISIONS.md` ADR-0019): the Stackelberg congestion model of the author's 2013
-  undergraduate monograph (section 4, after Brueckner and Van Dender 2008) re-derived
-  with sympy -- equations (1)-(12), the reaction-slope bounds `1/2 <= lambda < 1`, the
-  leader's toll at exactly three quarters of the marginal congestion damage under
-  linear cost, the condition `c''/s >= s^2 d''` for the inelastic-demand bounds, the
-  linear closed forms -- 29 identities pinned by the tests, three numeric examples,
-  comparative statics over cost curvature and demand slope, a low-cost-entrant
-  extension labelled as this repository's, and the join of each theory object to the
-  article's published signs (`theory/bridge.py`, from `replication/published.json`).
-  The five congestion-economics diagrams of the monograph's section 2 are redrawn as
-  hand-written SVG from piecewise-linear curves, every labelled point, toll and
-  triangle area computed into `reports/theory/figures.json`; `reports/theory.typ` is
-  the fourth Typst report. The report carries no timestamp, so
-  `tests/test_theory.py` rebuilds it in memory and fails when the committed copy is
-  stale. `sympy` joins the dependencies; `scripts/check_docs_paths.py` now also
-  checks `docs/theory/*.md` and `theory/` paths.
-- The data side of the 2013 monograph, cross-checked against this repository:
-  `data/external/monograph_airports.csv` (the 38 airports of its Lista de Siglas,
-  grade A, three IATA codes annotated where they differ from OurAirports) with
-  `scripts/monograph_airports.py` and its test (31 of the 38 are in the ADR-0001 map
-  and cover all 27 nodes; 37 appear in its Tables 3-4 and its text says 36 -- three
-  counts declared, none reconciled); `docs/notes/monografia-2013.md` (its four
-  sources, its six airline groups as a dated convergent source for `groups.csv`, the
-  weighted geometric mean of 2013 as the antecedent of `gmchhi`, and what its
-  surviving do-file does against what its text says, phrased as questions for the
-  author); source 15 of `docs/data-availability.md`.
-- `docs/theory/` (Portuguese, ADR-0019): the thematic discussion of the theory
-  behind the article -- `01-economia-do-congestionamento.md` (the economics of
-  airport congestion with the five diagrams redrawn), `02-o-jogo-do-congestionamento.md`
-  (the Stackelberg game derived step by step, every identity checked, ending where
-  Guo, Jiang and Wan 2018 took the formulation to airfares), `03-do-modelo-ao-artigo.md`
-  (the bridge from each theory object to the 2016 article's regressors and published
-  signs, the map from the monograph's equation (22) to the registry, what reproduces,
-  the 2018 critique), `04-impacto.md` (the reception) and `bibliografia.md` (the first
-  literature list in the repository, 36 entries, 28 DOIs resolved via Crossref, the
-  monograph's typos corrected and listed); tutorial module M14 as the door into it;
-  `DECISIONS.md` ADR-0019.
-- `just demo` is real (`scripts/demo.py`, `tests/test_demo.py`): the committed
-  fixture (three routes cut from the 2004, 2009 and 2012 files, 19,907 staged
-  legs) runs through the same code path as the full pipeline -- staged legs,
-  the group x route x month fact table, the route-month panel (101 rows x 228
-  columns) and Table 2 (7 of 13 variables computed, 4 absent and 2 entirely
-  null, declared) -- in about one second, offline, writing only under the
-  git-ignored `data/derived/demo/` and a `summary.json` with the counts and
-  the wall time. The README Quickstart, `CONTRIBUTING.md`, `scripts/README.md`
-  and `tests/fixtures/README.md` (which still said the fixture "does not
-  exist yet") describe what actually runs.
-- Flight-level delay prediction (`ml/`, `just ml`, `reports/prediction/`,
-  `reports/prediction.typ`, `docs/notes/prediction.md`). `ml/dataset_flights.py`
-  makes one DuckDB scan per staged year and writes
-  `data/derived/ml/year=YYYY/part-0.parquet`: 10,200,560 rows, one per
-  **scheduled** flight of the replication universe (ADR-0002), 46 pre-departure
-  features for the D-1 horizon plus 3 inbound-leg features for H-1, five
-  targets, 313 MB in 24.73 seconds (`data/derived/ml/manifest.json`). The delay
-  targets were null where ADR-0012 left no actual timestamp (4,965,966 of the
-  10.2 M rows kept one; ADR-0017 below raised that to 8,686,697) and
-  where ADR-0015 marks the timestamp suspect (|delay| >= 1,440 minutes: 5,349
-  flights, 0.1%); `cancelled` is defined on every row, because the table is the
-  scheduled universe. Every column is registered under the new
-  `ml` layer of `src/vra/registry.py` and described in `docs/dictionary.md` and
-  `datapackage.json`; the table itself stays out of git (ADR-0004), so the
-  resource is a description of a table the reader rebuilds. `ml/split.py` holds
-  the rolling origin 2006-2013 and the fixed 2002-2010 / 2011 / 2012-2013 split
-  of ADR-0009, plus route-hash subsampling that keeps whole routes together;
-  `ml/train_xgb.py` fits XGBoost `hist` with early stopping on each fold's
-  validation year (LightGBM optional); `ml/evaluate.py` reports AUC, PR-AUC,
-  Brier, a calibration table, the two naive baselines and permutation
-  importance; `ml/run.py` writes `reports/prediction/*.json` and `results.md`.
-
-- Leakage rule as executable checks (`ml/leakage_tests.py`,
-  `tests/test_leakage.py`, `reports/prediction/leakage.json`). Nine checks run
-  on the committed fixture in the test suite and on the real dataset in
-  `just ml`: no post-departure column in either horizon's feature list, targets
-  and diagnostics kept out of both, D-1 a strict subset of H-1 whose additions
-  are all about the inbound leg, every lagged rate equal to the fact table's
-  `t-1` value and not its `t` value, the airport day-hour movement counts
-  recounted from the staged **schedule**, the rotation link scheduled to land
-  before the flight departs, no target where ADR-0012 leaves no actual
-  timestamp, no busy-hour flag in the build's first year, and holidays taken
-  from `data/external/holidays.csv` by date. A tenth test plants a leak (the
-  same month's route prevalence) and asserts the checks catch it.
-
-- `data/analysis/*.parquet` and `*.csv.gz` are tracked in git (`DECISIONS.md`
-  ADR-0014): the fact table and panel run 8-12 MB, city and airline-city
-  projections 2-4 MB, all under the pre-commit `check-added-large-files`
-  threshold, raised from 5 MB to 50 MB (`.pre-commit-config.yaml`) to match; a
-  reviewer can now run `just replicate` without rebuilding anything first.
-  `just check-analysis` (`pytest -m analysis`, new
-  `tests/test_analysis_staleness.py`) rebuilds the panel from the committed
-  fact table in memory and fails a commit whose shape, column names or a
-  value checksum drift from `data/analysis/panel_route_month.parquet`; it
-  skips, never fails, when `data/derived/` is not present locally, which is
-  the ordinary CI job (no `data/staged/`, per `CLAUDE.md`). `manifest.json`
-  and `panel_manifest.json` now carry the short git commit that built them
-  (`vra.stage.git_commit(..., short=True)`, `.gitattributes` marks the four
-  tracked binary tables `linguist-generated`).
-
-- Feature and panel layer (`src/vra/{groups,codes,hhi,congestion,hub,features,panel}.py`,
-  `sql/views.sql`): `vra features` builds the canonical fact table
-  `group x route x month` over the replication universe -- 166,203 cells, 87
-  columns, one pass per year over the 13.6 M staged legs in about 12 s -- plus
-  the city-month and airline-city-month projections; `vra panel` assembles the
-  public route-month panel (31,760 route-months x 228 columns over the 27 nodes
-  of ADR-0001) with the article's own column names, the declared variants and
-  the new feature families. `aggregate(fact, grain)` is the only path to a
-  coarser grain and is tested for additivity against a direct count from the
-  flights (ADR-0004); the same check ships as the `v_check_additivity` view and
-  returns zero rows on the full series. New definitions: dated airline groups
-  and the four classes of ADR-0011 (`groups.py`), the article's three
-  justification sets alongside the ADR-0005 taxonomy (`codes.py`), flight-share
-  concentration with a passenger-weighted placeholder that returns null until
-  ANAC's traffic data exist (`hhi.py`), the ADR-0007 p90 congestion proxy
-  (`congestion.py`), and a hub score with the volume floors that stop a
-  four-flight regional from outranking Gol in Rio (`hub.py`). `vra refs`
-  validates `data/external` row by row against the ADRs the tables encode.
-
-- `legacy_missing_actual_as_zero` (ADR-0012) in `delays.effective_delay_min` /
-  `effective_delay_sql` and threaded through `features` and `panel`: `True` for
-  the replication panel, `False` for the prediction layer. The fact table stays
-  convention-free -- it carries both the observed and the missing-actual counts
-  -- and the flag selects the **denominator** of every proportion and mean,
-  never a count and never a sum, which the test suite pins. Per-year share of
-  realised flights with no actual time, from the full series: 80.1% (2000)
-  falling to 59.2% (2007), back to 77.7% (2009), then 0.01% or less from 2010
-  on, when the raw layout changed.
-
-- Benchmark comparison (`replication/gabarito/compare.py`, the only reader of
-  `AIRLINE_DELAYS_PRIVATE_DIR`): writes `data/analysis/taxas.csv` and the
-  generated block of `docs/declared-differences.md` with agreement rates,
-  median and p90 absolute differences and row counts -- statistics only, with a
-  structural guard that refuses to write anything else. Measured on 24,929
-  comparable route-months: `maxalccfu`, `olccfu` and `dlccfu` at 1.000, `f` at
-  0.953 and `fscb_prdelarr` at 0.649 on the stable-vintage half against the
-  0.975 and 0.651 the earlier reconstruction reported from the 2019 vintage of
-  the raw files. `taxas.csv` reports both a headline rate and a
-  `rate_stable_vintage`, because the shortfall is the raw files having changed
-  since 2019, not the definitions: agreement on `f` is 0.94-0.97 in the three
-  quietest quartiles of vintage drift and 0.74 in the noisiest, correlation
-  -0.45.
-
-- Generated documentation: `docs/dictionary.md` (518 columns across five layers)
-  and `datapackage.json` (Frictionless v2, four resources) are produced from
-  `src/vra/registry.py` by `vra dictionary` and `vra datapackage` and are never
-  hand-edited. The registry gained entries for every column of the fact, city,
-  airline-city and panel layers, generated from one description resolver and
-  checked in both directions against the tables actually built.
-
-- Research note `docs/notes/features.md` (Portuguese) and the panel section of
-  `docs/declared-differences.md`: the vintage effect, the FSC class against the
-  article's FSC group set, the two delay conventions, and what the VRA cannot
-  produce.
-
-- Replication layer (`replication/`): Tables 2-7 of Bendinelli, Bettini &
-  Oliveira (2016) reproduced column by column. `common.py` holds the `Source`
-  switch (private benchmark through `AIRLINE_DELAYS_PRIVATE_DIR`, or the public
-  `data/analysis/panel_route_month.parquet` once it exists), the do-files'
-  sample filters, the regressor and instrument lists, the rebuilt route, time
-  and seasonality dummies, and the HAC settings; `kp.py` implements the
-  Kleibergen-Paap rk LM and rk Wald F and the Cragg-Donald Wald, which no Python
-  package provides; `published.py` parses the published numbers out of the
-  article text into `published.json`; `table2.py` through `table7.py` are one
-  module per published table; `sensitivity.py` is the ADR-0008 grid; `run.py`
-  writes `reports/replication/{results,summary,sensitivity}.json` and
-  `tables.md`. `just replicate [private]` runs it. Report source
-  `reports/replication.typ` (Portuguese), research note
-  `docs/notes/replication.md` (Portuguese), divergences in
-  `docs/declared-differences.md`. Tests: `tests/test_replication_kp.py` (the
-  i.i.d. collapse of rk Wald onto Cragg-Donald and of rk LM onto Anderson, plus
-  a `gabarito`-marked regression test against the published values) and
-  `tests/test_replication_public.py` (the whole public path on a synthetic panel
-  built to the published contract). Measured on the benchmark: 302 of 306
-  coefficients agree in sign, 259 sit within half a published standard error,
-  and no Hansen J changes its verdict.
-
-- Data layer (`src/vra/{io,stage,keys,universe,delays,registry,cli}.py`,
-  `scripts/{fetch,make_fixture,verify_reconcile}.py`): `vra fetch` downloads
-  the 168 monthly ANAC VRA CSVs for 2000-2013 from the SIROS directory
-  listing (2.17 GB, sha256 in `data/raw/manifest.json`, idempotent);
-  `vra stage` parses both raw layouts -- 12 columns/comma/latin-1/CRLF up to
-  2009, 20 columns/semicolon/UTF-8/LF from 2010, with a different column
-  order and a free-text justification -- into 13,652,322 flight legs at
-  `data/staged/year=YYYY/part-0.parquet` (zstd 9); `vra verify` reconciles
-  the result with the private 2019 `vra.dta`; `vra layouts` measures a raw
-  file instead of assuming its shape. Column registry in `registry.py`,
-  offline fixtures in `tests/fixtures/`, staging note in
-  `docs/notes/staging.md`, reconciliation in `reports/reconciliation.md`.
-
-- Repository scaffold: licensing (`LICENSE` MIT, `LICENSE-CC-BY-4.0.md`),
-  `CITATION.cff` (software plus the preferred citation for Bendinelli,
-  Bettini & Oliveira 2016), governance docs (`CLAUDE.md`, `AGENTS.md`,
-  `CONTRIBUTING.md`, `SECURITY.md`, `ROADMAP.md`), tooling
-  (`pyproject.toml`, `.python-version`, `justfile`, `ruff.toml`,
-  `.editorconfig`, `.gitattributes`, `.gitignore`,
-  `.pre-commit-config.yaml`), CI (`.github/workflows/ci.yml`,
-  `docs-lint.yml`, `security.yml`, `.github/dependabot.yml`), and the empty
-  directory skeleton (`data/{raw,staged,derived,private,external}`, `sql/`,
-  `reports/`, `docs/{notes,tutorial}/`, `replication/`, `ml/`, `scripts/`,
-  `tests/`) described in `DECISIONS.md` and the architecture review.
+  number the entry pages quote, read from the committed manifests, tables and reports; no
+  timestamp; `tests/test_summary.py` fails when it is stale. `dictionary`, `datapackage`,
+  `zenodo-json` and `summary` take `--check`; `airline-delays report` compiles the three reports.
+- **The bilingual entry layer**: `README.md` (English, the main page) with `README.pt-BR.md`;
+  `docs/README.md`, `data/README.md` and `CONTRIBUTING.md` with their `.pt-BR` counterparts,
+  written natively and kept in parity by `scripts/check_readme_parity.py`; an English summary
+  paragraph on each Portuguese index page.
+- **`docs/editorial/`**: the style guide, the shared README outline with the `summary.json`
+  key behind each number, and the number allowlist.
+- **The prose checks**: `scripts/check_prose_numbers.py` with `tests/test_prose_numbers.py`,
+  `tests/test_prose_vocabulary.py`, and `scripts/check_docs_paths.py` extended to the READMEs,
+  every page under `docs/` and the data guides.
+- **ADR-0020** and **ADR-0021**.
 
 ### Changed
 
-- `empty_actual_means_on_time` replaces `legacy_missing_actual_as_zero` as the name of the
-  ADR-0012 convention -- the parameter, the CLI flag, the manifest key and the panel column.
-  The panel is regenerated with the one column renamed and every value unchanged.
+- **One stage-ordered package.** `src/vra/`, `replication/`, `ml/` and `theory/` become
+  `src/airline_delays/` with the subpackages `ingest`, `staging`, `reference`, `fact`, `panel`,
+  `estimation`, `prediction`, `theory` and `reporting`, plus the cross-cutting `definitions/`
+  and `schema/`. The console script is `airline-delays`, one command per stage in pipeline
+  order; the `justfile` recipes follow the same names, grouped by stage, with `just pipeline`
+  and `just pipeline-full`. Tests are renamed with their modules.
 - **Single-source estimation.** `airline-delays estimate` runs Tables 2-7 on the article's
-  panel (or any panel carrying the contract, `--panel`), writes `reports/replication/` flat --
-  no `public/`/`private/` split -- and records the panel's repository path, row count and
-  sha256 in `results.json`. `estimation/common.py` becomes `specification`, `loader`,
-  `sample` and `estimators`; `run.py` splits into `compare`, `report` and `run`; the
-  sensitivity grid keeps its seasonality axis only. Every re-estimated value equals the
-  previous run to the last digit (1,097 values compared). The demo's step 4 runs Table 2 on
-  the article panel; the Kleibergen-Paap test against the published Table 3 now runs in CI.
-- One stage-ordered package. `src/vra/`, `replication/`, `ml/` and `theory/` become
-  `src/airline_delays/` with subpackages `ingest/` (layouts, manifest, download), `staging/`
-  (clean, select, build), `fact/` (measures, build, projections -- `city_month` now lives here),
-  `panel/` (columns, build), `schema/` (columns, dictionary, datapackage), `estimation/`,
-  `prediction/` (dataset, split, train, evaluate, leakage, run) and `theory/`, plus the
-  cross-cutting `definitions/` (nodes, universe, delays, cause_codes, carriers, concentration,
-  hubs, congestion) and `paths.py`. The console script is `airline-delays`, one command per
-  stage in pipeline order (`fetch`, `stage`, `reference`, `fact`, `panel`, `dictionary`,
-  `datapackage`, `estimate`, `predict-dataset`, `predict`, `theory`); `just` recipes follow the
-  same names. Tests are renamed with their modules; `sys.path` hacks are gone.
-
-- `docs/data-availability.md` sources 1 (the VRA is HOTRAN plus BAV, and ANAC's
-  published percentages used 30- and 60-minute cuts), 3, 9, 12 and 13 (the RPE
-  reliability caveat of Resolução ANAC 8/2007 and the 2013 gap, stated by the author
-  in 2013); `docs/notes/references.md` sections 1-2; `docs/notes/features.md` section
-  5; `docs/declared-differences.md` gains the monograph's Table 5 under "Not
-  attempted, and why"; `scripts/check_no_private_paths.py` allowlists
-  `docs/notes/monografia-2013.md`; the README and M12 count 15 sources.
-- M0, M1, M2, M5, M11 and M13 amended to point to the theory chapters (M13 gains
-  extension 9, the monograph's own question); the indexes (`docs/README.md`,
-  `docs/tutorial/README.md`, `docs/notes/README.md`, `ROADMAP.md`) list M14 and
-  `docs/theory/`; the README overview names the theory layer.
-- **The prediction layer reads an empty actual time as "no alteration
-  reported"** (`DECISIONS.md` ADR-0017, panel of three reviewers under
-  ADR-0010, verdicts in `docs/notes/colegiado-adr0012.md`). IAC 1504 issues the
-  Boletim de Alteração de Vôo only "sempre que houver alguma alteração", and the
-  realised times are fields of that boletim, so an empty one on a realised flight
-  of the 2000-2009 layout is the absence of a reported alteration.
-  `ml/dataset_flights.py` therefore reads a delay of 0 and sets the new column
-  `on_time_no_bav`, but only for realised flights of years up to 2009 whose
-  carrier class in `groups.csv` is FSC, LCC or regional (`BAV_CLASSES`,
-  `BAV_LAST_LEGACY_YEAR`); for `other` and unlabelled carriers -- foreign
-  operators and the non-operating side of a code-share, whose null rate runs at
-  90-100% against 52-75% for the domestic majors -- the empty field stays
-  unknown and the flight keeps no delay target. The same reading is applied to
-  the inbound leg and to the lagged rates (`monthly_lags`, `flight_number_sql`),
-  so no feature measures a different quantity from the target it predicts.
-  Arrival targets go from 4,965,966 to 8,686,697 of 10,200,560 rows; the pre-2010
-  late rate falls from 75-94% to 18-41% and the 2009-to-2010 discontinuity
-  disappears. On the 2010-2013 folds, where the two readings see exactly the same
-  data, the rolling-origin day-ahead AUC rises from 0.636-0.711 to 0.715-0.724
-  and the 2010 Brier from 0.250 to 0.162: the gain is in the training data, not
-  the test set. `reports/prediction/results.md` prints both readings side by
-  side from the preserved `reports/prediction/rolling_reading_A.json`, and
-  `docs/declared-differences.md` gains the null actual-arrival rate by carrier
-  and year (`scripts/null_actual_by_carrier.py`, new). The replication panel is
-  unchanged: it still runs under the 2019 vintage's convention (ADR-0012), which
-  is what reproduces the benchmark.
+  estimation panel (or any panel carrying the contract, `--panel`), writes `reports/replication/`
+  flat and records the panel's path, row count and sha256 in `results.json`; `estimation/common.py`
+  becomes `specification`, `loader`, `sample` and `estimators`. Every re-estimated value equals
+  the previous run to the last digit (1,097 values compared); the Kleibergen-Paap test against
+  the published Table 3 and the replication freshness test run in CI; the demo's last step runs
+  Table 2 on the article panel.
+- **`empty_actual_means_on_time`** replaces `legacy_missing_actual_as_zero` as the name of the
+  ADR-0012 convention -- parameter, CLI flag, manifest key and panel column; the reconstruction
+  panel is regenerated with the one column renamed and every value unchanged.
+- **The prose, rewritten as one narrative**: `README.md`, `CLAUDE.md`, `AGENTS.md`,
+  `CONTRIBUTING.md`, `SECURITY.md`, `ROADMAP.md`, `DECISIONS.md`, `docs/data-availability.md`.
+  In `DECISIONS.md` the evidence of ADR-0001, 0002, 0005, 0012, 0013 and 0017 becomes "Basis"
+  and states the article's definitions, restated by its first author; ADR-0019 follows the
+  package paths. Registry definitions that quoted agreement rates are reworded; the dictionary
+  and the data package are regenerated.
+- **This changelog is consolidated**: the history before the restructure is the 0.1.0 entry.
 
 ### Removed
 
-- The verification layer against the authors' private base -- `replication/gabarito/`,
-  `scripts/verify_reconcile.py`, `scripts/check_no_private_paths.py`, `data/analysis/taxas.csv`,
-  `data/private/`, `reports/reconciliation.md`, `reports/reconciliation_by_month.csv`,
-  `reports/replication/public/`, `docs/declared-differences.md`, `docs/audit/`, the pytest marker
-  `gabarito`, the `AIRLINE_DELAYS_PRIVATE_DIR` variable, the `vra verify` command and the
-  `just gabarito`/`just verify` recipes, the two `no-private-data` pre-commit hooks -- because the
-  article's own estimation panel is now published in this repository (ADR-0020) and the
-  replication runs on it directly. Registry definitions that quoted agreement rates were reworded;
-  `docs/dictionary.md` and `datapackage.json` regenerated.
+- **The verification layer against the authors' final base**, superseded by publishing the
+  base itself (ADR-0020): the comparison package under `replication/` and its pytest marker,
+  the reconciliation script with its report and by-month table, the agreement-rate table under
+  `data/analysis/`, the private-data directory and the environment variable that pointed outside
+  the repository, the `public/`/`private/` split of `reports/replication/`, the page of
+  divergences and the audit directory under `docs/`, `scripts/verify_reconcile.py`,
+  `scripts/check_no_private_paths.py`, the `vra verify` command with its recipes, and the two
+  `no-private-data` pre-commit hooks.
+
+## [0.1.0] - 2026-09-05
+
+The repository before the restructure: reconstruction, replication, prediction and theory, built between the scaffold and the pre-publication audit.
+
+### Added
+
+- Repository scaffold: `LICENSE` (MIT) and `LICENSE-CC-BY-4.0.md`, `CITATION.cff` with the article as preferred citation, the governance pages, `pyproject.toml`, `justfile`, `ruff.toml`, pre-commit, CI (`ci.yml`, `docs-lint.yml`, `security.yml`) and Dependabot.
+- Ingest and staging: the 168 monthly ANAC VRA CSVs for 2000-2013 downloaded from the SIROS listing (2.17 GB, sha256 per file in `data/raw/manifest.json`, idempotent), a command that measures a raw file's layout instead of assuming it, and both raw layouts -- 12 columns, comma, latin-1, CRLF to 2009; 20 columns, semicolon, UTF-8, free-text justification from 2010 -- parsed into 13,652,322 flight legs at `data/staged/year=YYYY/part-0.parquet` (zstd 9); offline fixtures cut byte for byte from the real files; `docs/notes/staging.md`.
+- Reference tables under `data/external/`, every row with a source, a URL, a retrieval date and a confidence grade: node map and distances (OurAirports), dated airline groups and events, IAC 1504 code tables, federal holidays and computed observances, capacity and slot rows; `docs/notes/references.md`.
+- The fact table `group x route x month` over the replication universe (87 columns, one scan per staged year) with its city-month and airline-city-month projections through `aggregate()`, tested for additivity and shipped as the `v_check_additivity` view in `sql/views.sql`; the route-month reconstruction panel (228 columns over the 27 nodes of ADR-0001) with the article's column names, the declared variants and the new feature families; `docs/notes/features.md`.
+- Definitions: dated groups and four classes (ADR-0011), the article's three justification sets beside the ADR-0005 taxonomy, flight-share concentration with a passenger-weighted placeholder, the ADR-0007 p90 congestion proxy, a hub score with volume floors.
+- The ADR-0012 convention as a named parameter selecting the denominator of every proportion and mean -- `True` for the reconstruction panel, `False` for prediction -- and the per-year share of realised flights with no actual time.
+- The column registry and the documentation generated from it, `docs/dictionary.md` and `datapackage.json` (Frictionless v2), never hand-edited and checked in both directions against the tables built.
+- The replication layer: Tables 2-7 of Bendinelli, Bettini & Oliveira (2016), one module per table; the do-files' sample filters, regressor and instrument lists, rebuilt route, time and seasonality dummies and HAC settings; `reports/replication.typ`; `docs/notes/replication.md`.
+- The Kleibergen-Paap rk LM and rk Wald F and the Cragg-Donald Wald, which no Python package provides, with the i.i.d. collapses tested; the published numbers parsed into `published.json`; the ADR-0008 sensitivity grid.
+- `data/analysis/*.parquet` and `*.csv.gz` tracked in git (ADR-0014) with the pre-commit large-file threshold raised to 50 MB; `just check-analysis` rebuilds the panel from the committed fact table and fails on drift; manifests stamped with the short git commit.
+- Flight-level delay prediction: the modelling table of 10,200,560 scheduled flights with 46 D-1 features, 3 inbound-leg features for H-1 and five targets, one DuckDB scan per year; the rolling origin 2006-2013 and the fixed split of ADR-0009; XGBoost with early stopping on each fold's validation year; AUC, PR-AUC, Brier, calibration, two naive baselines and permutation importance; `reports/prediction/`, `reports/prediction.typ`, `docs/notes/prediction.md`.
+- The leakage rule as nine executable checks, run on the fixture in the test suite and on the real dataset in the prediction run, plus a test that plants a leak and asserts the checks catch it.
+- `just demo` (`scripts/demo.py`, `tests/test_demo.py`): the committed fixture through the same code path as the full pipeline in about one second, offline, writing only under the git-ignored `data/derived/demo/`.
+- The theory layer (ADR-0019): the Stackelberg congestion model of the author's 2013 undergraduate monograph re-derived with sympy -- equations (1)-(12), the reaction-slope bounds, the leader's toll at three quarters of the marginal damage under linear cost, the inelastic-demand condition, 29 identities pinned by `tests/test_theory.py` -- with numeric examples, comparative statics, a low-cost-entrant extension and the join of each theory object to the article's published signs; eleven figures drawn with matplotlib in the SAPIANS style; `reports/theory.typ` as a SAPIANS report on the design package vendored under `reports/sapians/`; the four Portuguese chapters of `docs/theory/` with `bibliografia.md`; tutorial module M14.
+- The data side of the 2013 monograph: `data/external/monograph_airports.csv` (its 38 listed airports, grade A) with `scripts/monograph_airports.py` and its test; `docs/notes/monografia-2013.md`; source 15 of `docs/data-availability.md`.
+- Documentation: the README with cited numbers, the Data Availability Statement source by source, the Portuguese tutorial (M0-M13), `docs/notes/`; `scripts/check_docs_paths.py` in CI over the README and the tutorial.
+- An earlier verification layer compared the reconstruction with the authors' final base column by column and committed agreement statistics only; retired in the restructure above.
+
+### Changed
+
+- The prediction layer reads an empty actual time on a realised pre-2010 flight as "no alteration reported" (ADR-0017, a panel of three reviewers under ADR-0010, `docs/notes/colegiado-adr0012.md`): delay 0 and the flag `on_time_no_bav`, for carriers of class FSC, LCC or regional only; arrival targets go from 4,965,966 to 8,686,697 of 10,200,560 rows, and `reports/prediction/results.md` prints both readings side by side. The reconstruction panel is unchanged (ADR-0012).
+- `fsc_*` panel columns use the article's own FSC carrier set; the class-based family moves to `fscc_*` (ADR-0013). Only names moved; the rename fixed the regressands the estimation read.
+- The outlier threshold applies to the absolute value of the delay (ADR-0015): every sum, mean and share of minutes tests `abs(delay) < threshold`; `actual_time_suspect` is written at staging and the modelling table counts the excluded flights per year.
+- `docs/data-availability.md` sources 1, 3, 9, 12 and 13 amended with what the monograph documents about the VRA's composition and the RPE series; tutorial modules M0, M1, M2, M5, M11 and M13 point to the theory chapters.
 
 ### Fixed
 
-Everything under this heading down to "Duplicated route-month keys" closes a
-finding of the independent pre-publication audit,
-[`docs/audit/2026-09-05-pre-publication.md`](docs/audit/2026-09-05-pre-publication.md),
-whose "Fixes applied" section lists the same changes finding by finding. What
-stays open is in `ROADMAP.md`, "Open items, by phase".
-
-- **The 2002 fixture lost its CRLF on every fresh clone, so `uv run pytest -q`
-  failed for everyone but the author** (audit B-1). `.gitattributes`'s
-  `*.csv text eol=lf` normalised the one property the legacy fixture exists to
-  prove; the blob stored in git already carried LF, so `actions/checkout` would
-  have made the first CI run on GitHub red. The fixtures are now
-  `tests/fixtures/vra_raw_sample_*.csv -text` and were re-added so the stored
-  blob carries the bytes on disk (`git ls-files --eol tests/fixtures/` shows
-  `i/crlf w/crlf`). `tests/test_io.py` asserts on the bytes of the file it
-  reads, and a new `TestFixtureBytes` fails with a message naming
-  `.gitattributes` if a fixture ever arrives normalised again.
-- **Absolute paths into the author's private research archive were committed
-  in `data/external/`** (audit B-2). 30 rows of `groups.csv` and `events.csv`
-  carried absolute `file://` URLs naming four files inside the author's private
-  research archive, and `data/external/README.md` named two private research
-  bases -- a leak that
-  contradicted the repository's own confidentiality statement and that both
-  existing guards structurally missed (one matched staged *path names*, the
-  other one module's contents). Those rows now cite `author's research notes
-  (private, not redistributed)` with the public URL where the fact has one and
-  an empty `url` where it does not; the 13 rows that pointed at the author's
-  own checkout of this repository now cite `DECISIONS.md` relatively. The same
-  clean-up removed absolute archive paths from `docs/data-availability.md` and
-  `docs/notes/references.md`. New `scripts/check_no_private_paths.py` scans
-  file *content* in two tiers -- the archive's layout, forbidden everywhere;
-  the private benchmark's file names, allowlisted per file with a reason and
-  never under `data/` -- and is run both by a new `no-private-data-content`
-  pre-commit hook (over staged blobs) and by `tests/test_no_private_paths.py`
-  (over every tracked text file, unmarked so it runs in CI). The allowlist is
-  checked for rot: an entry that no longer allows anything is an error.
-- **The README generalised the article's central result** (audit M-1). It said
-  the OLS-to-2SGMM sign inversion of both HHIs "replicates in all 12
-  comparisons"; an inversion actually occurs in **4** of the 12 -- columns (1)
-  and (2), the `ODDS` regressand -- and all 4 replicate. What holds 12 times
-  out of 12 is the weaker statement that replication and article agree on
-  *whether* the sign flips. The number was hand-derived, which this repository
-  forbids: `replication.run.hhi_sign_inversions` now computes both statements
-  from `results.json` and writes them to `summary.json` with per-column detail,
-  `tables.md` prints the cell-by-cell table, and `README.md` and
-  `docs/notes/replication.md` quote that file. `uv run python -m replication.run
-  --rescore` rebuilds `summary.json` and `tables.md` from a committed
-  `results.json` without re-estimating.
-- **The ADR-0017 accounting was counted twice, differently, and one column was
-  mislabelled** (audit M-2, M-3). `reports/prediction/results.md` headed a
-  column "out of scope" while printing `target_excluded_missing_actual`
-  (out-of-scope flights *that also have no actual arrival time*), so a reader
-  following the README's citation found an apparent 53,180-flight
-  contradiction; separately, `null_actual_by_carrier.csv` and `results.md`
-  disagreed by 24 realised flights on the same population. `ml/run.py` now
-  writes one canonical `accounting` block into
-  `reports/prediction/dataset.json` -- per year: scheduled, realised, realised
-  in and out of scope, `on_time_no_bav`, `actual_time_suspect`, targets
-  available and exclusions by reason -- and `results.md`, `README.md` and
-  `docs/declared-differences.md` quote that block under matching headers and
-  compute nothing themselves. The residual 24-flight difference is explained
-  where it appears: the CSV counts the staged universe, the block counts the
-  flight table built from it, which drops flights whose schedule is unusable.
-  `on_time_no_bav` is likewise printed beside, not merged into, the
-  null-*arrival* counts, because the flag covers a missing arrival **or**
-  departure.
-- **The `ml` runtime in the README was printed by nothing** (audit M-4).
-  `ml/run.py` now writes a `runtime` block into
-  `reports/prediction/dataset.json` -- total wall time, the dataset build, the
-  rolling and fixed fold sums -- and states that the total exceeds the fold
-  sums because permutation importance, calibration and I/O sit inside it and
-  are not separately timed. The README cites that block (2,344.2 s total
-  against 2,141.7 s of fold fits). `uv run python -m ml.run --report-only`
-  rebuilds `dataset.json` and `results.md` from artefacts already on disk,
-  without refitting a model.
-- **Two placeholder DOIs would have shipped** (audit M-5). The README badge no
-  longer renders a dead `zenodo.XXXXXXX` link; it reads "DOI pending Zenodo
-  deposit" and points at `ROADMAP.md`. `registry.datapackage()` now **omits**
-  `id` until a DOI is passed -- Frictionless makes it optional, and a
-  placeholder there is metadata a harvester would resolve -- and carries
-  `pending_doi: true` with a note instead. `CITATION.cff` explains in a comment
-  why it has no `doi:` of its own.
-- **Smaller corrections from the same audit.** Dead internal paths in
-  `docs/declared-differences.md` (m-1: `reports/replication/tables.md` and
-  `sensitivity.json` now carry their `public/`/`private/` segment); the
-  reading-A day-ahead range in the README and the CHANGELOG, 0.636 not 0.638
-  (m-2); `data/analysis/panel_route_month.csv.gz` is now byte-reproducible,
-  because `to_csv` writes the gzip header with `mtime=0` and the payload was
-  already deterministic (m-3); the superseded row count, target count and
-  build time in this file's own "Added" section (m-5); the expected
-  `no-private-data` grep count in `docs/tutorial/12`, now five and describing
-  both hooks (m-6); the README's data-availability summary gains OurAirports
-  and the federal holiday laws, the two sources it redistributes but did not
-  list, and says how many of the 14 it covers (m-8); `ruff-pre-commit` pinned
-  to `v0.16.6`, the version `uv.lock` resolves (m-10); the non-existent
-  `.sapians-doclint-baseline.json` dropped from the `docs-lint` path filter
-  (m-11); and the four sign disagreements in
-  `docs/declared-differences.md` row 7 now read replicated-against-published,
-  the same order as rows 2 and 3 (m-12). Found while verifying the above, not
-  in the audit: `scripts/null_actual_by_carrier.py` labelled each airline-year
-  with DuckDB's `any_value()`, which is free to answer differently on each
-  parallel scan, so five transition-year rows of a tracked CSV flipped between
-  runs. The convention is now stated and deterministic -- the group and class
-  in force in the airline's last observed month of that year -- and the file is
-  byte-reproducible. No total moves: `in_bav_scope` is identical on every row.
-- **Duplicated route-month keys, fixed at the source** (`DECISIONS.md`
-  ADR-0016). `data/staged/` is partitioned by the year of the *source file*
-  while `year` and `ym` come from `flight_date`, so 3,723 rows sit in a
-  directory that is not their calendar year -- mostly a December file carrying
-  legs scheduled for 1 January, plus a few typed years (2099, 2020, 2088).
-  `vra.features.build_fact` grouped inside each directory and concatenated the
-  results, so a route-month present in two directories was emitted twice: 844
-  rows over 422 `(group, route, ym)` keys in the fact table and, through the
-  route-month context join, 866 rows over 433 `(route, ym)` keys in the panel,
-  the copies carrying equal flight counts and different `n_rows_all`,
-  `n_extra`, `sh_extra`, medians and p90s -- each copy's order statistics
-  computed over part of its flights. `build_fact` now selects each **calendar
-  year** across the whole staged tree (`features.year_source_sql`, parquet
-  row-group statistics prune the rest) and asserts uniqueness on the way out;
-  `features.aggregate` asserts the projection's own key; `panel.build_panel`
-  asserts both on the way in. Rows dated outside the built years are counted in
-  `data/analysis/manifest.json` (`rows_outside_years`) instead of being folded
-  into a neighbour. The panel is now 31,313 rows over exactly the 168 months
-  2000m1-2013m12 (was 31,760 over 169, the extra month being 18 flights dated
-  January 2014 in the December 2013 file), the fact table 165,763 cells (was
-  166,203), and the benchmark comparison runs over 24,551 comparable
-  route-months instead of 24,929 with every rate up by a fraction of a point
-  (`f` 0.901 to 0.902, `fl_odel` 0.854 to 0.857, `prwheather` 0.882 to 0.884).
-  New `tests/test_keys_unique.py` rebuilds from a deliberately mis-partitioned
-  staged tree and checks the committed tables under the `analysis` marker.
-
-- **The outlier threshold applies to the absolute value of the delay**
-  (`DECISIONS.md` ADR-0015). The one-sided cut inherited from the laboratory
-  scripts (`delay < 313.25`) trimmed the late tail and let every negative month
-  typo through: VSP 4374 in December 2003 has an actual arrival dated November,
-  -43,170 minutes, and one route-month reached the public panel with
-  `fsc_minsarr` of -4,772. Every sum, mean and share of minutes in
-  `vra/delays.py`, `features.py` and `panel.py` now tests
-  `abs(delay) < threshold`, on both tails; counts of delayed flights are
-  untouched, because `x > 15` is the same test whatever the tail rule.
-  `fsc_minsarr` in the regenerated panel runs from -239.90 to 226.27 (1st
-  percentile -4.97, 99th 38.45), inside the band by construction. Table 2 of the
-  public replication moves with it: the `MINS` regressand goes from a mean of
-  -1.3404 and a standard deviation of 125 to 6.8632 and 8.79, against a
-  published 7.16 and 8.29, and the correlation triangle's largest disagreement
-  falls from 0.642 to 0.122. Against the benchmark, `fsc_minsarr`'s
-  90th-percentile absolute difference falls from 2.11 to 1.68 minutes and
-  `all_minsarr`'s from 4.13 to 2.49.
-
-- **`actual_time_suspect` is written at staging** (ADR-0015), so that one
-  definition serves every consumer: true when the departure or arrival delay is
-  a whole calendar day or more in absolute value, false when there is no actual
-  time at all. `ml/dataset_flights.py` reads the column instead of recomputing
-  the rule, and `data/derived/ml/manifest.json` counts the excluded flights per
-  year (242 in 2000 to 990 in 2013).
-
-- `ml.dataset_flights.collapse_fact` is kept as the compatibility path for a
-  fact table built before ADR-0016 held. It enforces the key invariant on its
-  input before joining it; against a table built by today's `build_fact` it
-  returns the frame untouched.
-
-- `registry.DTYPE_ALIASES` accepts `category` and `dictionary` as physical forms
-  of a declared `string`. The flight-level table dictionary-encodes every label
-  -- ten million repetitions of `MRSP-MRRJ` as Python objects is a gigabyte and
-  as codes is ten megabytes -- and `validate_schema` was reading that as a type
-  mismatch.
-
-- `registry.resource` omits `primaryKey` when none is given, instead of writing
-  an empty one: the flight-level table has no key that is unique in the source
-  data (the raw VRA repeats rows), and declaring one would be a claim, not a
-  schema.
-
-- `fsc_*` panel columns now use the article's own FSC carrier set (TAM group,
-  Varig group until 2007-03, Transbrasil, Vasp); the class-based family
-  (ADR-0003, Avianca Brasil included) moves to `fscc_*` (`DECISIONS.md`
-  ADR-0013). Only names moved -- no carrier list, formula or tolerance
-  changed -- but the rename fixes a real mismatch: the replication engine's
-  `fsc_oddsarr`/`fsc_minsarr`/`fsc_minsp15arr` (arrival) and
-  `fsc_oddsdep`/`fsc_minsdep`/`fsc_minsp15dep` (departure) regressands
-  (`replication/common.py`) were reading the class-based set instead of the
-  article's. Against the private benchmark, `fsc_prdelarr` agreement rises
-  from 0.527 (0.534 stable-vintage) to 0.610 (0.649 stable-vintage), against
-  the 0.651 the earlier reconstruction measured, and the stable-vintage
-  shortfall list `just gabarito` reports drops from seven columns to six
-  (`data/analysis/taxas.csv`). Updated: `src/vra/{registry,panel}.py`,
-  `replication/gabarito/compare.py`, `tests/{test_panel,test_gabarito}.py`,
-  `docs/declared-differences.md`, `docs/notes/{features,replication}.md`.
+- The 2002 fixture lost its CRLF on every fresh clone, so the suite failed for everyone but the author (audit B-1): the fixtures are `-text` in `.gitattributes`, re-added with their bytes, and a test names the file if a fixture arrives normalised again.
+- Absolute paths into the author's private research archive were committed in `data/external/` (audit B-2): the rows now cite "author's research notes (private, not redistributed)" with a public URL where the fact has one, and a content scan over every tracked text file guards the archive's layout.
+- The README generalised the article's central result (audit M-1): the OLS-to-2SGMM sign inversion of the HHI terms occurs in 4 of the 12 comparisons, the `ODDS` columns, and all 4 replicate; the agreement on whether the sign flips holds in 12 of 12. Both statements are computed by the estimation code, never hand-derived.
+- The ADR-0017 accounting was counted twice, differently, with one column mislabelled (audit M-2, M-3): one canonical `accounting` block in `reports/prediction/dataset.json`, quoted everywhere and computed nowhere else.
+- The prediction runtime in the README was printed by nothing (audit M-4): a `runtime` block in `reports/prediction/dataset.json`.
+- Two placeholder DOIs would have shipped (audit M-5): `datapackage.json` omits `id` until a DOI exists, the README badge renders no dead link, `CITATION.cff` carries no `doi:` of its own.
+- Smaller audit corrections (m-1 to m-12): dead internal paths, a mistyped AUC bound, byte-reproducible `csv.gz` and `null_actual_by_carrier.csv` (deterministic labels instead of `any_value()`), superseded counts in this file, the ruff hook pinned to the locked version, a non-existent path filter dropped from `docs-lint.yml`, the sign-disagreement rows in one order.
+- Duplicated route-month keys fixed at the source (ADR-0016): the fact table selects each calendar year across the whole staged tree instead of grouping inside the source-file directory, and asserts uniqueness; the panel is 31,313 rows over exactly the 168 months 2000m1-2013m12, the fact table 165,763 cells; `tests/test_keys_unique.py`.
+- `registry.DTYPE_ALIASES` accepts `category` and `dictionary` as physical forms of a declared `string`; `registry.resource` omits `primaryKey` when none is given; `collapse_fact` is kept as the compatibility path for a fact table built before ADR-0016 held.

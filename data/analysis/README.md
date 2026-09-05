@@ -1,57 +1,58 @@
 # data/analysis/
 
-Route-month and city-month tables built from `data/staged/` by
-`just fact` and `just panel`. Unlike `data/raw/`, `data/staged/` and
-`data/derived/`, this directory is **tracked in full**: since DECISIONS.md
-ADR-0014 its `*.parquet` and `*.csv.gz` tables are committed alongside their
-provenance files, so a reviewer can run the public replication (`just
-replicate`) without rebuilding anything first.
+The analysis tables of `airline-delays`, **tracked in full** (`DECISIONS.md`
+ADR-0014): the fact table, the reconstruction panel and its two city
+projections built from `data/staged/` by `just fact` and `just panel`, and the
+article's estimation panel -- the panel the authors of Bendinelli, Bettini &
+Oliveira (2016, *Transportation Research Part A* 85, 39-52, doi
+10.1016/j.tra.2016.01.001) estimated Tables 2-7 on, curated once into this
+directory (ADR-0020). A reader runs `just estimate` on a fresh clone without
+rebuilding anything. Every column is defined in `docs/dictionary.md`; every
+table is a resource of `datapackage.json`.
 
 ## What is in git
 
-| File | Size | What it is |
-|---|---|---|
-| `fact_group_route_month.parquet` | ~8 MB | group x route x month, replication universe. The canonical table (ADR-0004); every other grain is an `aggregate()` projection of it. Unique on `(group, route, ym)` by construction and by test (ADR-0016). |
-| `panel_route_month.parquet` | ~10 MB | route x month, the 27 nodes of ADR-0001. The public deliverable: the article's columns plus the new feature set. |
-| `panel_route_month.csv.gz` | ~12 MB | The same panel in CSV, for readers without a parquet reader (ADR-0004). |
-| `city_month.parquet` | ~2 MB | node x month, departures and arrivals both counted, with the ADR-0007 congestion proxy. |
-| `airline_city_month.parquet` | ~4 MB | group x node x month, with the hub share, score and dummy. |
-| `manifest.json` | 5 KB | How the fact table was built: the git commit, years, tool versions, outlier threshold, the ADR-0012 convention, the per-year count of realised flights with no actual time, and `rows_outside_years` — the staged rows dated outside the years built, which ADR-0016 counts rather than folds into a neighbouring year. |
-| `panel_manifest.json` | < 1 KB | The same for the panel: git commit, tool versions, row/column counts and the byte sizes of the two files it wrote. |
+| File | What it is | Rows x columns | Bytes |
+|---|---|---|---|
+| `fact_group_route_month.parquet` | airline group x route x month, replication universe. The canonical table (ADR-0004); every other grain is an `aggregate()` projection of it. Unique on `(group, route, ym)` by construction and by test (ADR-0016). | 165,763 x 87 | -- |
+| `panel_route_month.parquet` | route x month, 2000-2013, the 27 nodes of ADR-0001: the reconstruction panel, the article's columns that the VRA supports plus the new feature set. Unique on `(route, ym)`. | 31,313 x 228 | 9,941,210 |
+| `panel_route_month.csv.gz` | the reconstruction panel in CSV, for readers without a parquet reader (ADR-0004). | 31,313 x 228 | 11,788,959 |
+| `article_panel_route_month.parquet` | route x month, 2002-2013: the article's estimation panel, curated from the authors' final base of December 2015 (a Stata file of 24,589 route-months x 1,829 variables). The 52 columns kept are the keys and geography, the flight counts, the six regressands, the exogenous regressors, the concentration terms, the seven instruments and the components of the two low-cost dummies; the route, time and seasonality dummies are rebuilt by code. | 24,589 x 52 | 2,202,177 |
+| `article_panel_route_month.csv.gz` | the article's estimation panel in CSV. | 24,589 x 52 | 2,916,686 |
+| `city_month.parquet` | city node x month, departures and arrivals both counted, with the congestion proxy of ADR-0007. Unique on `(node, ym)`. | 21,231 x 91 | -- |
+| `airline_city_month.parquet` | airline group x city node x month, with the hub share, score and dummy. | 49,801 x 81 | -- |
+| `manifest.json` | how the fact table was built: git commit, years, tool versions, the outlier threshold, the ADR-0012 convention, the per-year count of realised flights with no actual time, and the staged rows dated outside the built years (ADR-0016). | -- | -- |
+| `panel_manifest.json` | the same for the reconstruction panel: commit, tool versions, shape, the byte sizes of the two files. | -- | -- |
+| `article_panel_manifest.json` | the provenance of the article panel: the source's sha256 and header timestamp, the columns kept and excluded, the per-column null counts, the sha256 of both files. Never a path. | -- | -- |
 
-All seven files sit well under the pre-commit `check-added-large-files`
-threshold (50 MB, raised for exactly this in ADR-0014); the flight-level
-table stays out of git regardless of size (ADR-0004) and goes to Zenodo
-instead.
+The rows, columns and byte counts above are values of `reports/summary.json`;
+the tables without a byte count are described by shape only. Everything stays
+under the pre-commit large-file threshold raised for this directory in
+ADR-0014; flight-level tables stay out of git regardless of size (ADR-0004).
 
 ## Keeping it in sync: `just check-analysis`
 
-Because these tables are committed, a stale one is a silent bug: edit
-`schema/columns.py` or `panel/build.py`, forget to rerun `just panel`, and the tracked
-file no longer matches what the current code would produce. `just
-check-analysis` (a `pytest -m analysis` run, see
-`tests/test_analysis_staleness.py`) rebuilds the panel from the committed
-`fact_group_route_month.parquet` in memory and compares its shape, column
-names and a value checksum against the committed
-`panel_route_month.parquet`; it fails loudly on a mismatch and skips (not
-fails) when the tables or `data/derived/` are not present locally.
+A tracked table that no longer matches the code is a silent error.
+`just check-analysis` (`pytest -m analysis`, `tests/test_analysis_staleness.py`)
+rebuilds the reconstruction panel from the committed fact table in memory and
+compares shape, column names and a value checksum with the committed
+`panel_route_month.parquet`; it fails on a mismatch and skips when the tables
+or `data/derived/` are not present locally. CI's `metadata` job checks in the
+same spirit that `docs/dictionary.md`, `datapackage.json` and
+`reports/summary.json` are rebuilds of the registry and of these tables.
 
-## Regenerating from scratch
+## Regenerating
 
 ```bash
-uv run airline-delays fact    # ~12 s: the fact table, the city projections, the day-hour table
-uv run airline-delays panel   # ~10 s: the reconstruction panel, parquet and csv.gz
+uv run airline-delays fact     # about 11 s: the fact table, the city projections, the day-hour intermediate
+uv run airline-delays panel    # about 8 s: the reconstruction panel, parquet and csv.gz
 ```
 
-Both commands need `data/staged/`, which `just fetch && just stage` produces
-from ANAC's published files. `just fact && just panel` runs the pair in
-about 22 seconds and is what regenerates every file in the table above.
-
-`data/derived/` holds two intermediates these commands write and read —
-`route_month_context.parquet` (route-month counts outside the replication
-universe, plus the order statistics a fact table cannot carry) and
-`node_day_hour.parquet` (movements per node, day and scheduled hour, the input
-to the congestion proxy). They stay git-ignored like the rest of that layer
-(ADR-0004): they are inputs `just check-analysis` needs to rebuild the panel,
-not a deliverable in their own right, and they are cheap to regenerate
-alongside everything else here.
+Both need `data/staged/`, which `just fetch && just stage` produces from
+ANAC's files; `just fact && just panel` runs the pair, then regenerates
+`docs/dictionary.md` and `datapackage.json`. The article's estimation panel is
+not produced by the pipeline: `airline-delays article-panel` curates it from
+the authors' base on the owner's machine only, and the tracked files are the
+release (ADR-0020). `data/derived/` holds the two intermediates `just fact`
+writes and `just check-analysis` reads (`route_month_context.parquet` and
+`node_day_hour.parquet`); they stay git-ignored like the rest of that layer.

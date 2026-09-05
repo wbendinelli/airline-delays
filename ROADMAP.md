@@ -1,239 +1,161 @@
 # ROADMAP
 
-What is done, what is in progress, and what is left to build, organised by
-the phases named in `justfile`, plus the didactic modules ported from the
-archive review. Each pipeline phase names its `just` target and the
-`src/vra/` modules it depends on; see `DECISIONS.md` for decisions already
-settled and the README's "Declared differences" section for what does not
-close yet.
+What is done and what is left, by pipeline stage, plus the publication
+milestone, the open items and the didactic modules. Every number here is a
+value of `reports/summary.json`; every decision named is in `DECISIONS.md`.
 
-## Pipeline phases
+## Pipeline stages
 
-1. **Data** (`just fetch`, `just stage`) — **done.** Downloads the ANAC
-   monthly VRA CSVs year by year into `data/raw/` with a `manifest.json`
-   (source URL, retrieval date, sha256 per file), then parses into the
-   canonical flight table (`data/staged/year=YYYY/*.parquet`, zstd, tight
-   types) via `src/vra/io.py`, `keys.py`, `universe.py`, `codes.py` and
-   `delays.py`. 13,652,322 flight legs, 168 files (`data/staged/manifest.json`).
-2. **References** (`just refs`) — **done.** Validates `data/external/*.csv`
-   (node map, airline groups and mergers, IAC 1504 taxonomy, BNDES
-   capacity, holidays): every row cites a `source` and a `url`
-   (`docs/notes/references.md`). Two of these tables are thin by
-   construction and stay open items — see below.
-3. **Features and panel** (`just features`, `just panel`) — **done.** The
-   `group x route x month` fact table (`src/vra/hhi.py`, `congestion.py`,
-   `hub.py`), aggregated on demand to any other grain (`aggregate()`,
-   tested for additivity) and assembled into the replication panel
-   (`panel.py`). 165,763 fact cells and 31,313 panel rows across 310 routes
-   and exactly the 168 months 2000m1-2013m12, unique on their keys by
-   construction and by test (ADR-0016, `tests/test_keys_unique.py`)
-   (`data/analysis/manifest.json`, `data/analysis/panel_manifest.json`).
-4. **Replication** (`just replicate`) — **done.** Tables 2-7 of
-   Bendinelli, Bettini & Oliveira (2016) from public data only
-   (`replication/table2.py` through `table7.py`); `replication/gabarito/`
-   scores the result against the private benchmark locally and commits
-   only the agreement rate. 306 coefficients compared, 302 sign
-   agreement, 259 within half a published standard error
-   (`reports/replication/private/summary.json`); the public panel
-   estimates Table 2 only — the five regression tables need variables it
-   does not carry yet (`docs/declared-differences.md`).
-5. **Prediction** (`just ml`) — **done, and rebuilt under ADR-0017.**
-   `ml/dataset_flights.py` builds the flight-level table (10,200,560
-   scheduled flights, 46 D-1 features plus 3 for H-1, five targets, one
-   DuckDB scan per calendar year, about 25 s); `ml/split.py` holds the
-   rolling origin 2006-2013 and the fixed 2002-2010 / 2011 / 2012-2013
-   split of ADR-0009; XGBoost `hist` with early stopping on each fold's
-   validation year, LightGBM optional. The nine leakage checks of
-   `ml/leakage_tests.py` run on the fixture in `pytest` and on the real
-   dataset in `just ml`. The delay targets follow reading B of ADR-0017 —
-   an empty actual time on a realised pre-2010 flight of an FSC, LCC or
-   regional carrier is "no alteration reported", delay 0, flagged
-   `on_time_no_bav`; `other` and unlabelled carriers keep no target — and
-   `reports/prediction/results.md` carries a sensitivity block with the
-   headline metrics under the superseded reading A next to it. Everything
-   is generated: `reports/prediction/*.json`,
-   `reports/prediction/results.md`, `reports/prediction.typ`,
-   `reports/build/prediction.pdf`, `docs/notes/prediction.md` and
-   `docs/notes/colegiado-adr0012.md`. The dataset itself stays out of git
-   (ADR-0004) and is described in `datapackage.json`.
-6. **Reports** (`just report`) — **partial.** Four of the five exist and
-   are generated, never hand-edited: `reports/reconciliation.md`,
-   `reports/replication.typ` (compiled to `reports/build/replication.pdf`),
-   `reports/prediction.typ` (compiled to `reports/build/prediction.pdf`)
-   and `reports/theory.typ` (compiled to `reports/build/theory.pdf`, its
-   inputs written by `just theory`). A reconstruction report does not exist
-   yet, and `just report` itself is still the placeholder recipe in
-   `justfile` — the three Typst sources are compiled by hand, per
-   `reports/README.md`.
-7. **Publication on Zenodo** (`just publish`) — **pending.** Deposit the
-   raw snapshot and the prepared data, mint a DOI, update `CITATION.cff`
-   and the README badge (which today reads "DOI pending Zenodo deposit" and
-   links here, rather than resolving a placeholder), and generate
-   `datapackage.json` with `id` set to that DOI. Blocked on nothing technical — the licence read of ADR-0000
-   already supports redistribution — but not yet done. `just publish`
-   itself is still the placeholder recipe.
+The nine stages of `src/airline_delays/`, in the order `just --list` shows
+them; each is one `airline-delays` command wrapped by one recipe.
+`just pipeline` runs stages 3-9 from `data/staged/`; `just pipeline-full`
+runs everything from ANAC's servers to the compiled reports.
 
-## Open items, by phase
+| # | Stage | Recipe | Reads -> writes | Status |
+|---|---|---|---|---|
+| 1 | ingest | `just fetch` | ANAC's monthly CSVs -> `data/raw/` with `manifest.json`: 168 files, 2.17 GB, about 17 minutes | done |
+| 2 | staging | `just stage` | `data/raw/` -> `data/staged/year=YYYY/`, 13,652,322 flight legs over 14 years | done |
+| 3 | reference | `just reference` | validates every table of `data/external/`: a source and a URL on every row | done |
+| 4 | fact | `just fact` | staged legs -> the `group x route x month` fact table (165,763 cells x 87 columns) and its city projections, about 11 s | done |
+| 5 | panel | `just panel` | fact table -> the reconstruction panel (31,313 route-months x 228 columns, 310 routes, 168 months, 27 nodes), about 8 s; then the dictionary and the data package | done |
+| 6 | estimation | `just article-panel`, `just estimate` | the article's estimation panel (24,589 x 52) -> Tables 2-7 re-estimated and compared with the published values, `reports/replication/`, about 41 s | done |
+| 7 | prediction | `just predict-dataset`, `just predict` | staged legs -> the flight-level table (10,200,560 rows, 46 D-1 features plus 3 for H-1, five targets) -> the rolling-origin evaluation, `reports/prediction/`, 2,344.2 s | done |
+| 8 | theory | `just theory` | the congestion model derived and checked (29 identities, 11 figures) -> `reports/theory/` | done |
+| 9 | reporting | `just summary`, `just report`, `just publish` | `reports/summary.json`; the three Typst reports compiled; the publication metadata checked and the release checklist printed | done |
 
-- **e-SIC reply** (phase 2/7) — `docs/notes/esic-licenca-vra.md` has the
-  request text; it has not been sent yet, so there is no protocol number
-  or reply to record. The CC BY reading of ADR-0000 does not block on it.
-- **Capacity declarations** (phase 2) — `data/external/capacity.csv` holds
-  one row (Congonhas, confidence B); ANAC's seasonal declared-capacity
-  bulletins for the other 26 nodes have not been located
-  (`docs/data-availability.md`, source 6). `prcongested` (ADR-0007) stays
-  unreproduced until this exists.
-- **Slot-coordination dates** (phase 2) — `data/external/slots.csv` has
-  two rows (Guarulhos, Santos Dumont); Congonhas, Recife and Brasília are
-  declared absent, not guessed at (`docs/notes/references.md`, §6).
-- **HHI by passengers** (phase 2/3) — `rthhi`/`maxcthhi`/`gmchhi` need
-  ANAC's paid-passenger statistics by airline-route-month, not yet
-  collected (`docs/data-availability.md`, source 3;
-  `src/vra/hhi.passenger_weighted_hhi` already has the right signature and
-  returns `None` until then).
-- **The `fl_ddel` asymmetry** (phase 3) — arrival-delay counts reproduce
-  the benchmark at 56.3% (stable vintage) against 87.9% for departures
-  under the identical rule; declared in `DECISIONS.md` ADR-0002 and still
-  unexplained.
-- **Code-share legs of the non-operating carrier** (phase 2/5, candidate
-  ADR-0018) — IAC 1504 art. 6.6 says only the operating carrier reports a
-  code-share leg, and the non-operator's leg has no effect on the
-  published indices. ADR-0017's scope amendment keeps those legs in the
-  universes but out of the delay targets; whether they should leave the
-  universes altogether is a separate audit that has not been done
+## Next milestone: publication
+
+1. **Tag v1.0.0** on `main` once CI is green and `just publish` reports the
+   metadata consistent. The GitHub-Zenodo integration archives the tagged
+   repository and mints the DOI; `.zenodo.json`, generated by
+   `airline-delays zenodo-json` from `src/airline_delays/schema/metadata.py`,
+   supplies the deposit metadata.
+2. **The DOI flip**, one `fix` commit: `doi:` in `CITATION.cff`; `DOI` in
+   `src/airline_delays/schema/metadata.py`, from which `airline-delays datapackage`
+   writes the package `id` and `airline-delays zenodo-json` the related
+   identifier; the README badge, which resolves the article's DOI until then;
+   the dataset citation of the article's estimation panel (README "Citation",
+   `docs/data-availability.md` source 12). `tests/test_metadata_consistency.py`
+   holds the files together. Then tag v1.0.1.
+3. **The monograph's own Zenodo deposit** (the author's action). Its DOI
+   replaces `[DOI-MONOGRAFIA]` wherever the placeholder stands (`docs/theory/`,
+   `docs/notes/monografia-2013.md`, `docs/tutorial/14-a-teoria-por-tras-do-artigo.md`,
+   `docs/data-availability.md`), fills the `url` column of
+   `data/external/monograph_airports.csv` and enters `CITATION.cff` under
+   `references` -- a `fix` commit, because it corrects an identifier already
+   in prose.
+
+## Open items
+
+- **e-SIC reply** -- `docs/notes/esic-licenca-vra.md` has the request text; it
+  has not been sent, so there is no protocol number or reply to record. The
+  CC BY reading of ADR-0000 does not block on it.
+- **Capacity declarations** -- `data/external/capacity.csv` holds one row
+  (Congonhas, confidence B); ANAC's seasonal bulletins for the other nodes
+  have not been located (`docs/data-availability.md`, source 6). The
+  reconstruction panel carries no `prcongested` until they exist (ADR-0007);
+  the article's estimation panel carries the authors' values.
+- **Slot-coordination dates** -- `data/external/slots.csv` has two rows
+  (Guarulhos, Santos Dumont); Congonhas, Recife and Brasília are recorded as
+  not found (`docs/notes/references.md`).
+- **Passenger HHIs for the reconstruction panel** -- `rthhi`, `maxcthhi` and
+  `gmchhi` need ANAC's paid-passenger statistics by airline-route-month, not
+  collected (source 3); `passenger_weighted_hhi` in
+  `src/airline_delays/definitions/concentration.py` returns null until then,
+  and the panel carries the flight-share `rthhi_flights` and `maxcthhi_flights`
+  under their own names. The article's estimation panel carries the authors' values.
+- **Code-share legs of the non-operating carrier** (candidate ADR-0018) --
+  IAC 1504 §6.6 says only the operating carrier reports a code-share leg.
+  ADR-0017 keeps those legs in the universes but out of the delay targets;
+  whether they should leave the universes altogether is an audit not yet done
   (`docs/notes/colegiado-adr0012.md`).
-- **`prev_arr_known_h1` is low before 2010** (phase 5) — the H-1 horizon
-  is the ADR-0009 definition, not a clock: the inbound leg may land after
-  the one-hour cut. The share is measured per year in
-  `data/derived/ml/manifest.json` and reported, not repaired.
-- **KP fixture status** (phase 4) — `replication/kp.py`'s algebraic
-  self-check (`tests/test_replication_kp.py`, the Wald-to-Cragg-Donald and
-  LM-to-Anderson collapses) runs in CI on synthetic data and needs no
-  fixture. The regression test against the *published* Table 3 values
-  (`test_identification_statistics_against_the_published_table_3`) is
-  `gabarito`-marked and needs `AIRLINE_DELAYS_PRIVATE_DIR`; there is no
-  public fixture that lets it run in CI, and building one (a small
-  synthetic panel with known KP statistics) has not been attempted.
-- **Zenodo deposit** (phase 7) — see above; also the sole remaining step
-  before the README's DOI badge stops reading "pending Zenodo deposit" and
-  `datapackage.json` gains an `id`. Neither carries a placeholder any more:
-  the descriptor omits `id` and flags `pending_doi: true`, and `CITATION.cff`
-  says in a comment why it has no `doi:` (audit 2026-09-05, M-5). Minting the
-  DOI means passing it to `registry.datapackage(doi=...)`, regenerating with
-  `uv run vra datapackage`, and adding `doi:` to `CITATION.cff`.
-- **`just replicate` writes its own wall time into its output** (audit
-  2026-09-05, m-4) — `reports/replication/<source>/results.json` and
-  `tables.md` carry `meta.seconds`, so a rerun diffs against the committed
-  artefact by that one measured value and nothing else. Either stop stamping
-  the measured time into a tracked file or move it to an untracked sidecar;
-  neither has been decided. `uv run python -m replication.run --rescore`
-  rebuilds the derived files without re-measuring, which is a workaround, not
-  the fix.
-- **Manifest commit stamps trail HEAD** (audit 2026-09-05, m-7) —
-  `data/derived/ml/manifest.json` and `reports/prediction/*.json` stamp the
-  commit that was HEAD when they were generated, which is by construction the
-  commit *before* the one that contains them; `data/staged/manifest.json`
-  additionally uses a 40-character SHA where the rest use 7. No stamp is
-  `UNCOMMITTED`, so the integrity requirement holds, but a reader cannot map an
-  artefact onto the commit that ships it. Fixing it properly needs a
-  post-commit amend step or a two-phase commit, neither of which is worth the
-  machinery yet; normalising the SHA length is a smaller, separate change.
-- **`datapackage.json` describes 5 resources against the dictionary's 6
-  layers** (audit 2026-09-05, m-9) — the staged-flights layer has no resource
-  entry. It is the one layer that is neither committed nor rebuilt by a single
-  documented command from a committed input, so what its `path` should say is a
-  real question, not an oversight; deciding it is the work.
+- **`prev_arr_known_h1` is low before 2010** -- the H-1 horizon is the
+  ADR-0009 definition, not a clock: the inbound leg may land after the
+  one-hour cut. The share is measured per year in `data/derived/ml/manifest.json`
+  and reported, not repaired.
+- **A KP fixture with known statistics** -- `tests/test_estimation_kp.py`
+  checks the algebra on synthetic data and the identification statistics of
+  Table 3 against the published values on the committed article panel, with
+  measured tolerances. A small synthetic panel whose Kleibergen-Paap
+  statistics are known in closed form would make the second check independent
+  of the article; it has not been built.
+- **Measured time in tracked files** -- `reports/replication/results.json`
+  and `reports/prediction/dataset.json` carry their own wall time, so a rerun
+  on an unchanged tree diffs by that value and nothing else;
+  `airline-delays estimate --rescore` rebuilds the derived files without
+  re-measuring. Moving the timing to an untracked sidecar has not been decided.
+- **Manifest commit stamps trail HEAD** -- the manifests under `data/analysis/`
+  and the reports stamp the commit that was HEAD when they were generated, by
+  construction the commit before the one that ships them. No stamp is
+  `UNCOMMITTED`; mapping an artefact onto its shipping commit needs a
+  two-phase commit, not yet worth the machinery.
+- **The monograph's residual cross-check** (`docs/notes/monografia-2013.md`):
+  the CR2 measure, the airport-pair grain for the Viracopos dummy
+  (`docs/tutorial/13-propor-melhorias.md`, section 9), the 30-or-more against
+  more-than-30 boundary, departure against arrival, and the airport count of
+  its text against its tables.
+- **`o_icao`/`d_icao` wording** -- ADR-0001 says every table carries `o_icao`
+  and `d_icao`, but the dictionary has `origin_icao`/`dest_icao` only in the
+  staged and modelling layers. Fixing the wording or adding the columns is a
+  decision, not a documentation edit.
+- **Figures 1, 2 and 5 against the printed monograph** (the author's check):
+  the redrawn Figure 1 prints both the "AD = P_S - P_P" segment of the text
+  and the Pigouvian toll at Q_S; Figure 2's slopes make the price instrument
+  lose less, as the text concludes; Figure 5 has the two externalities offset
+  exactly, as the text describes.
 
 ## Didactic modules
 
-**Done.** `docs/tutorial/00-como-usar.md` plus modules
-`01-a-proposta.md` through `13-propor-melhorias.md` — the archive review
-(`avaliacao-comparativa.md` §5, outside this repository) maps the
-research arc, from the original 2013 proposal through this repository's
-`citation-audit` sibling, into thirteen modules, M0-M12; a fourteenth,
-"propor melhorias", was added here because the repository this arc led to
-has its own extensions worth proposing, which the archive review's arc
-predates. Contrary to what this file said before the modules existed,
-they live under `docs/tutorial/` (not `docs/notes/`), because they are
-the didactic walkthrough the README's "Data availability" and
-`docs/tutorial/README.md` already point to, not research-evidence notes.
+`docs/tutorial/` (Portuguese, ADR-0006): `00-como-usar.md` plus fourteen
+modules, the research arc from the 2013 proposal to this repository. M1-M13
+keep their numbers; M14 is the door into `docs/theory/`.
 
-- **M0** (`00-como-usar.md`) — how to use this material: a map of the arc,
-  the conventions used, and what is missing and why.
-- **M1** (`01-a-proposta.md`) — the original proposal (Sep 2013): the
-  question was about prices, not delays; the target journals; timeline
-  vs. reality (submission seven months late).
-- **M2** (`02-a-leitura-do-orientador.md`) — the advisor's reading list
-  (Jun-Aug 2014): thirteen answers without their questions, 1,300 minutes
-  of editing, the pivot from prices to delays.
-- **M3** (`03-primeiro-desenho.md`) — the first design (Jul 2014): an
+- **M0** (`00-como-usar.md`) -- how to use this material: the map of the arc,
+  the conventions, what sits outside the repository and why.
+- **M1** (`01-a-proposta.md`) -- the original proposal (Sep 2013): a question
+  about prices, the target journals, the timeline against reality.
+- **M2** (`02-a-leitura-do-orientador.md`) -- the advisor's reading list and
+  the pivot from prices to delays.
+- **M3** (`03-primeiro-desenho.md`) -- the first design (Jul 2014): an
   airport-level model; an apron-capacity variable built, then abandoned.
-- **M4** (`04-segundo-desenho.md`) — the second design (Mar 2015): OLS
-  with fixed effects, 38 airports, 29,232 observations; "instrumentation
-  left for later," and the OLS-to-cautionary-tale inversion this
-  repository's own Table 6 still shows.
-- **M5** (`05-caminho-nao-tomado.md`) — the road not taken (Jun 2015): the
-  pricing draft, what it reproduces, a 30-vs-15-minute delay threshold,
-  the TRA equation already sitting in the folder.
-- **M6** (`06-dados-fonte-ao-painel.md`) — data: from the public source to
-  the panel, with the reconciliation against the private benchmark.
-- **M7** (`07-especificacao-e-estimacao.md`) — specification and
-  estimation: 2SGMM, HAC, and the Kleibergen-Paap statistic written from
-  scratch because no Python package implements it.
-- **M8** (`08-o-que-reproduz.md`) — what reproduces and what does not,
-  number by number: 302 of 306 coefficients agree in sign, N 5.3% larger
-  in every column, no verdict changed.
-- **M9** (`09-da-dissertacao-ao-artigo.md`) — from dissertation to article
-  (Oct 2015-Mar 2016): arbitrated dates, a changed title, an authorship
-  question, footnote 20 vs. footnote 33, a promise removed before
-  submission.
-- **M10** (`10-revisao-por-pares.md`) — peer review, the hole: nothing
-  survived it in writing; what this repository does instead.
-- **M11** (`11-recepcao.md`) — reception: what the field picked up, what
-  it got wrong, who adopted the method (`citation-audit`).
-- **M12** (`12-consentimento-licencas-publicacao.md`) — consent, licences
-  and publication: a map of rights holders, the licence per layer, and
-  what stays out of this repository.
-- **M13** (`13-propor-melhorias.md`) — propose improvements: the nine
-  extensions this repository's architecture already supports, what each
-  one still needs, and the next concrete step for each.
-- **M14** (`14-a-teoria-por-tras-do-artigo.md`) — the door into
-  `docs/theory/` (ADR-0019): the theory the article rests on, derived and
-  checked by `just theory` — the economics of congestion with the five
-  diagrams redrawn, the Stackelberg game of the author's 2013 monograph,
-  the bridge to the 2016 econometrics, and the reception. Thematic, not
-  chronological; M1-M13 keep their numbers.
+- **M4** (`04-segundo-desenho.md`) -- the second design (Mar 2015): OLS with
+  fixed effects, and the OLS-to-2SGMM sign change Table 6 still shows.
+- **M5** (`05-caminho-nao-tomado.md`) -- the road not taken (Jun 2015): the
+  pricing draft and the delay-threshold question.
+- **M6** (`06-dados-fonte-ao-painel.md`) -- the data pipeline from source to
+  panel: ANAC's raw files and their two layouts, the universe, the node map,
+  the fact table and the reconstruction panel, and the definitions the two
+  panels share.
+- **M7** (`07-especificacao-e-estimacao.md`) -- specification and estimation:
+  2SGMM, HAC, and the Kleibergen-Paap statistic written from scratch.
+- **M8** (`08-o-que-reproduz.md`) -- the replication: Tables 2-7 re-estimated
+  on the article's estimation panel, published here, and compared with the
+  published tables number by number -- 306 coefficients, 302 with the same
+  sign, 259 within half a published standard error, the HHI sign pattern in
+  12 of 12; the published and re-estimated sample sizes side by side.
+- **M9** (`09-da-dissertacao-ao-artigo.md`) -- from dissertation to article
+  (Oct 2015-Mar 2016): dates, title, authorship, footnotes.
+- **M10** (`10-revisao-por-pares.md`) -- peer review: nothing survived it in
+  writing; what this repository does instead.
+- **M11** (`11-recepcao.md`) -- reception: what the field picked up and who
+  adopted the method (`citation-audit`).
+- **M12** (`12-consentimento-licencas-publicacao.md`) -- rights, licences and
+  what is published where: who holds each source, the licence of each layer,
+  the article's estimation panel released by its first author with the
+  co-authors credited, and what stays outside the repository.
+- **M13** (`13-propor-melhorias.md`) -- propose improvements: the extensions
+  the architecture already supports and the next concrete step for each.
+- **M14** (`14-a-teoria-por-tras-do-artigo.md`) -- the theory the article
+  rests on, derived and checked by `just theory`.
 
 ## Theory layer (ADR-0019)
 
-**Done.** `theory/` (the Stackelberg congestion model of the author's 2013
-undergraduate monograph, re-derived with sympy and checked numerically;
-the five congestion-economics diagrams redrawn as SVG; the join of each
-theory object to the article's published signs), `reports/theory/`,
+Done: `src/airline_delays/theory/` (the Stackelberg congestion model of the
+author's 2013 undergraduate monograph re-derived with sympy and checked
+numerically, 29 identities; eleven figures in the SAPIANS style; the join of
+each theory object to the article's published signs), `reports/theory/`,
 `reports/theory.typ`, `tests/test_theory.py`, the four Portuguese chapters
-under `docs/theory/` with `bibliografia.md`, module M14, and the evidence
-note `docs/notes/monografia-2013.md` with `data/external/monograph_airports.csv`.
-
-**Open items.**
-
-- **Zenodo deposit of the monograph** (author's action). Until the DOI
-  exists the chapters carry the placeholder `[DOI-MONOGRAFIA]`; when it
-  does, it replaces the placeholder, fills the `url` column of
-  `data/external/monograph_airports.csv` and enters `CITATION.cff` under
-  `references` -- a `fix` commit, because it corrects an identifier already
-  in prose.
-- **The residual data cross-check** of the monograph, listed in
-  `docs/notes/monografia-2013.md`: the CR2 measure, the airport-pair grain
-  for the Viracopos dummy (`docs/tutorial/13-propor-melhorias.md`, section
-  9), the 30-or-more against more-than-30 boundary, departure against
-  arrival, and the 36/37/38 airport count -- declared, not resolved.
-- **An inconsistency found while mapping the monograph to the registry:**
-  ADR-0001 says every table carries `o_icao` and `d_icao`, but the
-  dictionary has `origin_icao`/`dest_icao` only in the staged and modelling
-  layers. Recording it here; fixing the ADR's wording or adding the columns
-  is a decision, not a documentation edit.
-- **Figures 1, 2 and 5 against the printed monograph** (author's check):
-  the redrawn Figure 1 prints both the "AD = P_S - P_P" segment of the text
-  and the Pigouvian toll at Q_S; Figure 2's slopes are chosen so that the
-  price instrument loses less, as the text concludes; Figure 5 is drawn so
-  that the two externalities offset exactly, as the text describes.
+under `docs/theory/` with `bibliografia.md`, module M14, and the evidence note
+`docs/notes/monografia-2013.md` with `data/external/monograph_airports.csv`.
+What remains is under "Open items": the monograph's deposit, the residual
+cross-check, the `o_icao` wording and the figure checks.

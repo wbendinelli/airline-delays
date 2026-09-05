@@ -79,6 +79,8 @@ KNOWN_TOP = {
 # a path candidate but "N/A" or "ROADMAP" (no extension, prose) are not.
 ROOT_FILES = {
     "README.md",
+    "README.pt-BR.md",
+    "CONTRIBUTING.pt-BR.md",
     "CLAUDE.md",
     "AGENTS.md",
     "CONTRIBUTING.md",
