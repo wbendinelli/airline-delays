@@ -156,3 +156,64 @@ class TestTheCommittedReplicationIsFresh:
                         compared += 1
         assert compared > 1000
         assert fresh["meta"]["sample"]["n_after_singleton_cut"] == 20_630
+
+
+@pytest.mark.analysis
+class TestTheCommittedProjectionsAreNotStale:
+    """`city_month.parquet` and `airline_city_month.parquet` are what `airline-delays fact` writes."""
+
+    def test_the_two_projections_rebuild_from_the_committed_fact_table(self) -> None:
+        import pandas as pd
+
+        from airline_delays import fact as fact_mod
+
+        day_hour_path = DERIVED_DIR / "node_day_hour.parquet"
+        if not day_hour_path.exists():
+            pytest.skip(f"{day_hour_path} is absent (run `just fact` first)")
+        fact = pd.read_parquet(ANALYSIS_DIR / "fact_group_route_month.parquet")
+        day_hour = pd.read_parquet(day_hour_path)
+        city = fact_mod.slim(fact_mod.city_month(fact, day_hour))
+        airline_city = fact_mod.slim(
+            fact_mod.add_hub(fact_mod.aggregate(fact, "airline_city_month"))
+        )
+        for rebuilt, name in ((city, "city_month"), (airline_city, "airline_city_month")):
+            committed = pd.read_parquet(ANALYSIS_DIR / f"{name}.parquet")
+            assert rebuilt.shape == committed.shape, name
+            assert list(rebuilt.columns) == list(committed.columns), name
+            assert _checksum(rebuilt) == _checksum(committed), name
+
+
+@pytest.mark.analysis
+class TestOneYearOfTheFactTableRebuilds:
+    """One calendar year of the fact table, rebuilt from `data/staged`, equals the committed slice."""
+
+    YEAR = 2012
+
+    def test_the_year_matches_the_committed_fact_table(self, tmp_path: Path) -> None:
+        import pandas as pd
+
+        from airline_delays import fact as fact_mod
+
+        staged = ROOT / "data" / "staged"
+        if not (staged / f"year={self.YEAR}").exists():
+            pytest.skip(f"data/staged/year={self.YEAR} is absent (run `just stage` first)")
+        analysis, derived = tmp_path / "analysis", tmp_path / "derived"
+        fact_mod.build_fact(
+            staged,
+            analysis,
+            derived,
+            years=(self.YEAR,),
+            groups_path=EXTERNAL_DIR / "groups.csv",
+            verbose=False,
+        )
+        rebuilt = pd.read_parquet(analysis / "fact_group_route_month.parquet")
+        committed = pd.read_parquet(ANALYSIS_DIR / "fact_group_route_month.parquet")
+        committed = committed[committed["ym"] // 100 == self.YEAR]
+        # Entry and exit flags look at the neighbouring years, which a one-year build
+        # does not see; everything else is a function of the year's own flights.
+        columns = [c for c in committed.columns if c not in {"is_entry", "is_exit"}]
+        keys = list(fact_mod.FACT_UNIQUE_KEY)
+        left = rebuilt[columns].sort_values(keys).reset_index(drop=True)
+        right = committed[columns].sort_values(keys).reset_index(drop=True)
+        assert len(left) == len(right)
+        pd.testing.assert_frame_equal(left, right, check_dtype=False, check_categorical=False)
