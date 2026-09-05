@@ -39,7 +39,13 @@ mesmas três chaves que o painel público já usa.
 **Já implementado, não uma proposta.** `fsc_prdelarr1530` e
 `fsc_prdelarr30m` (e as variantes `fscc_`/`all_`/`lccfu_`/`lccclass_`)
 já existem e já foram medidos contra o gabarito privado — ver M5, que
-mostra a mesma ambiguidade sem resolução no projeto irmão original.
+mostra a mesma ambiguidade sem resolução no projeto irmão original. A
+linhagem é mais longa: 30 minutos é o corte da Resolução ANAC 218 e a
+variável dependente da monografia de 2013 (M14,
+`docs/notes/monografia-2013.md`); `fsc_prdelarr30m` é o que mais se
+aproxima do que o autor mediu em 2013 — sobre outro conjunto de empresas
+(todas, por empresa) e outro denominador (voos planejados no do-file de
+2013; voos realizados na publicação da ANAC).
 
 ## 4. Meteorologia (METAR)
 
@@ -107,9 +113,31 @@ declarada por aeroporto e a auditoria dos trechos de code-share da não
 operadora (candidata a ADR-0018) — as três estão listadas em
 `docs/notes/prediction.md`, seção 7.
 
+## 9. A pergunta da monografia de 2013 (M14)
+
+**O que já existe.** A unidade da monografia — empresa × rota × mês, com
+atrasos acima de 30 minutos — é o grão da tabela-fato deste repositório:
+`arr_delayed_gt30` e `dep_delayed_gt30` (`docs/dictionary.md`). O HHI da
+rota sobre voos planejados que ela regrediu é `rthhi_flights`; o tempo de
+voo médio é `sched_block_mean_min`; a presença da Gol e da Azul na rota é
+`pres_glo`/`pres_azu`, e a entrada de um grupo na rota é `is_entry`. A
+ponte completa, variável a variável, está em
+[`../theory/03-do-modelo-ao-artigo.md`](../theory/03-do-modelo-ao-artigo.md).
+
+**O que falta.** A dummy da Azul no seu próprio aeroporto exige o grão
+par-de-aeroportos (`origin_icao`/`dest_icao` existem só nas camadas
+staged e de modelagem; ADR-0001 dobra Viracopos em `MRSP`); o CR2 do
+aeroporto, computável a partir da tabela-fato; os assentos por aeronave
+(HOTRAN, não coletado); o clima mensal do ICEA (seção 4 acima); e os
+passageiros em conexão da Infraero (fonte 13 de
+`docs/data-availability.md`, com `src/vra/hub.py` como substituto
+estrutural). O próximo passo concreto é uma agregação de `data/staged/`
+por par de aeroportos em vez de por nó, reusando a limpeza do staging — o
+mesmo caminho da seção 7.
+
 ## Exercício
 
-Escolha uma das oito extensões acima cuja seção comece com "O que já
+Escolha uma das nove extensões acima cuja seção comece com "O que já
 existe" mais longa que "O que falta". Rode o comando `grep`/`cat` que a
 seção cita, confirme o número, e escreva as duas próximas linhas de
 código (arquivo e função) que você adicionaria para completá-la —
@@ -117,9 +145,9 @@ sem escrevê-las de verdade, só nomeá-las.
 
 ## Nota honesta
 
-"A arquitetura já sustenta" não é o mesmo que "já está pronto" — das oito
+"A arquitetura já sustenta" não é o mesmo que "já está pronto" — das nove
 extensões acima, três já têm número publicado hoje (o limiar de 30 minutos,
-o atraso de LCC como resposta e a previsão por voo); as outras cinco
+o atraso de LCC como resposta e a previsão por voo); as outras seis
 precisam de uma fonte de dado ainda não coletada ou de uma função ainda não
 escrita. Nenhuma dessas cinco foi implementada neste módulo de documentação
 — descrever o caminho não é percorrê-lo.

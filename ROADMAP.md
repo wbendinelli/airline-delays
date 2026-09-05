@@ -56,13 +56,14 @@ close yet.
    `reports/build/prediction.pdf`, `docs/notes/prediction.md` and
    `docs/notes/colegiado-adr0012.md`. The dataset itself stays out of git
    (ADR-0004) and is described in `datapackage.json`.
-6. **Reports** (`just report`) — **partial.** Three of the four exist and
+6. **Reports** (`just report`) — **partial.** Four of the five exist and
    are generated, never hand-edited: `reports/reconciliation.md`,
-   `reports/replication.typ` (compiled to `reports/build/replication.pdf`)
-   and `reports/prediction.typ` (compiled to
-   `reports/build/prediction.pdf`). A reconstruction report does not exist
+   `reports/replication.typ` (compiled to `reports/build/replication.pdf`),
+   `reports/prediction.typ` (compiled to `reports/build/prediction.pdf`)
+   and `reports/theory.typ` (compiled to `reports/build/theory.pdf`, its
+   inputs written by `just theory`). A reconstruction report does not exist
    yet, and `just report` itself is still the placeholder recipe in
-   `justfile` — the two Typst sources are compiled by hand, per
+   `justfile` — the three Typst sources are compiled by hand, per
    `reports/README.md`.
 7. **Publication on Zenodo** (`just publish`) — **pending.** Deposit the
    raw snapshot and the prepared data, mint a DOI, update `CITATION.cff`
@@ -193,6 +194,46 @@ the didactic walkthrough the README's "Data availability" and
 - **M12** (`12-consentimento-licencas-publicacao.md`) — consent, licences
   and publication: a map of rights holders, the licence per layer, and
   what stays out of this repository.
-- **M13** (`13-propor-melhorias.md`) — propose improvements: the eight
+- **M13** (`13-propor-melhorias.md`) — propose improvements: the nine
   extensions this repository's architecture already supports, what each
   one still needs, and the next concrete step for each.
+- **M14** (`14-a-teoria-por-tras-do-artigo.md`) — the door into
+  `docs/theory/` (ADR-0019): the theory the article rests on, derived and
+  checked by `just theory` — the economics of congestion with the five
+  diagrams redrawn, the Stackelberg game of the author's 2013 monograph,
+  the bridge to the 2016 econometrics, and the reception. Thematic, not
+  chronological; M1-M13 keep their numbers.
+
+## Theory layer (ADR-0019)
+
+**Done.** `theory/` (the Stackelberg congestion model of the author's 2013
+undergraduate monograph, re-derived with sympy and checked numerically;
+the five congestion-economics diagrams redrawn as SVG; the join of each
+theory object to the article's published signs), `reports/theory/`,
+`reports/theory.typ`, `tests/test_theory.py`, the four Portuguese chapters
+under `docs/theory/` with `bibliografia.md`, module M14, and the evidence
+note `docs/notes/monografia-2013.md` with `data/external/monograph_airports.csv`.
+
+**Open items.**
+
+- **Zenodo deposit of the monograph** (author's action). Until the DOI
+  exists the chapters carry the placeholder `[DOI-MONOGRAFIA]`; when it
+  does, it replaces the placeholder, fills the `url` column of
+  `data/external/monograph_airports.csv` and enters `CITATION.cff` under
+  `references` -- a `fix` commit, because it corrects an identifier already
+  in prose.
+- **The residual data cross-check** of the monograph, listed in
+  `docs/notes/monografia-2013.md`: the CR2 measure, the airport-pair grain
+  for the Viracopos dummy (`docs/tutorial/13-propor-melhorias.md`, section
+  9), the 30-or-more against more-than-30 boundary, departure against
+  arrival, and the 36/37/38 airport count -- declared, not resolved.
+- **An inconsistency found while mapping the monograph to the registry:**
+  ADR-0001 says every table carries `o_icao` and `d_icao`, but the
+  dictionary has `origin_icao`/`dest_icao` only in the staged and modelling
+  layers. Recording it here; fixing the ADR's wording or adding the columns
+  is a decision, not a documentation edit.
+- **Figures 1, 2 and 5 against the printed monograph** (author's check):
+  the redrawn Figure 1 prints both the "AD = P_S - P_P" segment of the text
+  and the Pigouvian toll at Q_S; Figure 2's slopes are chosen so that the
+  price instrument loses less, as the text concludes; Figure 5 is drawn so
+  that the two externalities offset exactly, as the text describes.

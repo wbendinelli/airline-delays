@@ -14,7 +14,9 @@ revision 18, 1.300 minutos de edição acumulados) contém treze respostas
 numeradas — `QUESTÃO 1`, `2`, `3`, **`6`**… `13`. As respostas 4 e 5
 **não existem no arquivo**. Todo o conteúdo é revisão de literatura (Mayer
 e Sinai 2003, Mazzeo 2003, Morrison e Whinston 2008, Rupp 2009, Santos e
-Robin 2010, entre outros) — nenhuma pergunta original do orientador
+Robin 2010, entre outros — três delas, Mayer e Sinai 2003, Rupp 2009 e
+Santos e Robin 2010, já estavam na bibliografia da monografia de 2013,
+`docs/theory/bibliografia.md`) — nenhuma pergunta original do orientador
 sobrevive; só se infere o tema de cada uma pela resposta que a segue. A
 `QUESTÃO 3` é o único lugar onde o tema de preços reaparece, já como
 possibilidade futura, não como plano:

@@ -33,6 +33,14 @@ Resolução ANAC 218); o código que o acompanha roda com **15 minutos**. As
 duas versões nunca foram reconciliadas, porque o projeto parou antes
 disso importar.
 
+O limiar de 30 minutos não nasceu nesse rascunho: é o primeiro dos dois
+cortes (30 e 60 minutos) que a ANAC publicava pela Resolução 218, e foi a
+variável dependente da monografia de graduação de 2013 (M14,
+`docs/notes/monografia-2013.md`), cujo texto já contrasta "mais de trinta
+minutos" no Brasil com "mais de quinze minutos" nos Estados Unidos. O
+artigo de 2016 adotou os 15 minutos; o rascunho de 2015 ficou no meio, com
+o texto em 30 e o código em 15.
+
 Esta descrição vem de uma análise de acervo produzida antes deste
 repositório existir (*avaliação comparativa*, projeto 02, e *avaliação em
 oito critérios*, seção C5) — nenhum arquivo desse projeto está neste

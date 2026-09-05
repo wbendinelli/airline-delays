@@ -12,5 +12,9 @@ Supporting documentation that does not fit in the README:
   differences" section summarises it).
 - `notes/` -- research notes in Portuguese (see `docs/notes/README.md`).
 - `tutorial/` -- a didactic walkthrough in Portuguese: `00-como-usar.md`
-  plus modules `01-a-proposta.md` through `13-propor-melhorias.md` (see
-  `docs/tutorial/README.md`).
+  plus modules `01-a-proposta.md` through `14-a-teoria-por-tras-do-artigo.md`
+  (see `docs/tutorial/README.md`).
+- `theory/` -- the thematic discussion of the theory behind the article, in
+  Portuguese: the economics of airport congestion, the Stackelberg game of
+  the author's 2013 monograph derived and checked, the bridge to the 2016
+  article and its reception (see `docs/theory/README.md`).

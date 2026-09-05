@@ -37,6 +37,17 @@ version numbers, mark progress.
   weighted geometric mean of 2013 as the antecedent of `gmchhi`, and what its
   surviving do-file does against what its text says, phrased as questions for the
   author); source 15 of `docs/data-availability.md`.
+- `docs/theory/` (Portuguese, ADR-0019): the thematic discussion of the theory
+  behind the article -- `01-economia-do-congestionamento.md` (the economics of
+  airport congestion with the five diagrams redrawn), `02-o-jogo-do-congestionamento.md`
+  (the Stackelberg game derived step by step, every identity checked, ending where
+  Guo, Jiang and Wan 2018 took the formulation to airfares), `03-do-modelo-ao-artigo.md`
+  (the bridge from each theory object to the 2016 article's regressors and published
+  signs, the map from the monograph's equation (22) to the registry, what reproduces,
+  the 2018 critique), `04-impacto.md` (the reception) and `bibliografia.md` (the first
+  literature list in the repository, 36 entries, 28 DOIs resolved via Crossref, the
+  monograph's typos corrected and listed); tutorial module M14 as the door into it;
+  `DECISIONS.md` ADR-0019.
 - `just demo` is real (`scripts/demo.py`, `tests/test_demo.py`): the committed
   fixture (three routes cut from the 2004, 2009 and 2012 files, 19,907 staged
   legs) runs through the same code path as the full pipeline -- staged legs,
@@ -208,6 +219,10 @@ version numbers, mark progress.
   5; `docs/declared-differences.md` gains the monograph's Table 5 under "Not
   attempted, and why"; `scripts/check_no_private_paths.py` allowlists
   `docs/notes/monografia-2013.md`; the README and M12 count 15 sources.
+- M0, M1, M2, M5, M11 and M13 amended to point to the theory chapters (M13 gains
+  extension 9, the monograph's own question); the indexes (`docs/README.md`,
+  `docs/tutorial/README.md`, `docs/notes/README.md`, `ROADMAP.md`) list M14 and
+  `docs/theory/`; the README overview names the theory layer.
 - **The prediction layer reads an empty actual time as "no alteration
   reported"** (`DECISIONS.md` ADR-0017, panel of three reviewers under
   ADR-0010, verdicts in `docs/notes/colegiado-adr0012.md`). IAC 1504 issues the

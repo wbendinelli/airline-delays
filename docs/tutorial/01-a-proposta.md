@@ -72,6 +72,10 @@ está na própria definição de `route` e `ym` no dicionário
 O que motivou a virada de preços para atrasos não está registrado em
 nenhum documento datado do acervo original — só a sequência de datas entre
 a proposta (set/2013) e o primeiro seminário (jul/2014) permite inferir
-que algo mudou nesse intervalo. O module seguinte (M2) mostra o único
+que algo mudou nesse intervalo. Em paralelo à proposta, e sob o mesmo
+orientador, a pergunta sobre atrasos e internalização já estava escrita
+na monografia de graduação de 2013 (M14, `docs/theory/README.md`): a
+pergunta de preços não foi a origem, foi uma das duas perguntas de 2013.
+O módulo seguinte (M2) mostra o único
 artefato desse intervalo: um exercício bibliográfico de treze respostas,
 sem as perguntas que as provocaram.

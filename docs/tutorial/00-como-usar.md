@@ -24,6 +24,13 @@ cada um preso a arquivos que existem e a números que um script imprime.
 | [`11-recepcao.md`](11-recepcao.md) | Recepção: quem citou, o que deturpou, quem adotou o método |
 | [`12-consentimento-licencas-publicacao.md`](12-consentimento-licencas-publicacao.md) | Consentimento, licenças e o que fica de fora de um repositório público |
 | [`13-propor-melhorias.md`](13-propor-melhorias.md) | Propor melhorias: as extensões que este repositório já sustenta |
+| [`14-a-teoria-por-tras-do-artigo.md`](14-a-teoria-por-tras-do-artigo.md) | A teoria por trás do artigo: a porta para `docs/theory/` — a economia do congestionamento, o jogo derivado e verificado, a ponte para o artigo de 2016 e o seu impacto |
+
+A discussão temática da teoria — da economia do congestionamento ao
+artigo de 2016 e às suas citações — vive em
+[`../theory/README.md`](../theory/README.md); M14 é a porta. Ela não é
+cronológica e não renumera nada: os módulos M1–M13 continuam sendo o arco
+documental, na ordem em que os documentos existiram.
 
 ## Convenções
 
@@ -31,15 +38,20 @@ cada um preso a arquivos que existem e a números que um script imprime.
   (`README.md`, `data/analysis/taxas.csv`) existe neste repositório neste
   momento — `scripts/check_docs_paths.py` prova isso, rodando em CI a cada
   mudança. *Itálico* marca um documento **fora** deste repositório (a
-  dissertação, os slides, as análises do acervo de pesquisa que
+  monografia de 2013, a dissertação, os slides, as análises do acervo de pesquisa que
   antecederam este repositório) — descrito, não incluído; ver M12 para o
   porquê.
 - **Todo número cita o arquivo que o imprime.** Nunca um número solto. Onde
   o número vem de uma análise externa ao repositório (a maior parte do
   arco histórico, M1–M5, M9–M11), o texto diz isso explicitamente — não é
   um script que se possa rodar aqui, é um achado documentado alhures.
-  Onde o número vem de dentro do repositório (M6–M8, M12, M13), o comando
+  Onde o número vem de dentro do repositório (M6–M8, M12–M14), o comando
   que o produz está no módulo.
+- **Fórmulas.** Equações em `$…$` seguem a numeração da monografia de
+  2013, (1)–(12); toda desigualdade ou constante afirmada em prosa é
+  verificada por `theory/model.py` e impressa em
+  `reports/theory/model.json` — "nenhum número solto", aplicado à
+  álgebra.
 - **A honestidade é a pedagogia.** Cada módulo termina numa nota do que não
   fecha, não foi tentado, ou permanece em aberto. Isso não é uma falha de
   redação — é o ponto central de `CLAUDE.md`: *"Fixing" a divergence
@@ -55,7 +67,7 @@ cada um preso a arquivos que existem e a números que um script imprime.
 
 É a reconstrução de uma base pública (VRA/ANAC), a replicação de um artigo
 publicado a partir dela, e a previsão de atraso por voo — ver a visão
-geral do [`README.md`](../../README.md). Não é a dissertação nem o artigo
+geral do [`README.md`](../../README.md). Não é a monografia de 2013, a dissertação nem o artigo
 em si (esses são citados por DOI, nunca redistribuídos —
 [`docs/data-availability.md`](../data-availability.md)), e não é uma
 cópia do acervo de pesquisa que motivou o projeto: os módulos M1–M5 e
@@ -71,5 +83,6 @@ uv run pytest -q
 
 Se os testes passam, o ambiente está pronto para qualquer módulo a partir
 do M6. Módulos M1–M5 e M9–M11 não pedem nenhum comando de reconstrução —
-são leitura. Cada módulo lista os comandos que precisa, na ordem em que
+são leitura. M14 pede só `just theory` e
+`uv run pytest tests/test_theory.py -q`, sem dado nenhum. Cada módulo lista os comandos que precisa, na ordem em que
 precisa.

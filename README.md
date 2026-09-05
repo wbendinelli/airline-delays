@@ -14,7 +14,12 @@ flight table, replicates the tables of Bendinelli, Bettini & Oliveira (2016,
 *Transportation Research Part A*,
 [`10.1016/j.tra.2016.01.001`](https://doi.org/10.1016/j.tra.2016.01.001)) from
 public data only, and trains a flight-level delay predictor evaluated by a
-rolling-origin split.
+rolling-origin split. It also documents the theory the article rests on — a
+review of the economics of airport congestion and a Stackelberg model of
+congestion internalisation, ported from the author's 2013 undergraduate
+monograph and re-derived symbolically, ending at the article's reception
+(`docs/theory/README.md`, `reports/theory/model.json`, `DECISIONS.md`
+ADR-0019).
 
 **This repository supports:** reconstructing the flight table year by year
 under a documented universe, node map and delay definition
@@ -351,6 +356,6 @@ around 2020 (the exact revoking instrument is pending e-SIC confirmation,
 are printed by versioned scripts under `replication/`, `ml/` and `theory/`,
 never typed by hand (`CLAUDE.md`); a number without a script behind it is a
 bug in this repository, not a fact about Brazilian aviation. The theory
-chapters derive and review; they estimate nothing, and the
+chapters (`docs/theory/`) derive and review; they estimate nothing, and the
 2013 monograph's own coefficients are quoted there as an outside document,
 never as a result of this repository.
