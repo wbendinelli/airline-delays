@@ -1,0 +1,14 @@
+* text=auto eol=lf
+
+*.parquet binary
+*.csv.gz binary
+*.csv text eol=lf
+
+# Deterministic script output -- GitHub should not compute language stats
+# nor a "human" diff over these.
+data/derived/** linguist-generated
+docs/dicionario.md linguist-generated
+
+# data/external/*.csv is NOT marked linguist-generated, on purpose: it is
+# human judgment (the node map, each merger's date, each code's class), and
+# its diff is exactly what needs to stay reviewable in a pull request.

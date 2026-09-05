@@ -1,0 +1,1690 @@
+{
+  "dataset": "ANAC Voo Regular Ativo (VRA)",
+  "source": "https://siros.anac.gov.br/siros/registros/diversos/vra",
+  "attribution": "ANAC, Voo Regular Ativo (VRA), via dados.gov.br",
+  "generated_at": "2026-09-05T04:19:37+00:00",
+  "n_files": 168,
+  "total_bytes": 2166489628,
+  "files": [
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20001.csv",
+      "file": "data/raw/vra/2000/VRA_20001.csv",
+      "bytes": 6260901,
+      "sha256": "9c661827ba155a901e9b3b1709c9de796adeb0cc9f27878dbf1cc8bbd54d8a3c",
+      "retrieved_at": "2026-09-05T04:02:36+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_200010.csv",
+      "file": "data/raw/vra/2000/VRA_200010.csv",
+      "bytes": 5807365,
+      "sha256": "10bc3c45a4d4624f046653c345e08ae96ba947af31c8df69597b97a16997cc8a",
+      "retrieved_at": "2026-09-05T04:03:04+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_200011.csv",
+      "file": "data/raw/vra/2000/VRA_200011.csv",
+      "bytes": 5582149,
+      "sha256": "4d802899d5c51bc1b67803dcf8209ed90e89ba7def60d596ba417c229ce4e17a",
+      "retrieved_at": "2026-09-05T04:03:07+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_200012.csv",
+      "file": "data/raw/vra/2000/VRA_200012.csv",
+      "bytes": 6063785,
+      "sha256": "172d8c70f6f61559bac7dea7489104b279fd00e7e14deea70e8c9bd15804443e",
+      "retrieved_at": "2026-09-05T04:03:10+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20002.csv",
+      "file": "data/raw/vra/2000/VRA_20002.csv",
+      "bytes": 5719650,
+      "sha256": "84896bb153235f78f10fad236c756ec3dc77cd6c1c372407b1deead263debdb3",
+      "retrieved_at": "2026-09-05T04:02:40+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20003.csv",
+      "file": "data/raw/vra/2000/VRA_20003.csv",
+      "bytes": 6107224,
+      "sha256": "f6f7db61c56832112663dffd7d9adb4c56006f0bf6489ccf5acea26c9036b4a8",
+      "retrieved_at": "2026-09-05T04:02:43+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20004.csv",
+      "file": "data/raw/vra/2000/VRA_20004.csv",
+      "bytes": 5611533,
+      "sha256": "afc536523eda9fdb6819d6a60379ecb85166bffe2c428d95eb1e53690ef75aa4",
+      "retrieved_at": "2026-09-05T04:02:46+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20005.csv",
+      "file": "data/raw/vra/2000/VRA_20005.csv",
+      "bytes": 5400939,
+      "sha256": "6a0c7febc3d19a124b96cb4b5eb22e105ed7960ad1fd0872ef4b64ab544ff3a8",
+      "retrieved_at": "2026-09-05T04:02:49+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20006.csv",
+      "file": "data/raw/vra/2000/VRA_20006.csv",
+      "bytes": 5550143,
+      "sha256": "36c7e81f12beeecdeb1677d23f2492f478e553d52293be0163a8cf7b541347c5",
+      "retrieved_at": "2026-09-05T04:02:51+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20007.csv",
+      "file": "data/raw/vra/2000/VRA_20007.csv",
+      "bytes": 5951991,
+      "sha256": "2946f2713b57da07b97bef9ab783215fe90929729b98f88a39f4866bd4ea2da8",
+      "retrieved_at": "2026-09-05T04:02:55+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20008.csv",
+      "file": "data/raw/vra/2000/VRA_20008.csv",
+      "bytes": 5829148,
+      "sha256": "9b8915eff29dab4c9e421a460a276a6040703c7f9a1315bdcd2e0d5e7623f33a",
+      "retrieved_at": "2026-09-05T04:02:58+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2000/VRA_20009.csv",
+      "file": "data/raw/vra/2000/VRA_20009.csv",
+      "bytes": 5645972,
+      "sha256": "493cd2dc5f04bcd550e195a257bceb871cca0acf20c370067add9f668fc5ac11",
+      "retrieved_at": "2026-09-05T04:03:01+00:00",
+      "http_status": 200,
+      "year": 2000,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20011.csv",
+      "file": "data/raw/vra/2001/VRA_20011.csv",
+      "bytes": 6098966,
+      "sha256": "63d24f1ce394cf4316a06c1d88ce3f478ee9de8002fe9256684059b6e5cb1e22",
+      "retrieved_at": "2026-09-05T04:03:13+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_200110.csv",
+      "file": "data/raw/vra/2001/VRA_200110.csv",
+      "bytes": 6298908,
+      "sha256": "1a174615bbf3abeed4b32585f39feabe66413016d53db4860c36f1a3d85f731b",
+      "retrieved_at": "2026-09-05T04:03:46+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_200111.csv",
+      "file": "data/raw/vra/2001/VRA_200111.csv",
+      "bytes": 6206938,
+      "sha256": "ce7ef73d87c491baf5b22a4e3e9cb573bb777259b3fd11535fa8b470b0e8d2d5",
+      "retrieved_at": "2026-09-05T04:03:49+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_200112.csv",
+      "file": "data/raw/vra/2001/VRA_200112.csv",
+      "bytes": 6446819,
+      "sha256": "7621c7d9a247daa571e9dfd428e372fc8662f90daed2ad9b09fe66886e34e253",
+      "retrieved_at": "2026-09-05T04:03:53+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20012.csv",
+      "file": "data/raw/vra/2001/VRA_20012.csv",
+      "bytes": 5538345,
+      "sha256": "daa9ad4064a0a8fba2bbe8d6a38cbdb574a68d6030225c1d6832bf8a00a05f4f",
+      "retrieved_at": "2026-09-05T04:03:16+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20013.csv",
+      "file": "data/raw/vra/2001/VRA_20013.csv",
+      "bytes": 6217348,
+      "sha256": "d8fceb9e752cf10bd61aa3b4fc75d14e6db1eff6913a1bb7a451986559b8e70c",
+      "retrieved_at": "2026-09-05T04:03:19+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20014.csv",
+      "file": "data/raw/vra/2001/VRA_20014.csv",
+      "bytes": 5966821,
+      "sha256": "0866dff59e0774699e2dcf4d7b6cafe3e7ea5a8e129aa48dcc1710252b723465",
+      "retrieved_at": "2026-09-05T04:03:22+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20015.csv",
+      "file": "data/raw/vra/2001/VRA_20015.csv",
+      "bytes": 6404216,
+      "sha256": "a97cda9fb01067752bf70725d6ee0684f4614f38ddb06307c9eeb897bf87f0b6",
+      "retrieved_at": "2026-09-05T04:03:25+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20016.csv",
+      "file": "data/raw/vra/2001/VRA_20016.csv",
+      "bytes": 6176263,
+      "sha256": "df74a318e17c09b9490e6ed03b439fca0a92724260bbc3538a64dab5110f6764",
+      "retrieved_at": "2026-09-05T04:03:30+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20017.csv",
+      "file": "data/raw/vra/2001/VRA_20017.csv",
+      "bytes": 6532641,
+      "sha256": "b1da88754b6889f382af6a6c73cde17faa153f60b5ee06d61693e1402e56b886",
+      "retrieved_at": "2026-09-05T04:03:36+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20018.csv",
+      "file": "data/raw/vra/2001/VRA_20018.csv",
+      "bytes": 6151754,
+      "sha256": "adbfc9059fd14df64a80842e94beb18445b4bcc02d79b3eef39b4948c4821cbe",
+      "retrieved_at": "2026-09-05T04:03:40+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2001/VRA_20019.csv",
+      "file": "data/raw/vra/2001/VRA_20019.csv",
+      "bytes": 5759147,
+      "sha256": "0e18f7e31870354b6bbf68f38dd13c46f9d70d8d8d73e4f1bf46856f346fb02a",
+      "retrieved_at": "2026-09-05T04:03:43+00:00",
+      "http_status": 200,
+      "year": 2001,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20021.csv",
+      "file": "data/raw/vra/2002/VRA_20021.csv",
+      "bytes": 6472674,
+      "sha256": "09cf9b677951eae6c216cad76378a22eeb123638e6e62956322f52de0f939813",
+      "retrieved_at": "2026-09-05T04:03:56+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_200210.csv",
+      "file": "data/raw/vra/2002/VRA_200210.csv",
+      "bytes": 6263531,
+      "sha256": "bf91a405fc3eab8a5e180868a5f1ea71eb8a012a7e5297222ab35b66acd95bb1",
+      "retrieved_at": "2026-09-05T04:04:23+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_200211.csv",
+      "file": "data/raw/vra/2002/VRA_200211.csv",
+      "bytes": 6001299,
+      "sha256": "dd9761e831d0c27edb8914e17100c9110a15713983e907fba0aabd8a3779e2d1",
+      "retrieved_at": "2026-09-05T04:04:26+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_200212.csv",
+      "file": "data/raw/vra/2002/VRA_200212.csv",
+      "bytes": 6295694,
+      "sha256": "49d9eb3394d03806fd3f353f3db655979bb5b8070a7461debfbd58550361fac8",
+      "retrieved_at": "2026-09-05T04:04:29+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20022.csv",
+      "file": "data/raw/vra/2002/VRA_20022.csv",
+      "bytes": 5588014,
+      "sha256": "8f92473f6b44a0de1aa74f93071f6037a029f9eba7db52f64ed1e309cdccd318",
+      "retrieved_at": "2026-09-05T04:03:59+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20023.csv",
+      "file": "data/raw/vra/2002/VRA_20023.csv",
+      "bytes": 5977081,
+      "sha256": "136c5ebc558c164dec2605aa254dd43458aea0da94f15f1f11e1042117b75732",
+      "retrieved_at": "2026-09-05T04:04:01+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20024.csv",
+      "file": "data/raw/vra/2002/VRA_20024.csv",
+      "bytes": 5751446,
+      "sha256": "da389862940ce07071f5677301120816cf77a1c5030f999b8931f3e195bb1bc2",
+      "retrieved_at": "2026-09-05T04:04:04+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20025.csv",
+      "file": "data/raw/vra/2002/VRA_20025.csv",
+      "bytes": 6068150,
+      "sha256": "080c28d32c6090dcf69bb703fe9a9f9eaaf99a767dc00f4f00af106df43a8005",
+      "retrieved_at": "2026-09-05T04:04:08+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20026.csv",
+      "file": "data/raw/vra/2002/VRA_20026.csv",
+      "bytes": 5960644,
+      "sha256": "b06397be2240bdd2f502d71d5cb527e271883409127bdeba44ed239e899b16d8",
+      "retrieved_at": "2026-09-05T04:04:10+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20027.csv",
+      "file": "data/raw/vra/2002/VRA_20027.csv",
+      "bytes": 6283420,
+      "sha256": "cd6ef56ff6b1dbe8acef84ae22058f1f287ebd8a8188f9c9d8fdd74a554dcf34",
+      "retrieved_at": "2026-09-05T04:04:14+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20028.csv",
+      "file": "data/raw/vra/2002/VRA_20028.csv",
+      "bytes": 6066835,
+      "sha256": "2159448534eeec536dd2f8000731691fa47ae7491370fe5dd6d5e5d0b5dda3c2",
+      "retrieved_at": "2026-09-05T04:04:16+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2002/VRA_20029.csv",
+      "file": "data/raw/vra/2002/VRA_20029.csv",
+      "bytes": 5774692,
+      "sha256": "541e4af604c6c918ddac45f7f3ad1f81718fc6527f3cd40dd32f1e592517cecb",
+      "retrieved_at": "2026-09-05T04:04:20+00:00",
+      "http_status": 200,
+      "year": 2002,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20031.csv",
+      "file": "data/raw/vra/2003/VRA_20031.csv",
+      "bytes": 6358584,
+      "sha256": "52465b7d7c89cc3a9686b34a7e5b9954f7406471d1e233743024d3edb0796673",
+      "retrieved_at": "2026-09-05T04:04:33+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_200310.csv",
+      "file": "data/raw/vra/2003/VRA_200310.csv",
+      "bytes": 4771693,
+      "sha256": "44cf18ce0c90b853181534cee935be9bd5f33b8673b837ecb61c99373efae1bb",
+      "retrieved_at": "2026-09-05T04:05:00+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_200311.csv",
+      "file": "data/raw/vra/2003/VRA_200311.csv",
+      "bytes": 4586519,
+      "sha256": "c7913791c09365136c77373d33992cdd0b321aba7d062a8748ae6d6048468588",
+      "retrieved_at": "2026-09-05T04:05:03+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_200312.csv",
+      "file": "data/raw/vra/2003/VRA_200312.csv",
+      "bytes": 4881400,
+      "sha256": "eecc69a11baba3ae444858cfa5829d7aa6e7f0121ff1bf7c1930ac4252b26f9a",
+      "retrieved_at": "2026-09-05T04:05:06+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20032.csv",
+      "file": "data/raw/vra/2003/VRA_20032.csv",
+      "bytes": 5745286,
+      "sha256": "f568a6271885cc73c622398eaee47f4b05a49cf9d29309cbcbb253afcb56ac40",
+      "retrieved_at": "2026-09-05T04:04:35+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20033.csv",
+      "file": "data/raw/vra/2003/VRA_20033.csv",
+      "bytes": 6364656,
+      "sha256": "a8184d7b94716f6a63aebc33debec6fa3292ec4d2b8a463bfd07cb846364345a",
+      "retrieved_at": "2026-09-05T04:04:39+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20034.csv",
+      "file": "data/raw/vra/2003/VRA_20034.csv",
+      "bytes": 6260206,
+      "sha256": "7753c3d4f87c4b398358796844964424745e419f7d13db7ab415a396eb301f40",
+      "retrieved_at": "2026-09-05T04:04:44+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20035.csv",
+      "file": "data/raw/vra/2003/VRA_20035.csv",
+      "bytes": 5395648,
+      "sha256": "838d9b535d77a3dcb62f99dc18c08d8dadf8fe5830a87a9018b4c66462d5af30",
+      "retrieved_at": "2026-09-05T04:04:47+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20036.csv",
+      "file": "data/raw/vra/2003/VRA_20036.csv",
+      "bytes": 4496914,
+      "sha256": "3a8716b54918b52f47d89201232698ef0127805cc6dd24273dd62a34ce0b534e",
+      "retrieved_at": "2026-09-05T04:04:50+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20037.csv",
+      "file": "data/raw/vra/2003/VRA_20037.csv",
+      "bytes": 4804048,
+      "sha256": "f8a350489254f749b8988208209a8dfcc036e616cf5feaaec382cdb2c5501eb2",
+      "retrieved_at": "2026-09-05T04:04:53+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20038.csv",
+      "file": "data/raw/vra/2003/VRA_20038.csv",
+      "bytes": 4597372,
+      "sha256": "98c30bb5d6e7f884fd5413ef9ad2a8bb633757f687d366d68d0a9ed34b70bc59",
+      "retrieved_at": "2026-09-05T04:04:55+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2003/VRA_20039.csv",
+      "file": "data/raw/vra/2003/VRA_20039.csv",
+      "bytes": 4492347,
+      "sha256": "48cea41271458faaa444542387316879e6dde0adb85ee8b7e82cf0f0a9daa264",
+      "retrieved_at": "2026-09-05T04:04:58+00:00",
+      "http_status": 200,
+      "year": 2003,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20041.csv",
+      "file": "data/raw/vra/2004/VRA_20041.csv",
+      "bytes": 4928656,
+      "sha256": "5a72c2b4ddc33364323a34f9298c79aef9185f8bbf278d1b5af1b0d2d3801737",
+      "retrieved_at": "2026-09-05T04:05:09+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_200410.csv",
+      "file": "data/raw/vra/2004/VRA_200410.csv",
+      "bytes": 5173089,
+      "sha256": "20813c9d4413785f15ff6c6a40db3ad6430d467c490980ba2cfff69bb6c45eb3",
+      "retrieved_at": "2026-09-05T04:05:34+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_200411.csv",
+      "file": "data/raw/vra/2004/VRA_200411.csv",
+      "bytes": 4554502,
+      "sha256": "eb3067735f5250b64e357ec8323c700c0a76d96ba27c872e87469b8a053adbdc",
+      "retrieved_at": "2026-09-05T04:05:37+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_200412.csv",
+      "file": "data/raw/vra/2004/VRA_200412.csv",
+      "bytes": 5428767,
+      "sha256": "218bb3936c21f3bb0795b66aab5ee2a3dd03bceca57f08c1e276a6ae0b543d44",
+      "retrieved_at": "2026-09-05T04:05:40+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20042.csv",
+      "file": "data/raw/vra/2004/VRA_20042.csv",
+      "bytes": 4521910,
+      "sha256": "2f0f754000a7a195124658880c3f3edebb4cc245c62e6eda64fc173db273d27b",
+      "retrieved_at": "2026-09-05T04:05:12+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20043.csv",
+      "file": "data/raw/vra/2004/VRA_20043.csv",
+      "bytes": 4906416,
+      "sha256": "d24432dbd2b6e17098f708e61a55329b20ea4f6dd4d539165e9976997455ae22",
+      "retrieved_at": "2026-09-05T04:05:15+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20044.csv",
+      "file": "data/raw/vra/2004/VRA_20044.csv",
+      "bytes": 4776874,
+      "sha256": "210833e74890bc8d059be524014cea28c183396df0dfea5126e0947ec7e8e116",
+      "retrieved_at": "2026-09-05T04:05:18+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20045.csv",
+      "file": "data/raw/vra/2004/VRA_20045.csv",
+      "bytes": 4853026,
+      "sha256": "ce4fc11171937ac4b5bfb6316c68c704583643d7ab844c09d432cad7d2ca616a",
+      "retrieved_at": "2026-09-05T04:05:21+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20046.csv",
+      "file": "data/raw/vra/2004/VRA_20046.csv",
+      "bytes": 4886917,
+      "sha256": "873fed8cbe4a8a53cf73f66c157d98bee851e07d709b03e9c57ebbc2414fc586",
+      "retrieved_at": "2026-09-05T04:05:24+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20047.csv",
+      "file": "data/raw/vra/2004/VRA_20047.csv",
+      "bytes": 5392470,
+      "sha256": "d3ad9b323c0ee4c46ee6a9da47c70a8f3669a19ac27e94e7789bf1e0777d5702",
+      "retrieved_at": "2026-09-05T04:05:26+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20048.csv",
+      "file": "data/raw/vra/2004/VRA_20048.csv",
+      "bytes": 5144034,
+      "sha256": "db7be48e36d32e8fde92213621b0f88c76b61292741ccf15b16db89c2f3552f9",
+      "retrieved_at": "2026-09-05T04:05:29+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2004/VRA_20049.csv",
+      "file": "data/raw/vra/2004/VRA_20049.csv",
+      "bytes": 5001537,
+      "sha256": "1330498f5f9322e40f3a488db10b8f7d1de48f65120bd1c3a4b8a31ef58a96d9",
+      "retrieved_at": "2026-09-05T04:05:32+00:00",
+      "http_status": 200,
+      "year": 2004,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20051.csv",
+      "file": "data/raw/vra/2005/VRA_20051.csv",
+      "bytes": 5394186,
+      "sha256": "b6da3ce07f323a11e3a9f2b57215772fa18ff21a8400dc7372ba9d5433cc5bff",
+      "retrieved_at": "2026-09-05T04:05:42+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_200510.csv",
+      "file": "data/raw/vra/2005/VRA_200510.csv",
+      "bytes": 5415502,
+      "sha256": "f0fb49bdc6be70a84e8af1081e44f8e426978eed9f90a36371bb9c89126b66ac",
+      "retrieved_at": "2026-09-05T04:06:07+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_200511.csv",
+      "file": "data/raw/vra/2005/VRA_200511.csv",
+      "bytes": 5214276,
+      "sha256": "d81f7c09dbeedcfb716163542896d68dbf8ccc7cd13876584db17b92fdb62e4a",
+      "retrieved_at": "2026-09-05T04:06:10+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_200512.csv",
+      "file": "data/raw/vra/2005/VRA_200512.csv",
+      "bytes": 5581940,
+      "sha256": "2afba1d715682cc14e8493030da548df7d55a70e9f510b2b4aab1746e13ad6b8",
+      "retrieved_at": "2026-09-05T04:06:13+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20052.csv",
+      "file": "data/raw/vra/2005/VRA_20052.csv",
+      "bytes": 4553597,
+      "sha256": "c47883f93cf68215db164ff1db9e677f79c61689bfcf0a65a95ed82974f60795",
+      "retrieved_at": "2026-09-05T04:05:45+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20053.csv",
+      "file": "data/raw/vra/2005/VRA_20053.csv",
+      "bytes": 5055809,
+      "sha256": "890150ffcbca9f3d0ed9cf1917201ef9c95ef4c54cb52410f7f12aefb7cacd62",
+      "retrieved_at": "2026-09-05T04:05:48+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20054.csv",
+      "file": "data/raw/vra/2005/VRA_20054.csv",
+      "bytes": 4874632,
+      "sha256": "bd0f95ed89d3b07c042211af3ef02e2cd8c2bbb7fd5e71afbebf39dabe56d89e",
+      "retrieved_at": "2026-09-05T04:05:51+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20055.csv",
+      "file": "data/raw/vra/2005/VRA_20055.csv",
+      "bytes": 5314541,
+      "sha256": "f36c377af49d01552f5b2ae28d5e35473492b43dc6d50a9b80db92b3665f9eb5",
+      "retrieved_at": "2026-09-05T04:05:54+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20056.csv",
+      "file": "data/raw/vra/2005/VRA_20056.csv",
+      "bytes": 5207643,
+      "sha256": "2ec6ddbe7123a5ded8718b94ff200fda6e78e784d5ef7c7547e994eaa00fb34d",
+      "retrieved_at": "2026-09-05T04:05:56+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20057.csv",
+      "file": "data/raw/vra/2005/VRA_20057.csv",
+      "bytes": 5666293,
+      "sha256": "ff45cc6db7c8382141dd5780baacf9a3d31fe8f05422c2fed386b2ed8eaa075a",
+      "retrieved_at": "2026-09-05T04:05:59+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20058.csv",
+      "file": "data/raw/vra/2005/VRA_20058.csv",
+      "bytes": 5425623,
+      "sha256": "419a4d66b196ea3221a6038cd34315cc62a6a6a337223ad95873eb9f1af9e8d9",
+      "retrieved_at": "2026-09-05T04:06:02+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2005/VRA_20059.csv",
+      "file": "data/raw/vra/2005/VRA_20059.csv",
+      "bytes": 5390581,
+      "sha256": "6ee015da10cd3ec9f55795642c9c0dd6630a6803bd11494af04180dbd851430c",
+      "retrieved_at": "2026-09-05T04:06:05+00:00",
+      "http_status": 200,
+      "year": 2005,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20061.csv",
+      "file": "data/raw/vra/2006/VRA_20061.csv",
+      "bytes": 5525559,
+      "sha256": "096b27e8f3db4dad5593d6378247de87de56f0bdeafd378072dcca8c1929e949",
+      "retrieved_at": "2026-09-05T04:06:15+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_200610.csv",
+      "file": "data/raw/vra/2006/VRA_200610.csv",
+      "bytes": 5520500,
+      "sha256": "92f046d26988c96e069a13be6d61c5027eca438f2d19e7db9755f972ba3d2642",
+      "retrieved_at": "2026-09-05T04:06:42+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_200611.csv",
+      "file": "data/raw/vra/2006/VRA_200611.csv",
+      "bytes": 5387814,
+      "sha256": "0af3a8778898cd112c8d5b17cce38661c2d1bbcec94a0127fe5e7976c22e770a",
+      "retrieved_at": "2026-09-05T04:06:45+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_200612.csv",
+      "file": "data/raw/vra/2006/VRA_200612.csv",
+      "bytes": 6362997,
+      "sha256": "085428e81a8510cf2b7f577d05762d51db51fc56781f22dc83a4da21083059b5",
+      "retrieved_at": "2026-09-05T04:06:48+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20062.csv",
+      "file": "data/raw/vra/2006/VRA_20062.csv",
+      "bytes": 4982547,
+      "sha256": "5d21fb9e6d66e5d75f82f7001a33eb736dd593d91c9942bd04da9fde3995629d",
+      "retrieved_at": "2026-09-05T04:06:18+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20063.csv",
+      "file": "data/raw/vra/2006/VRA_20063.csv",
+      "bytes": 5601984,
+      "sha256": "e6e3c7b5d4d0550cbc2ff05d449d3566905c9ba44fd2c704de5827e62e66cb1c",
+      "retrieved_at": "2026-09-05T04:06:21+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20064.csv",
+      "file": "data/raw/vra/2006/VRA_20064.csv",
+      "bytes": 5290188,
+      "sha256": "f3005d78b310b7b796615a720d885db4799c5bfff04ea7bc372329976b20466d",
+      "retrieved_at": "2026-09-05T04:06:23+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20065.csv",
+      "file": "data/raw/vra/2006/VRA_20065.csv",
+      "bytes": 5672502,
+      "sha256": "35faaea9f3557e423d61b206b1189d3e3830aa44cd6a51d783781ab57bb6e245",
+      "retrieved_at": "2026-09-05T04:06:26+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20066.csv",
+      "file": "data/raw/vra/2006/VRA_20066.csv",
+      "bytes": 5574285,
+      "sha256": "065e41713ac069b3eb146a7d1cca1669d670acb2b997ac406fe9f947af9adcce",
+      "retrieved_at": "2026-09-05T04:06:30+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20067.csv",
+      "file": "data/raw/vra/2006/VRA_20067.csv",
+      "bytes": 6000722,
+      "sha256": "b2a2d5f4cf5638eb90b0db98ce4f224765b0ee7847b8c0de20f2e0a74cdcd4c7",
+      "retrieved_at": "2026-09-05T04:06:33+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20068.csv",
+      "file": "data/raw/vra/2006/VRA_20068.csv",
+      "bytes": 5940583,
+      "sha256": "ce1aba27605bf7d4aefcbea0a9c6414316b88c6be4d0c43396010c7e4361d363",
+      "retrieved_at": "2026-09-05T04:06:36+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2006/VRA_20069.csv",
+      "file": "data/raw/vra/2006/VRA_20069.csv",
+      "bytes": 5117119,
+      "sha256": "40bac782f9a751d6d8d56d6025de6e45e8b9032390d072a0e0d1b869ec49cae4",
+      "retrieved_at": "2026-09-05T04:06:39+00:00",
+      "http_status": 200,
+      "year": 2006,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20071.csv",
+      "file": "data/raw/vra/2007/VRA_20071.csv",
+      "bytes": 6792579,
+      "sha256": "9347444f9b0de9c434c89b5803c222a1857d1a0ad4025430e9bae588a0d0e411",
+      "retrieved_at": "2026-09-05T04:06:52+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_200710.csv",
+      "file": "data/raw/vra/2007/VRA_200710.csv",
+      "bytes": 6937137,
+      "sha256": "2de7d9e0d43ee9265c328cd8990cb7c1d1e4f4aadefd4ec182f8b86dfd7a4827",
+      "retrieved_at": "2026-09-05T04:07:20+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_200711.csv",
+      "file": "data/raw/vra/2007/VRA_200711.csv",
+      "bytes": 6291452,
+      "sha256": "f74fa06e5488e85c1cbc2b2b7c4dc9a4ed589ec730f0d0fc39432b136b9e07e6",
+      "retrieved_at": "2026-09-05T04:07:23+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_200712.csv",
+      "file": "data/raw/vra/2007/VRA_200712.csv",
+      "bytes": 6465116,
+      "sha256": "70d13357afcef31bfa1d3e49edfa22ee15533d4b634a17a45b18ce753ea7af59",
+      "retrieved_at": "2026-09-05T04:07:26+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20072.csv",
+      "file": "data/raw/vra/2007/VRA_20072.csv",
+      "bytes": 5705796,
+      "sha256": "fd28c7c243963f460c62ad26b68bd78c1cb18e55db8a8693d523acc416df642b",
+      "retrieved_at": "2026-09-05T04:06:54+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20073.csv",
+      "file": "data/raw/vra/2007/VRA_20073.csv",
+      "bytes": 6384653,
+      "sha256": "bd3ff2120c0015c8a1ee20c074609beb9b8e7f14f806932952ab7e02eca0ff97",
+      "retrieved_at": "2026-09-05T04:06:58+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20074.csv",
+      "file": "data/raw/vra/2007/VRA_20074.csv",
+      "bytes": 6166853,
+      "sha256": "6607e44f350c4407fbcc1f24ccf743d56539d93fd86c8d7e00de06362bef2f97",
+      "retrieved_at": "2026-09-05T04:07:01+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20075.csv",
+      "file": "data/raw/vra/2007/VRA_20075.csv",
+      "bytes": 6491898,
+      "sha256": "a53c0385963594ee702988e72ec08d9cb7397ff58356e9f3fd1937bbd136e27c",
+      "retrieved_at": "2026-09-05T04:07:04+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20076.csv",
+      "file": "data/raw/vra/2007/VRA_20076.csv",
+      "bytes": 6441350,
+      "sha256": "cc4895d0ef03806c4084ee9d9e31b27695d7d2d5a2d19cfb0b07cc9d01a88654",
+      "retrieved_at": "2026-09-05T04:07:08+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20077.csv",
+      "file": "data/raw/vra/2007/VRA_20077.csv",
+      "bytes": 6818217,
+      "sha256": "334270db913df80c22903d2cf9cb92295b06b9800b9d3d6493d99a506ceaecc5",
+      "retrieved_at": "2026-09-05T04:07:11+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20078.csv",
+      "file": "data/raw/vra/2007/VRA_20078.csv",
+      "bytes": 6384061,
+      "sha256": "ed0af4542bf421ac8d3715470de6399f87c4602599741e17e56cfa87d6587d86",
+      "retrieved_at": "2026-09-05T04:07:14+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2007/VRA_20079.csv",
+      "file": "data/raw/vra/2007/VRA_20079.csv",
+      "bytes": 6233161,
+      "sha256": "775c763adb6f33a0cca9a326e68df7fb706a8db1057831cf3f631987af6cf587",
+      "retrieved_at": "2026-09-05T04:07:17+00:00",
+      "http_status": 200,
+      "year": 2007,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20081.csv",
+      "file": "data/raw/vra/2008/VRA_20081.csv",
+      "bytes": 6390164,
+      "sha256": "170dcec6db72be7226f6a8197da7eb95fa694ca05d5ebf9727063675d66522f0",
+      "retrieved_at": "2026-09-05T04:07:30+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_200810.csv",
+      "file": "data/raw/vra/2008/VRA_200810.csv",
+      "bytes": 5559832,
+      "sha256": "07e440370fe37159e1ed6da4f4843b031f360f1963cb206bb32f3095b93820ce",
+      "retrieved_at": "2026-09-05T04:07:58+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_200811.csv",
+      "file": "data/raw/vra/2008/VRA_200811.csv",
+      "bytes": 5896194,
+      "sha256": "5b2bae50cb57702dceb4bba56a0bb9e0481db30f4758bd1bc31100e890b5bbce",
+      "retrieved_at": "2026-09-05T04:08:01+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_200812.csv",
+      "file": "data/raw/vra/2008/VRA_200812.csv",
+      "bytes": 6362217,
+      "sha256": "01136de9da8fa553afaefc7cab0004653d236ed47caf728e0314aadb2e591eb1",
+      "retrieved_at": "2026-09-05T04:08:04+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20082.csv",
+      "file": "data/raw/vra/2008/VRA_20082.csv",
+      "bytes": 5863228,
+      "sha256": "5d37fa9647ea73b43230fb832b30f7bda489034603a41f2003d9532770d5fb30",
+      "retrieved_at": "2026-09-05T04:07:32+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20083.csv",
+      "file": "data/raw/vra/2008/VRA_20083.csv",
+      "bytes": 6245235,
+      "sha256": "43969ba3170a194524f46664019887e118b44b85e55d894c154074afb45bca6a",
+      "retrieved_at": "2026-09-05T04:07:36+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20084.csv",
+      "file": "data/raw/vra/2008/VRA_20084.csv",
+      "bytes": 6062324,
+      "sha256": "77b5a63b4dc48a46023dcb892575eec035de73aa87c7b5ad9b63d59e23eaf0e1",
+      "retrieved_at": "2026-09-05T04:07:40+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20085.csv",
+      "file": "data/raw/vra/2008/VRA_20085.csv",
+      "bytes": 6243158,
+      "sha256": "a8c3b0d8d0e003416cd9c349a01f765ce2555e09774d69fde2e272a785fee464",
+      "retrieved_at": "2026-09-05T04:07:43+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20086.csv",
+      "file": "data/raw/vra/2008/VRA_20086.csv",
+      "bytes": 6015721,
+      "sha256": "28a1628affe11a519c94b28da7d3a14b8c147925d4bf79d48b7294248f7bd118",
+      "retrieved_at": "2026-09-05T04:07:46+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20087.csv",
+      "file": "data/raw/vra/2008/VRA_20087.csv",
+      "bytes": 6211459,
+      "sha256": "9e8ca35bfe62a33fffc27acd5ca522437324b7abc121e6fcb98bd545d34c1048",
+      "retrieved_at": "2026-09-05T04:07:49+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20088.csv",
+      "file": "data/raw/vra/2008/VRA_20088.csv",
+      "bytes": 5990338,
+      "sha256": "9695a26c0429d6e4983cd47e6134b797d4cf6af829183be701fe963fa365e5c5",
+      "retrieved_at": "2026-09-05T04:07:52+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2008/VRA_20089.csv",
+      "file": "data/raw/vra/2008/VRA_20089.csv",
+      "bytes": 5795467,
+      "sha256": "806dd14a9fd1215371ae294d3e2a3b2563e1c8c14a97037496d8564cfa4accdd",
+      "retrieved_at": "2026-09-05T04:07:55+00:00",
+      "http_status": 200,
+      "year": 2008,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20091.csv",
+      "file": "data/raw/vra/2009/VRA_20091.csv",
+      "bytes": 6333984,
+      "sha256": "0be1ab2d8fca85c56e568a82f9b15f56330c2c7f9b9fae2b3dd764bbfbc9349e",
+      "retrieved_at": "2026-09-05T04:08:07+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_200910.csv",
+      "file": "data/raw/vra/2009/VRA_200910.csv",
+      "bytes": 6827527,
+      "sha256": "16b8ad6ffedf7fbfe92f5e76cea5d28705f3c826222fc821264df3fe5dc66cd6",
+      "retrieved_at": "2026-09-05T04:08:36+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_200911.csv",
+      "file": "data/raw/vra/2009/VRA_200911.csv",
+      "bytes": 6609921,
+      "sha256": "9df1d88c55620c797b01ab399b58e98be32bd66ea4d20e96a3d7dace045ebd7c",
+      "retrieved_at": "2026-09-05T04:08:39+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_200912.csv",
+      "file": "data/raw/vra/2009/VRA_200912.csv",
+      "bytes": 8242423,
+      "sha256": "7c29414ecfd43173412843f7d7fcbd41a91c5d6ae37a7f48bc8af84da892b050",
+      "retrieved_at": "2026-09-05T04:08:43+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20092.csv",
+      "file": "data/raw/vra/2009/VRA_20092.csv",
+      "bytes": 6290747,
+      "sha256": "33662a0a7d12988f56faed78af2b9767a1cc467eb944abbb9d593231f71b2746",
+      "retrieved_at": "2026-09-05T04:08:10+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20093.csv",
+      "file": "data/raw/vra/2009/VRA_20093.csv",
+      "bytes": 6222234,
+      "sha256": "4003e7a4cdc39c4ba85b9442981726209764c8c1dc7bae22023d5c189cb0737d",
+      "retrieved_at": "2026-09-05T04:08:13+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20094.csv",
+      "file": "data/raw/vra/2009/VRA_20094.csv",
+      "bytes": 6116610,
+      "sha256": "ee5976ebf20cecc2baf1969f9f0e748811a76757e7cd22f370f76b5a8881bbb7",
+      "retrieved_at": "2026-09-05T04:08:16+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20095.csv",
+      "file": "data/raw/vra/2009/VRA_20095.csv",
+      "bytes": 6307687,
+      "sha256": "8ff3803146a6614f9fd04938fc3cd830676e8ec8b62919218b6ec4b05fea5ac6",
+      "retrieved_at": "2026-09-05T04:08:20+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20096.csv",
+      "file": "data/raw/vra/2009/VRA_20096.csv",
+      "bytes": 6258684,
+      "sha256": "7b1c3fde9c9c8af2fefb3e4aade410d595ac3f93b7d75f081c8630676358b0bb",
+      "retrieved_at": "2026-09-05T04:08:23+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20097.csv",
+      "file": "data/raw/vra/2009/VRA_20097.csv",
+      "bytes": 6645675,
+      "sha256": "030676635883729aececcbe947539c8a8ef1cb7518eb0b30d4db8608abbdbcbd",
+      "retrieved_at": "2026-09-05T04:08:26+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20098.csv",
+      "file": "data/raw/vra/2009/VRA_20098.csv",
+      "bytes": 6568825,
+      "sha256": "1328b908242c0a0db1afd91199a170c9747786b5b4bd731e0768801a90243db3",
+      "retrieved_at": "2026-09-05T04:08:29+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2009/VRA_20099.csv",
+      "file": "data/raw/vra/2009/VRA_20099.csv",
+      "bytes": 6283937,
+      "sha256": "9085330edd481644493a9ecb8ce917424774c4c06b2cc9f34dd30ebaa9c42d66",
+      "retrieved_at": "2026-09-05T04:08:32+00:00",
+      "http_status": 200,
+      "year": 2009,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_01.csv",
+      "file": "data/raw/vra/2010/VRA_2010_01.csv",
+      "bytes": 31249550,
+      "sha256": "0d5dd6faab1716ed98b07eb7b59f70c402d3ee850813b9b4f8fd9a34e8596ef2",
+      "retrieved_at": "2026-09-05T04:08:56+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_02.csv",
+      "file": "data/raw/vra/2010/VRA_2010_02.csv",
+      "bytes": 24075654,
+      "sha256": "1fd013fcf82cc0928a88d1e9e7910b800b3adb979fbddc9bf4bc6e18803abd93",
+      "retrieved_at": "2026-09-05T04:09:07+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_03.csv",
+      "file": "data/raw/vra/2010/VRA_2010_03.csv",
+      "bytes": 26537908,
+      "sha256": "8be5f835cea88d8fc9081e766cba279dd178040a0654e5f64c354ed52c2774ac",
+      "retrieved_at": "2026-09-05T04:09:18+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_04.csv",
+      "file": "data/raw/vra/2010/VRA_2010_04.csv",
+      "bytes": 25603398,
+      "sha256": "a974d648641bb995b00f01539b89b6ee1c6314941f7d13fc635a75da6ae96ead",
+      "retrieved_at": "2026-09-05T04:09:29+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_05.csv",
+      "file": "data/raw/vra/2010/VRA_2010_05.csv",
+      "bytes": 26538882,
+      "sha256": "4254cc63773c4d37a6c233513d1d40515ff3dbdb97a966251e7d9a9812f16942",
+      "retrieved_at": "2026-09-05T04:09:43+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_06.csv",
+      "file": "data/raw/vra/2010/VRA_2010_06.csv",
+      "bytes": 26574631,
+      "sha256": "dc0cead53a39df38cb614639fd7262ca98e9271d62d6e4bd21be02a09e8f6f29",
+      "retrieved_at": "2026-09-05T04:09:55+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_07.csv",
+      "file": "data/raw/vra/2010/VRA_2010_07.csv",
+      "bytes": 28680733,
+      "sha256": "a56b347dde29f52fe9a6b7aa274f2f925ed8f4d1bd54d4b4b2d907b634ddfbd4",
+      "retrieved_at": "2026-09-05T04:10:07+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_08.csv",
+      "file": "data/raw/vra/2010/VRA_2010_08.csv",
+      "bytes": 28478951,
+      "sha256": "8c8db0dcaafffade7dc68a5d99d39a0bdb67783f7b2e3ef18dc84434f8d4b1df",
+      "retrieved_at": "2026-09-05T04:10:19+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_09.csv",
+      "file": "data/raw/vra/2010/VRA_2010_09.csv",
+      "bytes": 28115487,
+      "sha256": "877d77cbd3d729b0cd5b97c946d391a286aaf456a58136f6ee48ebd6a39a6dc1",
+      "retrieved_at": "2026-09-05T04:10:31+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_10.csv",
+      "file": "data/raw/vra/2010/VRA_2010_10.csv",
+      "bytes": 29601551,
+      "sha256": "bd000d3b20ee2907d8ed275c62f43803d3f1a0e4e52cd20e722eca75106c397b",
+      "retrieved_at": "2026-09-05T04:10:43+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_11.csv",
+      "file": "data/raw/vra/2010/VRA_2010_11.csv",
+      "bytes": 29353295,
+      "sha256": "ce5bc8cc1d77a56e56261171de90bec4c208eb76fcf5845ecc1a4c8ebdd543c8",
+      "retrieved_at": "2026-09-05T04:10:55+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2010/VRA_2010_12.csv",
+      "file": "data/raw/vra/2010/VRA_2010_12.csv",
+      "bytes": 31653257,
+      "sha256": "fd288ab05db70afa3fdc2da2debbe809b0d3dad963eeb35bfd8615c90e00ea18",
+      "retrieved_at": "2026-09-05T04:11:09+00:00",
+      "http_status": 200,
+      "year": 2010,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_01.csv",
+      "file": "data/raw/vra/2011/VRA_2011_01.csv",
+      "bytes": 31549875,
+      "sha256": "77123b1ef3f1ae8c1841f8d888af85114cb3b25937ef2a93a96d8eaa9b97deb5",
+      "retrieved_at": "2026-09-05T04:11:23+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_02.csv",
+      "file": "data/raw/vra/2011/VRA_2011_02.csv",
+      "bytes": 27816027,
+      "sha256": "d5f9af068d830a92ccb7caeecc11c3ea2f6f08c58b94ebfa8fe3c06fce43213b",
+      "retrieved_at": "2026-09-05T04:11:37+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_03.csv",
+      "file": "data/raw/vra/2011/VRA_2011_03.csv",
+      "bytes": 30980182,
+      "sha256": "77cd5c9a268f297bfe64ce0241f7ebcd2784f5deb430d7a254fc425b1f57e563",
+      "retrieved_at": "2026-09-05T04:11:51+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_04.csv",
+      "file": "data/raw/vra/2011/VRA_2011_04.csv",
+      "bytes": 29948637,
+      "sha256": "314f8b300c9d20f1e590527a0e8989ce3634174d22716985c6e669abfa370920",
+      "retrieved_at": "2026-09-05T04:12:03+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_05.csv",
+      "file": "data/raw/vra/2011/VRA_2011_05.csv",
+      "bytes": 30853884,
+      "sha256": "f369537a082aa75319bc2cb81bf5da6cedd4a6ac6919f1fc3d962e6acc24d8d9",
+      "retrieved_at": "2026-09-05T04:12:16+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_06.csv",
+      "file": "data/raw/vra/2011/VRA_2011_06.csv",
+      "bytes": 31026861,
+      "sha256": "a3ab8f27fa32d655884e42ea99d66e6c7a2f94b571e499c3db9bf25b61b336f6",
+      "retrieved_at": "2026-09-05T04:12:28+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_07.csv",
+      "file": "data/raw/vra/2011/VRA_2011_07.csv",
+      "bytes": 32279763,
+      "sha256": "7efc9a3e6215504f3e2f2db020e1447368fe531b3e230a296ce7069899fc1b27",
+      "retrieved_at": "2026-09-05T04:12:41+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_08.csv",
+      "file": "data/raw/vra/2011/VRA_2011_08.csv",
+      "bytes": 32126518,
+      "sha256": "b22b11385fde387fee8f51c8ce73facff3148f130c03110a407e04ccccc24ad7",
+      "retrieved_at": "2026-09-05T04:12:55+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_09.csv",
+      "file": "data/raw/vra/2011/VRA_2011_09.csv",
+      "bytes": 30928685,
+      "sha256": "2aab4f59bf62ba86d93393395c12e90176806e6dc77f8b763f96181c9b9f3ef7",
+      "retrieved_at": "2026-09-05T04:13:08+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_10.csv",
+      "file": "data/raw/vra/2011/VRA_2011_10.csv",
+      "bytes": 31310197,
+      "sha256": "2cfeb6efed5c685bfbcc79c2f3727052577b6b1d1e6ef5cbb9a49024e55788e1",
+      "retrieved_at": "2026-09-05T04:13:22+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_11.csv",
+      "file": "data/raw/vra/2011/VRA_2011_11.csv",
+      "bytes": 31761054,
+      "sha256": "884dc9cd96120a2e711d2c66e7f9f363bddb14ffe2fdbdf96f2053883615a126",
+      "retrieved_at": "2026-09-05T04:13:35+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2011/VRA_2011_12.csv",
+      "file": "data/raw/vra/2011/VRA_2011_12.csv",
+      "bytes": 33860921,
+      "sha256": "1041e45967f7afc2460988cc512847233ad5361655cf129a372e0cb136c906da",
+      "retrieved_at": "2026-09-05T04:13:48+00:00",
+      "http_status": 200,
+      "year": 2011,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_01.csv",
+      "file": "data/raw/vra/2012/VRA_2012_01.csv",
+      "bytes": 34030924,
+      "sha256": "7b774f99e94c2621c08b53cc15bad5bb847ac3bc89bb04534d4a018a0b455e32",
+      "retrieved_at": "2026-09-05T04:14:03+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_02.csv",
+      "file": "data/raw/vra/2012/VRA_2012_02.csv",
+      "bytes": 30223273,
+      "sha256": "a397702f34e3e8ea80cff438e9c65ccbb3ddc3ce1e4d21c743055fa4ac87505d",
+      "retrieved_at": "2026-09-05T04:14:15+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_03.csv",
+      "file": "data/raw/vra/2012/VRA_2012_03.csv",
+      "bytes": 33216578,
+      "sha256": "dbdc8890e2cf9a4885bcf2256e5ee7f4f7127a3802881c16a39b2e994ba78fd0",
+      "retrieved_at": "2026-09-05T04:14:29+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_04.csv",
+      "file": "data/raw/vra/2012/VRA_2012_04.csv",
+      "bytes": 31975064,
+      "sha256": "098452dcde24b09ee9dc9a4cf39cf18a32c3bf755bbfddbb567a586d8903eb32",
+      "retrieved_at": "2026-09-05T04:14:48+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_05.csv",
+      "file": "data/raw/vra/2012/VRA_2012_05.csv",
+      "bytes": 32922335,
+      "sha256": "793eb271db4e180b86579f20799ec5c2558259c048909731aec1b001a219ff6a",
+      "retrieved_at": "2026-09-05T04:15:04+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_06.csv",
+      "file": "data/raw/vra/2012/VRA_2012_06.csv",
+      "bytes": 32284490,
+      "sha256": "bafb4320cf2a164d0f44246566606e22c32598e88acdd3afab66bc2e06cc3e04",
+      "retrieved_at": "2026-09-05T04:15:18+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_07.csv",
+      "file": "data/raw/vra/2012/VRA_2012_07.csv",
+      "bytes": 33521829,
+      "sha256": "8c31fc1461054b8eb4def96526fb69418bcfef54b1a02793d0de321d46cc0482",
+      "retrieved_at": "2026-09-05T04:15:37+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_08.csv",
+      "file": "data/raw/vra/2012/VRA_2012_08.csv",
+      "bytes": 32473341,
+      "sha256": "f78521cf11f2610d18eed8ccf47086f90118d7ea725a429fd16bd3d783bb9d99",
+      "retrieved_at": "2026-09-05T04:15:54+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_09.csv",
+      "file": "data/raw/vra/2012/VRA_2012_09.csv",
+      "bytes": 30731151,
+      "sha256": "6530c1c88a5d6ac63def62f92f4cc8d5e1ec90b7e11c9a923d7525b3bb09d9ae",
+      "retrieved_at": "2026-09-05T04:16:08+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_10.csv",
+      "file": "data/raw/vra/2012/VRA_2012_10.csv",
+      "bytes": 32058686,
+      "sha256": "5ed5cbdb0d5bc7476bba63eeb019d8f2160160b65235cd76926ffbd8125b0f76",
+      "retrieved_at": "2026-09-05T04:16:24+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_11.csv",
+      "file": "data/raw/vra/2012/VRA_2012_11.csv",
+      "bytes": 31045698,
+      "sha256": "a5e1a77ad61d6b0d6e1fff752b7f92a0333c3ff1e220836a96a1dbe4d0f9ae3a",
+      "retrieved_at": "2026-09-05T04:16:38+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2012/VRA_2012_12.csv",
+      "file": "data/raw/vra/2012/VRA_2012_12.csv",
+      "bytes": 31755372,
+      "sha256": "55add50c9697a2c0dff6404e4e3ea82dd51356e68d6633b33a6e5b90d94f1b03",
+      "retrieved_at": "2026-09-05T04:16:51+00:00",
+      "http_status": 200,
+      "year": 2012,
+      "month": 12
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_01.csv",
+      "file": "data/raw/vra/2013/VRA_2013_01.csv",
+      "bytes": 32542014,
+      "sha256": "211035270c01e80e9c32eb6b6f7be9438a2e1fec1e6e62cf8f397cbd23bb3057",
+      "retrieved_at": "2026-09-05T04:17:08+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 1
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_02.csv",
+      "file": "data/raw/vra/2013/VRA_2013_02.csv",
+      "bytes": 29289659,
+      "sha256": "9d0e3c117152adc6043ba3e462fbfe4c9eb382e994f674d808ecb5664ff64671",
+      "retrieved_at": "2026-09-05T04:17:21+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 2
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_03.csv",
+      "file": "data/raw/vra/2013/VRA_2013_03.csv",
+      "bytes": 31330541,
+      "sha256": "97a9145e102c22f0d55630b8326868dbd6cbfc9294e37f05fc47294ef7027f59",
+      "retrieved_at": "2026-09-05T04:17:34+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 3
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_04.csv",
+      "file": "data/raw/vra/2013/VRA_2013_04.csv",
+      "bytes": 30114326,
+      "sha256": "1383d21b9611e9e3a20abe026cf09891ba752ff5851a45d11ee2e2430e0ed8d6",
+      "retrieved_at": "2026-09-05T04:17:47+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 4
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_05.csv",
+      "file": "data/raw/vra/2013/VRA_2013_05.csv",
+      "bytes": 31514580,
+      "sha256": "7192809bf9bae5b45170abffa1fa85c164d473ae69ffa33446c0ca74ef32c095",
+      "retrieved_at": "2026-09-05T04:18:01+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 5
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_06.csv",
+      "file": "data/raw/vra/2013/VRA_2013_06.csv",
+      "bytes": 30657117,
+      "sha256": "0f2bbf3f7ddbcb9bde5d15b406aa0883b5dafee89bd5c9a1cd1fd37f375d81bb",
+      "retrieved_at": "2026-09-05T04:18:15+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 6
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_07.csv",
+      "file": "data/raw/vra/2013/VRA_2013_07.csv",
+      "bytes": 32558008,
+      "sha256": "2efc6d758d3b6fff92e4462712fc6f1d05e3d30525a620846a6f0f16b4264b8a",
+      "retrieved_at": "2026-09-05T04:18:28+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 7
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_08.csv",
+      "file": "data/raw/vra/2013/VRA_2013_08.csv",
+      "bytes": 31270188,
+      "sha256": "f41a129465c7faf76acb25de1d9b4dbd7a9c2246180a56d748775da066cba1db",
+      "retrieved_at": "2026-09-05T04:18:41+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 8
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_09.csv",
+      "file": "data/raw/vra/2013/VRA_2013_09.csv",
+      "bytes": 29766822,
+      "sha256": "1dc181bff050535bf402e32dbbb16de15444e0af3d494f484e0e400d08bcd92e",
+      "retrieved_at": "2026-09-05T04:18:54+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 9
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_10.csv",
+      "file": "data/raw/vra/2013/VRA_2013_10.csv",
+      "bytes": 31198804,
+      "sha256": "0c45d21b78ae907a22a7a47ea6e6c59b946283333423e9c0392fa1a0e5664181",
+      "retrieved_at": "2026-09-05T04:19:07+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 10
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_11.csv",
+      "file": "data/raw/vra/2013/VRA_2013_11.csv",
+      "bytes": 30079906,
+      "sha256": "0f91692930c5ea32098dcca0d314f27883642243bdcc9a0d1847f568ba668d29",
+      "retrieved_at": "2026-09-05T04:19:19+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 11
+    },
+    {
+      "url": "https://siros.anac.gov.br/siros/registros/diversos/vra/2013/VRA_2013_12.csv",
+      "file": "data/raw/vra/2013/VRA_2013_12.csv",
+      "bytes": 32340417,
+      "sha256": "77772ade304ae09fda21a4b360a4d0e1275a5c2f5e92497f207578f19fe68dbd",
+      "retrieved_at": "2026-09-05T04:19:36+00:00",
+      "http_status": 200,
+      "year": 2013,
+      "month": 12
+    }
+  ]
+}

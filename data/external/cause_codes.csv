@@ -1,0 +1,50 @@
+code,description_pt,section,category,article_set,source,url,retrieved_at,confidence
+AA,Atraso aeroporto de alternativa - ordem tecnica,delay,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AF,Facilidades do aeroporto - restricoes de apoio,delay,operational,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AG,Migracao/alfandega/saude,delay,operational,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AI,Aeroporto de origem interditado,delay,airport_restricted,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AJ,Aeroporto de destino interditado,delay,airport_restricted,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AM,Atraso aeroporto de alternativa - condicoes meteorologicas,delay,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AS,Seguranca/pax/carga/alarme,delay,operational,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AR,Aeroporto com restricoes operacionais,delay,airport_restricted,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+AT,Liberacao serv. trafego aereo/antecipacao,delay,operational,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+DF,Avaria durante operacoes em voo,delay,technical,princident,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+DG,Avaria durante operacoes em solo,delay,technical,princident,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+FP,Plano de voo - aprovacao,delay,operational,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+GF,Abastecimento/destanqueio,delay,operational,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+MA,Falha equipo automotivo e de atendimento de pax,delay,technical,princident,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+MX,Atrasos nao especificos - outros,delay,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+OA,Autorizado,delay,authorised,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+RA,Conexao de aeronave,delay,rotation,pr_connc,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+RI,"Conexao aeronave/volta - voo de ida nao penalizado, aeroporto interditado",delay,rotation,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+RM,"Conexao aeronave/volta - voo de ida nao penalizado, condicoes meteorologicas",delay,rotation,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+TC,Troca de aeronave,delay,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+TD,Defeitos da aeronave,delay,technical,princident,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+WA,Alternativa abaixo dos limites,delay,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+WI,Degelo e remocao de neve e/ou lama em aeronave,delay,weather,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+WR,Atraso devido retorno - condicoes meteorologicas,delay,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+WO,Aeroporto origem abaixo dos limites,delay,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+WP,Atraso devido retorno - ordem tecnica,delay,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+WT,Aeroporto destino abaixo dos limites,delay,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+WS,Remocao gelo/agua/lama/areia em aeroporto,delay,weather,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XA,Programado - feriado nacional,cancellation,authorised,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XB,Autorizado,cancellation,authorised,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XI,Devido aeroporto de origem interditado,cancellation,airport_restricted,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XJ,Devido aeroporto de destino interditado,cancellation,airport_restricted,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XL,Falta pax com passagem marcada (apenas para as linhas aereas domesticas regionais),cancellation,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XM,"Cancelamento - conexao aeronave/volta - voo de ida cancelado, aeroporto interditado",cancellation,airport_restricted,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XN,Cancelamento por motivos tecnicos - operacionais,cancellation,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XO,Cancelamento - aeroporto origem abaixo limites,cancellation,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XT,Cancelamento - aeroporto destino abaixo limites,cancellation,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XR,Cancelamento de voos operados em code sharing,cancellation,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+XS,"Cancelamento - conexao aeronave/volta - voo de ida cancelado, condicoes meteorologicas",cancellation,weather,prwheather,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+ST,Inclusao de etapa devido cancelamento de escalas previstas (exclusivo para linhas suplementadas),alteration,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+IR,Inclusao de etapa (aeroporto de alternativa) devido a um voo especial retorno,alteration,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+VR,Voo especial de retorno (exclusivo para retorno ao aeroporto de origem),alteration,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+VE,Especifico para voo especial de experiencia,alteration,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+VI,Especifico para voo especial de instrucao,alteration,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+HA,Autorizada,schedule_change,authorised,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+HB,"Operacao de voo com mais de 04 horas de atraso, pane aeronave",schedule_change,technical,princident,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+HC,"Operacao de voo com mais de 04 horas de atraso, aeroporto interditado",schedule_change,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+HD,Antecipacao de horario autorizada,schedule_change,authorised,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A
+HI,Antecipacao de horario autorizada - especifico voos internacionais,schedule_change,other,none,IAC 1504,https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf,2026-09-05,A

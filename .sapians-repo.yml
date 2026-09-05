@@ -1,0 +1,10 @@
+# SAPIANS golden-path tier declaration.
+class: Research
+tier: C
+description: From ANAC's raw VRA flight-leg records (13.5M legs, 2000-2013) to the replication of Bendinelli et al. (2016) and per-flight delay prediction.
+
+# Tier C follows the precedent of citation-audit and sapians-research
+# (Research/C): same infrastructure ceiling -- CI + pre-commit + a dependency
+# lock; no releases (sapians-research convention: publication tags, not
+# automatic semver); no package consumed by another fleet repository.
+# No cron anywhere, per the tier C trigger contract.

@@ -1,0 +1,55 @@
+# Three checks: lint (ruff), test (pytest against the committed fixture, no
+# network), citation (CITATION.cff stays schema-valid). A `links` job is
+# deliberately not wired up yet -- docs/data-availability.md and
+# docs/declared-differences.md have not landed (see ROADMAP.md), and a
+# link check against files that do not exist yet would fail for the wrong
+# reason; add it once those docs exist.
+#
+# Third-party actions are pinned by commit SHA (tag kept as a comment), per
+# SECURITY.md; Dependabot proposes the bumps.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+      - run: uv sync --locked --group dev
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+      - run: uv sync --locked --group dev
+      - name: Tests against the committed fixture (no network, no data/raw)
+        run: uv run pytest -q
+
+  citation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dieghernan/cff-validator@d8f85828214016ce6976e740b6e0504c0fdc4dbb # v5

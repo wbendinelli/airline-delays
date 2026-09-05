@@ -1,0 +1,24 @@
+name: Security
+
+# Secret scanning (gitleaks) via the shared reusable workflow -- least
+# privilege (contents: read only), no gitleaks-action GitHub API calls. See
+# SECURITY.md. No cron: this repository's tier C trigger contract runs
+# security on push/PR/dispatch only.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Secret scan (gitleaks)
+    uses: wbendinelli/.github/.github/workflows/security.yml@v0.8.0
+    permissions:
+      contents: read
+    with:
+      full-history: true

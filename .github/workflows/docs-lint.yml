@@ -1,0 +1,23 @@
+name: Docs lint
+
+# Documentation gate: checks README.md against the "research" profile
+# declared in .sapians-repo.yml (required sections, the tier/class identity
+# line, the BibTeX citation block) and repository-wide brand spelling. See
+# CLAUDE.md. The doclint tool and its rules live centrally in
+# wbendinelli/.github, pulled at config-ref so this workflow never drifts
+# from main silently.
+on:
+  push:
+    branches: [main]
+    paths: ["README.md", ".sapians-repo.yml", ".sapians-doclint-baseline.json"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    uses: wbendinelli/.github/.github/workflows/docs-lint.yml@v0.8.0
+    with:
+      config-ref: v0.8.0

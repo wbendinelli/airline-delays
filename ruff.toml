@@ -1,0 +1,24 @@
+# Ruff configuration (used by both pre-commit and CI). Sticks close to
+# Ruff's own default rule set for `src/vra/` -- no broad bespoke `select`,
+# so a new module lints against the same baseline as an existing one.
+target-version = "py312"
+line-length = 100
+extend-exclude = ["tests/fixtures", ".venv"]
+
+[lint]
+# E402 (module level import not at top of file) is not in Ruff's bare
+# default but is added here on purpose: `scripts/*.py` and `tests/conftest.py`
+# legitimately insert `src/` onto `sys.path` before importing `vra`, and mark
+# that one import with `# noqa: E402` -- enabling the rule is what makes
+# those markers meaningful instead of a silently-unused `noqa` (RUF100).
+# E501 (line too long) is redundant with `line-length` plus `ruff format`,
+# which already wraps everything the formatter controls.
+# B008 (function-call-in-default-argument) is a permanent false positive
+# for `typer`: `typer.Option(...)`/`typer.Argument(...)` as a parameter
+# default is the documented, only way to declare a CLI option -- see
+# `src/vra/cli.py`.
+extend-select = ["E402"]
+ignore = ["E501", "B008"]
+
+[format]
+docstring-code-format = true

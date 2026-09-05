@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it as below."
+title: "airline-delays: from ANAC's raw VRA records to replication and delay prediction"
+type: software
+version: 0.1.0
+date-released: '2026-09-05'
+authors:
+  - family-names: "Bendinelli"
+    given-names: "William Eduardo"
+    email: "wbendinelli@gmail.com"
+    affiliation: "Universidade de São Paulo"
+url: "https://github.com/wbendinelli/airline-delays"
+repository-code: "https://github.com/wbendinelli/airline-delays"
+license: MIT
+keywords:
+  - airline delays
+  - air transport
+  - congestion
+  - low cost carriers
+  - reproducible research
+  - econometrics
+  - machine learning
+abstract: >-
+  Reconstructs Brazil's Voo Regular Ativo (VRA) flight-leg records (ANAC,
+  2000-2013, about 13.5 million legs) into a single canonical flight table,
+  replicates the tables of Bendinelli, Bettini & Oliveira (2016,
+  Transportation Research Part A, doi:10.1016/j.tra.2016.01.001) from public
+  data only, and trains a flight-level delay predictor evaluated by a
+  rolling-origin split (2006-2013). Every column that reaches a public table
+  is declared in a single registry (`src/vra/registry.py`); every number in
+  the README and the reports is printed by a versioned script; every
+  divergence against the original article or against a private laboratory
+  benchmark is declared rather than absorbed into a redefinition. Engineered
+  under SAPIANS's software-engineering standard (golden path, tier C, class
+  Research -- see .sapians-repo.yml); SAPIANS is William Eduardo
+  Bendinelli's research-infrastructure practice, independent of, and with
+  no bearing on, the 2016 article's other co-authors or their institutions.
+preferred-citation:
+  type: article
+  title: "Airline delays, congestion internalization and non-price spillover effects of low cost carrier entry"
+  authors:
+    - family-names: "Bendinelli"
+      given-names: "William E."
+      affiliation: "Center for Transport Economics, Instituto Tecnológico de Aeronáutica (ITA), Brazil"
+    - family-names: "Bettini"
+      given-names: "Humberto F. A. J."
+      affiliation: "Center for Transport Economics, Instituto Tecnológico de Aeronáutica (ITA), Brazil; Universidade de São Paulo, Brazil"
+    - family-names: "Oliveira"
+      given-names: "Alessandro V. M."
+      affiliation: "Center for Transport Economics, Instituto Tecnológico de Aeronáutica (ITA), Brazil"
+  journal: "Transportation Research Part A: Policy and Practice"
+  volume: "85"
+  start: "39"
+  end: "52"
+  year: 2016
+  doi: "10.1016/j.tra.2016.01.001"

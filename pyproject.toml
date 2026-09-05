@@ -1,0 +1,57 @@
+[project]
+name = "airline-delays"
+version = "0.1.0"
+description = "From ANAC's raw VRA flight-leg records (2000-2013) to the replication of Bendinelli et al. (2016) and per-flight delay prediction."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.12,<3.13"
+authors = [
+  { name = "William Eduardo Bendinelli", email = "wbendinelli@gmail.com" },
+]
+dependencies = [
+  "pandas>=2.2,<3",
+  "pyarrow>=17",
+  "duckdb>=1.1",
+  "numpy>=2",
+  "scipy>=1.13",
+  "statsmodels>=0.14",
+  "linearmodels>=6",
+  "scikit-learn>=1.5",
+  "xgboost>=2.1",
+  "lightgbm>=4.5",
+  "typer>=0.12",
+  "pyreadstat>=1.2",
+  "requests>=2.32",
+  "tqdm>=4.66",
+]
+
+[project.urls]
+Homepage = "https://github.com/wbendinelli/airline-delays"
+Repository = "https://github.com/wbendinelli/airline-delays"
+Issues = "https://github.com/wbendinelli/airline-delays/issues"
+
+[project.scripts]
+vra = "vra.cli:app"
+
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.16",
+  "pre-commit>=4",
+  "cffconvert>=2.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "gabarito: requires data/private/ via AIRLINE_DELAYS_PRIVATE_DIR -- does not run in CI",
+]
+addopts = "-m 'not gabarito'"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vra"]

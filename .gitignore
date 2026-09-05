@@ -1,0 +1,22 @@
+# Heavy or generated data layers -- tracked only via their README.md (and,
+# for data/raw/, the fetch manifest). See CLAUDE.md and DECISIONS.md:
+# nothing else from these directories is ever committed.
+/data/raw/*
+!/data/raw/README.md
+!/data/raw/manifest.json
+/data/staged/*
+!/data/staged/README.md
+/data/derived/*
+!/data/derived/README.md
+/data/private/*
+!/data/private/README.md
+
+.venv/
+__pycache__/
+*.py[cod]
+*.duckdb
+.ruff_cache/
+.pytest_cache/
+.DS_Store
+
+reports/**/build

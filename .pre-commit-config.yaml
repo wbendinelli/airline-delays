@@ -1,0 +1,34 @@
+# Pre-commit -- mirrors what CI's `lint` job runs, so a red CI is rare.
+# Install:   uv run pre-commit install
+# Run all:   uv run pre-commit run --all-files
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        # .md: a trailing double space is a forced Markdown line break --
+        # see .editorconfig -- not something to "fix".
+        exclude: '\.md$'
+      - id: check-added-large-files
+        args: ["--maxkb=5000"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.4
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: no-private-data
+        name: "no-private-data: proj18/LABTAR/NECTAR/.dta and data/raw|staged|derived|private stay out of git"
+        language: system
+        pass_filenames: false
+        # A YAML block scalar on purpose: the command needs both single and
+        # double quotes (for the nested `bash -c` script and its grep
+        # patterns) plus literal colons, which a plain or quoted YAML flow
+        # scalar cannot hold without heavy escaping.
+        entry: |-
+          bash -c 'm=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei "proj18|labtar|nectarbase|\.dta$|^data/(raw|staged|derived|private)/" | grep -Ev "^data/(raw|staged|derived|private)/(README\.md|manifest\.json)$" || true); if [ -n "$m" ]; then echo "no-private-data: staged path(s) not allowed in git:"; echo "$m"; exit 1; fi'

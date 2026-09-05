@@ -1,0 +1,32 @@
+icao,node,node_name,city,uf,metropolitan,lat,lon,source,url,retrieved_at,confidence
+SBBH,MRBH,Belo Horizonte (metropolitan),Belo Horizonte,MG,True,-19.743225,-43.958622,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBCF,MRBH,Belo Horizonte (metropolitan),Belo Horizonte,MG,True,-19.743225,-43.958622,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBGL,MRRJ,Rio de Janeiro (metropolitan),Rio de Janeiro,RJ,True,-22.860198,-43.206688,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBRJ,MRRJ,Rio de Janeiro (metropolitan),Rio de Janeiro,RJ,True,-22.860198,-43.206688,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBGR,MRSP,São Paulo (metropolitan),São Paulo,SP,True,-23.355445,-46.753019,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBKP,MRSP,São Paulo (metropolitan),São Paulo,SP,True,-23.355445,-46.753019,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBSP,MRSP,São Paulo (metropolitan),São Paulo,SP,True,-23.355445,-46.753019,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBAR,SBAR,Aracaju,Aracaju,SE,False,-10.98394,-37.072873,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBBE,SBBE,Belém,Belém,PA,False,-1.379279,-48.476207,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBBR,SBBR,Brasília,Brasília,DF,False,-15.869167,-47.920834,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBBV,SBBV,Boa Vista,Boa Vista,RR,False,2.84615,-60.690648,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBCG,SBCG,Campo Grande,Campo Grande,MS,False,-20.469998,-54.673988,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBCT,SBCT,Curitiba,Curitiba,PR,False,-25.5285,-49.1758,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBCY,SBCY,Cuiabá,Cuiabá,MT,False,-15.6529,-56.116699,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBEG,SBEG,Manaus,Manaus,AM,False,-3.03861,-60.049702,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBFL,SBFL,Florianópolis,Florianópolis,SC,False,-27.670279,-48.552502,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBFZ,SBFZ,Fortaleza,Fortaleza,CE,False,-3.775833,-38.532222,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBGO,SBGO,Goiânia,Goiânia,GO,False,-16.632,-49.220699,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBJP,SBJP,João Pessoa,João Pessoa,PB,False,-7.148691,-34.950554,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBMO,SBMO,Maceió,Maceió,AL,False,-9.512559,-35.791839,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBMQ,SBMQ,Macapá,Macapá,AP,False,0.050664,-51.072201,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBNT,SBNT,Natal,Natal,RN,False,-5.91142,-35.2477,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBPA,SBPA,Porto Alegre,Porto Alegre,RS,False,-29.993984,-51.167482,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBPJ,SBPJ,Palmas,Palmas,TO,False,-10.2915,-48.356998,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBPV,SBPV,Porto Velho,Porto Velho,RO,False,-8.708491,-63.902338,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBRB,SBRB,Rio Branco,Rio Branco,AC,False,-9.869031,-67.893984,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBRF,SBRF,Recife,Recife,PE,False,-8.12747,-34.922961,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBSL,SBSL,São Luís,São Luís,MA,False,-2.586386,-44.235008,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBSV,SBSV,Salvador,Salvador,BA,False,-12.908611,-38.322498,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBTE,SBTE,Teresina,Teresina,PI,False,-5.06025,-42.823712,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
+SBVT,SBVT,Vitória,Vitória,ES,False,-20.258,-40.285,OurAirports coordinates; node grouping per ADR-0001 (DECISIONS.md),https://davidmegginson.github.io/ourairports-data/airports.csv,2026-09-05,A
