@@ -16,15 +16,16 @@ import pytest
 from airline_delays import schema, staging
 from airline_delays.definitions import delays
 from airline_delays.ingest import LAYOUT_2010, LAYOUT_LEGACY
+from airline_delays.staging.build import _register_helpers
 
 
 def _stage_fixture(duck, path: Path, layout) -> list[tuple]:
-    staging._register_helpers(duck)
+    _register_helpers(duck)
     return duck.execute(staging.build_select(str(path), layout)).fetchall()
 
 
 def _stage_fixture_df(duck, path: Path, layout):
-    staging._register_helpers(duck)
+    _register_helpers(duck)
     return duck.execute(staging.build_select(str(path), layout)).df()
 
 

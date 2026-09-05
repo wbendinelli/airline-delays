@@ -143,7 +143,7 @@ class TestAMisPartitionedTreeStillBuildsUniqueKeys:
 
     def test_the_panel_built_from_it_is_unique(self, built_from_scrambled, external_dir) -> None:
         fact = built_from_scrambled["fact"]
-        city = panel_mod.city_month(fact, built_from_scrambled["day_hour"])
+        city = fact_mod.city_month(fact, built_from_scrambled["day_hour"])
         table = panel_mod.assemble(
             fact, built_from_scrambled["context"], city, external_dir=external_dir
         )

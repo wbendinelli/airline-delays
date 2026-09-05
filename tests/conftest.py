@@ -141,7 +141,7 @@ def built(tmp_path_factory: pytest.TempPathFactory, staged_tree: Path, groups_cs
     fact = pd.read_parquet(analysis / "fact_group_route_month.parquet")
     context = pd.read_parquet(derived / "route_month_context.parquet")
     day_hour = pd.read_parquet(derived / "node_day_hour.parquet")
-    city = panel.city_month(fact, day_hour)
+    city = fact_mod.city_month(fact, day_hour)
     airline_city = fact_mod.add_hub(fact_mod.aggregate(fact, "airline_city_month"))
     table = panel.assemble(fact, context, city, external_dir=ROOT / "data" / "external")
     return {

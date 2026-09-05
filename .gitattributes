@@ -6,7 +6,7 @@
 
 # The raw ANAC fixtures are cut byte for byte from the published monthly
 # files and exist to prove the measured layout (latin-1, CRLF for
-# 2000-2009, LF from 2010) against `src/airline_delays/ingest.py`'s declaration. `-text`
+# 2000-2009, LF from 2010) against `src/airline_delays/ingest/layouts.py`'s declaration. `-text`
 # disables EOL normalisation entirely, in both directions: without it the
 # `*.csv` rule above rewrote the 2002 sample's CRLF to LF on checkout and
 # `tests/test_ingest.py` failed on every fresh clone. Do not fold these back

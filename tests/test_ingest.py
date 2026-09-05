@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 from airline_delays import ingest
+from airline_delays.ingest import download
 
 
 class TestLayouts:
@@ -69,7 +70,7 @@ class TestFixtureBytes:
     """The fixtures must reach the test as bytes, not as git's idea of them.
 
     `tests/fixtures/vra_raw_sample_*.csv` are cut byte for byte from the
-    published ANAC files precisely so that `src/airline_delays/ingest.py`'s declared layout is
+    published ANAC files precisely so that `src/airline_delays/ingest/layouts.py`'s declared layout is
     checked against a real file. A `text`/`eol` attribute in `.gitattributes`
     rewrites line endings on checkout, which silently turns the 2002 sample
     into an LF file in every fresh clone and makes
@@ -132,8 +133,8 @@ class TestNaming:
         assert ingest.expected_names(2012)[11] == "VRA_2012_12.csv"
 
     def test_the_month_pattern_reads_both_shapes(self) -> None:
-        assert ingest._MONTH_RE.search("VRA_20071.csv").groups() == ("2007", "1")
-        assert ingest._MONTH_RE.search("VRA_2012_01.csv").groups() == ("2012", "01")
+        assert download._MONTH_RE.search("VRA_20071.csv").groups() == ("2007", "1")
+        assert download._MONTH_RE.search("VRA_2012_01.csv").groups() == ("2012", "01")
 
     def test_the_listing_parser_finds_hrefs(self) -> None:
         html = (
@@ -141,7 +142,7 @@ class TestNaming:
             '<A HREF="/siros/registros/diversos/vra/2007/VRA_20071.csv">VRA_20071.csv</A><br>'
             '<A HREF="/siros/registros/diversos/vra/2007/VRA_200710.csv">VRA_200710.csv</A></pre>'
         )
-        names = sorted(Path(href).name for href in ingest._HREF_RE.findall(html))
+        names = sorted(Path(href).name for href in download._HREF_RE.findall(html))
         assert names == ["VRA_20071.csv", "VRA_200710.csv"]
         # The parent-directory link must not be mistaken for a data file.
         assert all(name.endswith(".csv") for name in names)

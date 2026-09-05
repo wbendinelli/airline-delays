@@ -176,6 +176,6 @@ def test_the_repository_dictionary_is_in_step_with_the_registry() -> None:
     if not path.exists():
         pytest.skip("docs/dictionary.md not generated yet; run `uv run airline-delays dictionary`")
     text = path.read_text(encoding="utf-8")
-    assert "Generated from `src/airline_delays/schema.py`" in text
+    assert "Generated from `src/airline_delays/schema/columns.py`" in text
     for column in schema.FACT[:20]:
         assert f"`{column.name}`" in text

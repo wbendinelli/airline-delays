@@ -1,6 +1,6 @@
 # Data dictionary
 
-Generated from `src/airline_delays/schema.py` by `airline-delays dictionary`. Do not edit by
+Generated from `src/airline_delays/schema/columns.py` by `airline-delays dictionary`. Do not edit by
 hand: the registry is the source of truth, and this file is a rendering of it.
 Definitions are given in English and Portuguese; `aggregation` says what happens
 to the column when rows are rolled up to a coarser grain (`sum` adds, `recompute`
