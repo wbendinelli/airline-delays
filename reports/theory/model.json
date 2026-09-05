@@ -1,7 +1,7 @@
 {
   "meta": {
     "generated_by": "airline-delays theory",
-    "source": "Bendinelli (2013), undergraduate monograph, USP/ESALQ, section 4, following Brueckner and Van Dender (2008, Journal of Urban Economics 64, 288-295) and Brueckner (2002, American Economic Review 92, 1357-1375); figures after Cohen and Coughlin (2003) and Cohen, Coughlin and Ott (2009), redrawn",
+    "source": "Bendinelli (2013), undergraduate monograph, USP, section 4, following Brueckner and Van Dender (2008, Journal of Urban Economics 64, 288-295) and Brueckner (2002, American Economic Review 92, 1357-1375); figures after Cohen and Coughlin (2003) and Cohen, Coughlin and Ott (2009), redrawn",
     "sympy": "1.14.0",
     "n_identities": 29,
     "equations": "numbered as in the monograph, (1) to (12)"
@@ -2045,6 +2045,220 @@
           }
         }
       }
+    }
+  },
+  "primer": {
+    "label": "didactic games of this repository, built from examples.linear; not in the monograph",
+    "primitives": {
+      "A": 10000.0,
+      "a": 1000.0,
+      "b": 100.0,
+      "D": 9000.0
+    },
+    "two_by_two": {
+      "strategies": {
+        "low": {
+          "volume": 22.5,
+          "meaning": "the efficient per-firm volume f* = D/(4b)"
+        },
+        "high": {
+          "volume": 30.0,
+          "meaning": "the Cournot volume D/(3b)"
+        }
+      },
+      "cell_key": "airline 1's strategy, then airline 2's; profit1 is airline 1's payoff",
+      "toll_per_flight": 0.0,
+      "cells": {
+        "low_low": {
+          "f1": 22.5,
+          "f2": 22.5,
+          "F": 45.0,
+          "c": 5500.0,
+          "profit1": 101250.0,
+          "profit2": 101250.0,
+          "total_profit": 202500.0,
+          "toll_revenue": 0.0
+        },
+        "low_high": {
+          "f1": 22.5,
+          "f2": 30.0,
+          "F": 52.5,
+          "c": 6250.0,
+          "profit1": 84375.0,
+          "profit2": 112500.0,
+          "total_profit": 196875.0,
+          "toll_revenue": 0.0
+        },
+        "high_low": {
+          "f1": 30.0,
+          "f2": 22.5,
+          "F": 52.5,
+          "c": 6250.0,
+          "profit1": 112500.0,
+          "profit2": 84375.0,
+          "total_profit": 196875.0,
+          "toll_revenue": 0.0
+        },
+        "high_high": {
+          "f1": 30.0,
+          "f2": 30.0,
+          "F": 60.0,
+          "c": 7000.0,
+          "profit1": 90000.0,
+          "profit2": 90000.0,
+          "total_profit": 180000.0,
+          "toll_revenue": 0.0
+        }
+      },
+      "best_response_of_airline_1": {
+        "to_low": "high",
+        "to_high": "high"
+      },
+      "dominant_strategy": "high",
+      "nash_cells": [
+        "high_high"
+      ],
+      "nash": "high_high",
+      "cooperative": "low_low",
+      "cooperative_total_equals_welfare_star": true,
+      "ordering": {
+        "temptation": 112500.0,
+        "reward": 101250.0,
+        "punishment": 90000.0,
+        "sucker": 84375.0
+      },
+      "is_prisoners_dilemma": true,
+      "deviation_from_cooperation": {
+        "extra_flights": 7.5,
+        "extra_cost_per_flight": 750.0,
+        "gain_to_deviator": 11250.0,
+        "loss_to_rival": 16875.0,
+        "loss_to_rival_as_extra_cost_times_rival_flights": 16875.0,
+        "change_in_total_profit": -5625.0
+      },
+      "with_toll": {
+        "toll_meaning": "the Cournot toll at the symmetric optimum, f* c' (examples.linear.tolls_at_symmetric_optimum.T2_star)",
+        "toll_per_flight": 2250.0,
+        "cells": {
+          "low_low": {
+            "f1": 22.5,
+            "f2": 22.5,
+            "F": 45.0,
+            "c": 5500.0,
+            "profit1": 50625.0,
+            "profit2": 50625.0,
+            "total_profit": 101250.0,
+            "toll_revenue": 101250.0
+          },
+          "low_high": {
+            "f1": 22.5,
+            "f2": 30.0,
+            "F": 52.5,
+            "c": 6250.0,
+            "profit1": 33750.0,
+            "profit2": 45000.0,
+            "total_profit": 78750.0,
+            "toll_revenue": 118125.0
+          },
+          "high_low": {
+            "f1": 30.0,
+            "f2": 22.5,
+            "F": 52.5,
+            "c": 6250.0,
+            "profit1": 45000.0,
+            "profit2": 33750.0,
+            "total_profit": 78750.0,
+            "toll_revenue": 118125.0
+          },
+          "high_high": {
+            "f1": 30.0,
+            "f2": 30.0,
+            "F": 60.0,
+            "c": 7000.0,
+            "profit1": 22500.0,
+            "profit2": 22500.0,
+            "total_profit": 45000.0,
+            "toll_revenue": 135000.0
+          }
+        },
+        "best_response_of_airline_1": {
+          "to_low": "low",
+          "to_high": "low"
+        },
+        "dominant_strategy": "low",
+        "nash_cells": [
+          "low_low"
+        ],
+        "nash": "low_low"
+      }
+    },
+    "reaction_function": {
+      "expression": "f2 = (D - b f1)/(2b)",
+      "intercept": 45.0,
+      "slope": -0.5,
+      "points": [
+        {
+          "f1": 0.0,
+          "f2": 45.0
+        },
+        {
+          "f1": 22.5,
+          "f2": 33.75
+        },
+        {
+          "f1": 30.0,
+          "f2": 30.0
+        },
+        {
+          "f1": 45.0,
+          "f2": 22.5
+        },
+        {
+          "f1": 60.0,
+          "f2": 15.0
+        },
+        {
+          "f1": 90.0,
+          "f2": 0.0
+        }
+      ]
+    },
+    "leader_profit_along_reaction": [
+      {
+        "f1": 22.5,
+        "f2": 33.75,
+        "F": 56.25,
+        "profit1": 75937.5,
+        "profit2": 113906.25
+      },
+      {
+        "f1": 30.0,
+        "f2": 30.0,
+        "F": 60.0,
+        "profit1": 90000.0,
+        "profit2": 90000.0
+      },
+      {
+        "f1": 45.0,
+        "f2": 22.5,
+        "F": 67.5,
+        "profit1": 101250.0,
+        "profit2": 50625.0
+      },
+      {
+        "f1": 60.0,
+        "f2": 15.0,
+        "F": 75.0,
+        "profit1": 90000.0,
+        "profit2": 22500.0
+      }
+    ],
+    "internalised_share_of_MCD": {
+      "monopoly": 1.0,
+      "cournot_symmetric": 0.5,
+      "stackelberg_leader_at_equilibrium": 0.3333333333,
+      "stackelberg_follower_at_equilibrium": 0.3333333333,
+      "atomistic": 0.0
     }
   }
 }

@@ -1,6 +1,6 @@
 """The Stackelberg congestion model of the 2013 monograph, as symbolic algebra.
 
-Source: Bendinelli (2013), undergraduate monograph, USP/ESALQ, Piracicaba,
+Source: Bendinelli (2013), undergraduate monograph, USP,
 section 4 ("Modelo econômico para um líder de Stackelberg"), which follows
 Brueckner and Van Dender (2008, *Journal of Urban Economics* 64, 288-295) and
 Brueckner (2002, *American Economic Review* 92, 1357-1375). Equation numbers

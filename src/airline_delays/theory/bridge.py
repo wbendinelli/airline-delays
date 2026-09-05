@@ -7,7 +7,7 @@ object each regressor stands for, and what sign the theory expects, is a
 judgment recorded once here (:data:`ROWS`); the published coefficients, signs
 and stars are read from ``src/airline_delays/estimation/published.json`` (written by
 ``src/airline_delays/estimation/published.py`` out of the article's text) and joined, never
-typed. ``docs/theory/03-do-modelo-ao-artigo.md`` quotes the result out of
+typed. ``docs/study/04-do-modelo-as-hipoteses.md`` quotes the result out of
 ``reports/theory/model.json``.
 """
 

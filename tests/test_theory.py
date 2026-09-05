@@ -27,7 +27,7 @@ from typing import Any
 import pytest
 import sympy as sp
 
-from airline_delays.theory import equilibrium, figures, model, run
+from airline_delays.theory import equilibrium, figures, model, primer, run
 from airline_delays.theory.families import LinearCost, LinearDemand, Primitives, QuadraticCost
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +47,7 @@ MODEL_KEYS = {
     "comparative_statics",
     "extension_lcc",
     "bridge",
+    "primer",
 }
 SVG_TAG = "{http://www.w3.org/2000/svg}svg"
 
@@ -193,6 +194,101 @@ class TestNumericExamples:
         toll = [row["T1_star_over_MCD"] for row in rows]
         assert lam == sorted(lam) and toll == sorted(toll)
         assert lam[0] == pytest.approx(0.5) and toll[0] == pytest.approx(0.75)
+
+
+# ---------------------------------------------------------- 2b. the primer
+class TestPrimer:
+    """The 2 x 2 game of the study's chapter 2 is cut out of the linear example, and says what it claims."""
+
+    @staticmethod
+    @pytest.fixture(scope="class")
+    def block() -> dict[str, Any]:
+        return primer.primer()
+
+    @staticmethod
+    @pytest.fixture(scope="class")
+    def linear() -> dict[str, Any]:
+        return equilibrium.example("linear")
+
+    def test_the_strategies_are_the_efficient_and_the_cournot_volumes(
+        self, block: dict[str, Any], linear: dict[str, Any]
+    ) -> None:
+        game = block["two_by_two"]
+        assert game["strategies"]["low"]["volume"] == pytest.approx(
+            linear["social_optimum"]["f_star"]
+        )
+        assert game["strategies"]["high"]["volume"] == pytest.approx(linear["cournot"]["f1"])
+        cells = game["cells"]
+        assert cells["low_low"]["total_profit"] == pytest.approx(
+            linear["social_optimum"]["welfare_star"]
+        )
+        assert cells["high_high"]["profit1"] == pytest.approx(linear["cournot"]["profit1"])
+        assert cells["high_high"]["profit2"] == pytest.approx(linear["cournot"]["profit2"])
+        assert cells["high_low"]["profit1"] == cells["low_high"]["profit2"]  # symmetric game
+
+    def test_the_game_is_a_prisoners_dilemma_whose_nash_cell_is_cournot(
+        self, block: dict[str, Any]
+    ) -> None:
+        game = block["two_by_two"]
+        o = game["ordering"]
+        assert o["temptation"] > o["reward"] > o["punishment"] > o["sucker"]
+        assert game["is_prisoners_dilemma"] is True
+        assert game["best_response_of_airline_1"] == {"to_low": "high", "to_high": "high"}
+        assert game["dominant_strategy"] == "high"
+        assert game["nash"] == "high_high" and game["nash_cells"] == ["high_high"]
+        assert game["cooperative"] == "low_low"
+        dev = game["deviation_from_cooperation"]
+        assert dev["gain_to_deviator"] > 0 > dev["change_in_total_profit"]
+        assert dev["loss_to_rival"] == pytest.approx(
+            dev["loss_to_rival_as_extra_cost_times_rival_flights"]
+        )
+        assert dev["gain_to_deviator"] - dev["loss_to_rival"] == pytest.approx(
+            dev["change_in_total_profit"]
+        )
+
+    def test_the_toll_moves_the_nash_cell_to_the_cooperative_cell(
+        self, block: dict[str, Any], linear: dict[str, Any]
+    ) -> None:
+        tolled = block["two_by_two"]["with_toll"]
+        assert tolled["toll_per_flight"] == pytest.approx(
+            linear["tolls_at_symmetric_optimum"]["T2_star"]
+        )
+        assert tolled["best_response_of_airline_1"] == {"to_low": "low", "to_high": "low"}
+        assert tolled["dominant_strategy"] == "low"
+        assert tolled["nash"] == "low_low"
+        # the toll is a transfer: profits plus toll revenue equal the untolled total in every cell
+        plain = block["two_by_two"]["cells"]
+        for key, cell in tolled["cells"].items():
+            assert cell["total_profit"] + cell["toll_revenue"] == pytest.approx(
+                plain[key]["total_profit"]
+            )
+
+    def test_reaction_points_and_the_leaders_profit_match_the_closed_forms(
+        self, block: dict[str, Any], linear: dict[str, Any]
+    ) -> None:
+        prim, cost = Primitives(), LinearCost()
+        D, b = prim.A - cost.a, cost.b
+        reaction = block["reaction_function"]
+        assert reaction["slope"] == pytest.approx(-0.5)
+        assert reaction["intercept"] == pytest.approx(D / (2 * b))
+        for point in reaction["points"]:
+            assert point["f2"] == pytest.approx(max(0.0, (D - b * point["f1"]) / (2 * b)))
+        along = block["leader_profit_along_reaction"]
+        best = max(along, key=lambda row: row["profit1"])
+        st = linear["stackelberg"]
+        assert best["f1"] == pytest.approx(st["f1"]) and best["f2"] == pytest.approx(st["f2"])
+        assert best["profit1"] == pytest.approx(st["profit1"])
+        assert best["profit2"] == pytest.approx(st["profit2"])
+
+    def test_internalised_shares_are_one_minus_the_tolls(
+        self, block: dict[str, Any], linear: dict[str, Any]
+    ) -> None:
+        shares = block["internalised_share_of_MCD"]
+        st = linear["stackelberg"]
+        assert shares["monopoly"] == 1.0 and shares["atomistic"] == 0.0
+        assert shares["cournot_symmetric"] == pytest.approx(1 - linear["cournot"]["T1_over_MCD"])
+        assert shares["stackelberg_leader_at_equilibrium"] == pytest.approx(1 - st["T1_over_MCD"])
+        assert shares["stackelberg_follower_at_equilibrium"] == pytest.approx(1 - st["T2_over_MCD"])
 
 
 # ---------------------------------------------------------------- 3. figures
