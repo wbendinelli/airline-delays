@@ -18,7 +18,7 @@ Node         Airports                   City
 ===========  =========================  ==========================
 
 Viracopos (SBKP) sits inside São Paulo: with it, exact agreement of flight
-counts against the private benchmark panel rises from 86.8% to 97.4%
+counts of the article's own panel is exact only with this map
 (ADR-0001).
 """
 

@@ -10,17 +10,17 @@ from .build import (
     capacity_note,
 )
 from .columns import (
-    BENCHMARK_ONLY_NULL,
     CITY_SIDE_COLUMNS,
     DROPPED_FROM_PANEL,
+    NOT_IN_VRA,
     PUBLISHED_SLICE_SUFFIXES,
     SLICE_SUFFIXES,
 )
 
 __all__ = [
-    "BENCHMARK_ONLY_NULL",
     "CITY_SIDE_COLUMNS",
     "DROPPED_FROM_PANEL",
+    "NOT_IN_VRA",
     "PUBLISHED_SLICE_SUFFIXES",
     "SLICE_SUFFIXES",
     "PanelResult",

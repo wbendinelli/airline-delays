@@ -108,13 +108,13 @@ class TestTheUnlabelledAirline:
 class TestTheBenchmarkSets:
     def test_the_article_fsc_set_is_not_the_fsc_class(self, table: carriers.GroupTable) -> None:
         fsc_class = {p.group for p in table.periods if p.klass == "FSC"}
-        assert set(carriers.BENCHMARK_FSC_GROUPS) < fsc_class
-        assert fsc_class - set(carriers.BENCHMARK_FSC_GROUPS) == {"AVIANCA_BRASIL"}
+        assert set(carriers.ARTICLE_FSC_GROUPS) < fsc_class
+        assert fsc_class - set(carriers.ARTICLE_FSC_GROUPS) == {"AVIANCA_BRASIL"}
 
     def test_the_article_lcc_set_is_not_the_lcc_class(self, table: carriers.GroupTable) -> None:
         lcc_class = {p.group for p in table.periods if p.klass == "LCC"}
-        assert set(carriers.BENCHMARK_LCC_GROUPS) < lcc_class
-        assert lcc_class - set(carriers.BENCHMARK_LCC_GROUPS) == {"WEBJET"}
+        assert set(carriers.ARTICLE_LCC_GROUPS) < lcc_class
+        assert lcc_class - set(carriers.ARTICLE_LCC_GROUPS) == {"WEBJET"}
 
 
 class TestTheSqlAndThePythonAgree:

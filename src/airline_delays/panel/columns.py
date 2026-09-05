@@ -28,7 +28,7 @@ CITY_SIDE_COLUMNS: tuple[str, ...] = (
 
 """City-month columns carried onto both endpoints of a route, as `o_`/`d_`."""
 
-BENCHMARK_ONLY_NULL: tuple[str, ...] = ("rthhi", "maxcthhi", "gmchhi", "prcongested")
+NOT_IN_VRA: tuple[str, ...] = ("rthhi", "maxcthhi", "gmchhi", "prcongested")
 
 """Article columns the VRA cannot produce; published as nulls, never substituted.
 

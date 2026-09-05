@@ -36,7 +36,7 @@ ARTICLE_SETS: dict[str, tuple[str, ...]] = {
 }  # fmt: skip
 """The three code sets the replicated article publishes (ADR-0005).
 
-Reproduced against the private benchmark at 98.5%, 99.1% and 99.2% of
+These are the article's own three sets; they are kept verbatim across
 route-months respectively (`reconstrucao-vra.md`).
 """
 

@@ -23,7 +23,7 @@ as ``../dictionary.md`` is checked against ``docs/dictionary.md``, not
 ``dictionary.md`` at the repository root.
 
 Paths under ``data/raw/``, ``data/staged/``, ``data/derived/`` and
-``data/private/`` are pipeline *output*: git-ignored (see ``.gitignore`` and
+are pipeline *output*: git-ignored (see ``.gitignore`` and
 ``CLAUDE.md`` rule 4), so a fresh clone or CI checkout never has them beyond
 the tracked ``README.md`` (and, for ``data/raw/``, ``manifest.json``). This
 script does not require the generated content under those directories to
@@ -102,7 +102,7 @@ ROOT_FILES = {
     ".sapians-repo.yml",
 }
 # Pipeline output: git-ignored beyond these tracked anchors (see .gitignore).
-GENERATED_PREFIXES = ("data/raw/", "data/staged/", "data/derived/", "data/private/")
+GENERATED_PREFIXES = ("data/raw/", "data/staged/", "data/derived/")
 GENERATED_ANCHORS = {
     "data/raw/README.md",
     "data/raw/manifest.json",

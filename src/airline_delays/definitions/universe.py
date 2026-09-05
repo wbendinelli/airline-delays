@@ -7,7 +7,7 @@ the test suite uses.
 Replication universe (``universe_repl``)
     Line types N, R and E — domestic scheduled, regional and special — with DI
     ``0``, the regular flight authorisation code. Realised **and** cancelled
-    flights both count, because the benchmark panel's flight count includes
+    flights both count, because the article panel's flight count includes
     cancellations (its cancellation rate is ``fl_can / f``).
 
 Prediction universe (``universe_ml``)
@@ -15,7 +15,7 @@ Prediction universe (``universe_ml``)
     return flights (DI 3) and the other authorisation codes become features,
     never filters.
 
-Evidence for the rule: regressing the benchmark panel's flight count on flight
+Basis for the rule: the article's `f` counts line types N, R and E with DI 0; regressing its flight count on flight
 counts by category gives a coefficient of about 1 for N/R/E with DI 0 and about
 0 elsewhere; admitting DI in {0, 1, 2} drops agreement from 97% to 54%.
 

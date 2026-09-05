@@ -298,7 +298,10 @@ def panel(
         Path | None, typer.Option(help="Fact table location; defaults to data/analysis.")
     ] = None,
     empty_actual_means_on_time: Annotated[
-        bool, typer.Option(help="ADR-0012 convention; True reproduces the benchmark.")
+        bool,
+        typer.Option(
+            help="ADR-0012 convention; True is the article's own (an empty actual time counts as on schedule)."
+        ),
     ] = True,
     panel_nodes_only: Annotated[
         bool, typer.Option(help="Restrict to the 27 nodes of ADR-0001.")
