@@ -109,7 +109,7 @@ def passenger_weighted_hhi(
     collected, and the VRA carries no traffic. The signature is here so that the
     panel column, the registry entry and the dictionary all exist and say
     exactly why the value is missing, instead of the flight-based HHI quietly
-    taking its place (`docs/declared-differences.md`).
+    taking its place (ADR-0007).
     """
     if not paid_passengers:
         return None

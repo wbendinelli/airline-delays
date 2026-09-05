@@ -20,8 +20,8 @@ them would silently shrink the denominator of every share, and calling them
 `group` falls back to their own ICAO code, so they stay distinguishable and
 the flight-share HHI keeps counting them as separate competitors.
 
-The benchmark's own sets are kept as named constants next to the table,
-because they are *not* the same thing as the classes (`docs/declared-differences.md`):
+The article's own sets are kept as named constants next to the table,
+because they are *not* the same thing as the classes (ADR-0013):
 the article's FSC set excludes Avianca Brasil, which ADR-0003 classes as FSC,
 and its "LCC" set is the two groups Gol and Azul, not the class, which also
 holds Webjet while it was independent.

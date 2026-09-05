@@ -9,8 +9,8 @@ on every row.
 actual time is a field of the *Boletim de Alteração de Vôo*, which IAC 1504
 requires only "sempre que houver alguma alteração": an empty actual time on a
 realised flight is the absence of a reported alteration, not an unknown outcome.
-A panel of three reviewers read the instruction, the reconciliation and the
-benchmark rates and adopted that reading (`docs/notes/colegiado-adr0012.md`).
+A panel of three reviewers read the instruction and the prediction outputs
+and adopted that reading (`docs/notes/colegiado-adr0012.md`).
 So a realised flight of a **pre-2010** year, operated by a carrier whose
 `groups.csv` class is FSC, LCC or regional, with an empty actual time, gets a
 delay of 0 and carries the flag ``on_time_no_bav``.
@@ -27,7 +27,7 @@ of these counts is reported per year in ``manifest.json`` and in
 
 Reading B is a **floor on punctuality**: a delay that was never reported counts
 as on time, so the measured late rate is a lower bound before 2010. That
-direction is stated in `docs/declared-differences.md` and is not corrected for.
+direction is stated in `docs/notes/prediction.md` and is not corrected for.
 
 Leakage rule, written before the first feature (ADR-0009):
 

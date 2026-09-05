@@ -1,7 +1,0 @@
-{
- "hhi_sign_inversions": {
-  "available": false,
-  "reason": "needs both table3 (2SGMM) and table6 (OLS)",
-  "n_comparisons": 0
- }
-}

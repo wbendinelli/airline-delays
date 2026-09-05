@@ -8,7 +8,7 @@ SBCT-MRSP) cut from the 2004, 2009 and 2012 files, about 20,000 staged flight
 legs, a few of them dated in the following January because the raw file month
 and the scheduled date disagree (the ADR-0016 case, kept on purpose) -- so a
 fresh clone can watch raw legs become the route-month panel and Table 2
-without the network, ``data/raw/`` or ``AIRLINE_DELAYS_PRIVATE_DIR``.
+without the network or ``data/raw/``.
 
 Steps (they mirror the ``staged_tree`` and ``built`` fixtures of
 ``tests/conftest.py``, which is what the test-suite exercises):

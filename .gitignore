@@ -8,8 +8,6 @@
 !/data/staged/README.md
 /data/derived/*
 !/data/derived/README.md
-/data/private/*
-!/data/private/README.md
 
 # data/analysis/ is a tracked directory, and since DECISIONS.md ADR-0014 its
 # *.parquet and *.csv.gz tables are tracked too -- the panel and fact table
@@ -22,7 +20,6 @@
 # rebuilding, not a replacement for that.
 /data/analysis/*
 !/data/analysis/README.md
-!/data/analysis/taxas.csv
 !/data/analysis/manifest.json
 !/data/analysis/panel_manifest.json
 !/data/analysis/*.parquet

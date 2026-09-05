@@ -1315,8 +1315,8 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
     "f": _Doc(
         "int32",
         "flights",
-        "Article `f`: flights scheduled on the route-month, realised plus cancelled (ADR-0002). Reproduces the benchmark on 97.5% of route-months.",
-        "`f` do artigo: voos programados na rota-mês, realizados mais cancelados (ADR-0002). Reproduz o gabarito em 97,5% das rota-meses.",
+        "Article `f`: flights scheduled on the route-month, realised plus cancelled (ADR-0002).",
+        "`f` do artigo: voos programados na rota-mês, realizados mais cancelados (ADR-0002).",
         "sum",
     ),
     "fl_real": _Doc(
@@ -1336,8 +1336,8 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
     "fl_odel": _Doc(
         "int32",
         "flights",
-        "Article `fl_odel`: realised flights that departed more than 0 minutes late — the benchmark's cut is 0, not 15.",
-        "`fl_odel` do artigo: voos realizados que partiram com mais de 0 minuto de atraso — o corte do gabarito é 0, não 15.",
+        "Article `fl_odel`: realised flights that departed more than 0 minutes late — the article's cut is 0, not 15.",
+        "`fl_odel` do artigo: voos realizados que partiram com mais de 0 minuto de atraso — o corte do artigo é 0, não 15.",
         "sum",
     ),
     "fl_ddel": _Doc(
@@ -1400,8 +1400,8 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
     "pres_glo": _Doc(
         "int8",
         "flag",
-        "The Gol group operated the route this month. The benchmark's `pres_glo` is ticket sales, not operation (declared difference).",
-        "O grupo Gol operou a rota neste mês. O `pres_glo` do gabarito é venda de bilhetes, não operação (diferença declarada).",
+        "The Gol group operated the route this month (VRA operations). The article's `pres_glo` is read from ticket sales.",
+        "O grupo Gol operou a rota neste mês (operação no VRA). O `pres_glo` do artigo é lido da venda de bilhetes.",
         "recompute",
     ),
     "pres_azu": _Doc(
@@ -1421,8 +1421,8 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
     "lcc": _Doc(
         "int8",
         "flag",
-        "Article `lcc`: Gol or Azul present on the route. Here from operations; the benchmark reads it from the tariff base, and the two disagree on about 11% of route-months (declared difference).",
-        "`lcc` do artigo: Gol ou Azul presente na rota. Aqui por operação; o gabarito lê da base tarifária, e as duas discordam em cerca de 11% das rota-meses (diferença declarada).",
+        "Article `lcc`: Gol or Azul present on the route. Here from VRA operations; the article reads it from the tariff base (ticket sales).",
+        "`lcc` do artigo: Gol ou Azul presente na rota. Aqui por operação no VRA; o artigo lê da base tarifária (venda de bilhetes).",
         "recompute",
     ),
     "olccfu": _Doc(
@@ -1442,8 +1442,8 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
     "maxalccfu": _Doc(
         "int8",
         "flag",
-        "Article `maxalccfu`: the larger of olccfu and dlccfu. Reproduces the benchmark on 100% of route-months.",
-        "`maxalccfu` do artigo: o maior entre olccfu e dlccfu. Reproduz o gabarito em 100% das rota-meses.",
+        "Article `maxalccfu`: the larger of olccfu and dlccfu.",
+        "`maxalccfu` do artigo: o maior entre olccfu e dlccfu.",
         "recompute",
     ),
     "prwheather": _Doc(
@@ -1540,8 +1540,8 @@ _ARTICLE_DOCS: dict[str, _Doc] = {
     "legacy_missing_actual_as_zero": _Doc(
         "int8",
         "flag",
-        "The ADR-0012 convention this table was built under: 1 means a realised flight with no actual time counted as on schedule, which is what reproduces the benchmark.",
-        "A convenção do ADR-0012 sob a qual esta tabela foi construída: 1 significa que um voo realizado sem horário real contou como pontual, que é o que reproduz o gabarito.",
+        "The ADR-0012 convention this table was built under: 1 means a realised flight with no actual time counted as on schedule, the article's own convention.",
+        "A convenção do ADR-0012 sob a qual esta tabela foi construída: 1 significa que um voo realizado sem horário real contou como pontual, a convenção do próprio artigo.",
         "none",
     ),
 }

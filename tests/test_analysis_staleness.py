@@ -8,8 +8,7 @@ rebuilds the panel from the *committed* fact table, in memory, and diffs it
 against the *committed* panel: a stale commit fails it.
 
 Marked `analysis` (registered in `pyproject.toml`, run by `just check-analysis`
-and by a plain `pytest -q` alongside everything else -- unlike `gabarito`, it
-needs no private data). It skips rather than fails when its inputs are not on
+and by a plain `pytest -q` alongside everything else). It skips rather than fails when its inputs are not on
 disk: CI's ordinary job has no `data/staged/` and therefore no `data/derived/`
 (ADR-0004, `CLAUDE.md`), so the rebuild this test performs cannot run there.
 It runs wherever `just features && just panel` has already been executed, which

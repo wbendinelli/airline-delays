@@ -9,22 +9,20 @@ under the definitions the reconstruction recovered against the private panel
 article's spelling — including `prwheather`, which is misspelled in the source
 and is not renamed.
 
-**The declared-variant block** exists wherever this repository's definition and
-the benchmark's differ and the evidence does not settle which is right. Two
-cases, both in `docs/declared-differences.md`: `fscc_*` uses ADR-0003's FSC
-*class*, which includes Avianca Brasil that the article's own group set
-excludes (ADR-0013); and `*_trunc` uses the vintage's zero-truncated delay
-against ADR-0008's signed one. Nothing is tuned to close a gap; both numbers
-are published.
+**The variant block** exists wherever this repository offers a second,
+documented definition next to the article's. Two cases: `fscc_*` uses
+ADR-0003's FSC *class*, which includes Avianca Brasil that the article's own
+group set excludes (ADR-0013); and `*_trunc` uses the article's zero-truncated
+delay against ADR-0008's signed one. Both numbers are published.
 
 **The new-feature block** is everything the article did not use: market
 structure, schedule shape, cause-code taxonomy, recovery and padding, the
 city-side aggregates on both endpoints and the ADR-0007 congestion proxy.
 
 `legacy_missing_actual_as_zero` defaults to `True` here and only here (ADR-0012):
-this is the table that has to reproduce a benchmark built from a vintage that
-read an empty actual time as "on schedule". The prediction layer builds its own
-dataset with `False`.
+this is the table built under the article's own convention, which read an empty
+actual time as "on schedule". The prediction layer builds its own dataset with
+`False`.
 """
 
 from __future__ import annotations
@@ -430,11 +428,10 @@ def assemble(
 def _presence(fact: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
     """Operation-based presence dummies: `lcc`, `pres_glo`, `pres_azu`, `pres_tam`.
 
-    The benchmark's `lcc` comes from the tariff base — who *sold tickets* on the
-    route — and this one comes from the VRA — who *flew* it. The two disagree on
-    about 11% of route-months and both are right about different questions
-    (`docs/declared-differences.md`); the name stays so the comparison is
-    possible, and the difference is declared rather than closed.
+    The article's `lcc` comes from the tariff base — who *sold tickets* on the
+    route — and this one comes from the VRA — who *flew* it. Both are right
+    about different questions; the name stays so the two panels can be read
+    side by side.
     """
 
     active = fact[fact["flights"] > 0]

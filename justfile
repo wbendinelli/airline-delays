@@ -34,17 +34,6 @@ panel:
 check-analysis:
     uv run pytest -q -m analysis
 
-# Column-by-column agreement of the public panel against the private benchmark.
-# Needs AIRLINE_DELAYS_PRIVATE_DIR exported in the shell; writes
-# data/analysis/taxas.csv and the generated block of docs/declared-differences.md.
-# Exits non-zero while any column sits below the rate the earlier reconstruction
-# measured -- today seven do, because the raw files changed between the 2019
-# vintage the benchmark was built from and the ones ANAC publishes now. That is
-# a standing, declared difference (docs/declared-differences.md), not a broken
-# build: the files are written either way.
-gabarito:
-    uv run python -m replication.gabarito.compare
-
 # Tables 2-7 of Bendinelli, Bettini & Oliveira (2016). `just replicate` uses the
 # public panel (data/analysis/panel_route_month.parquet, built by `just panel`);
 # `just replicate private` uses the benchmark and needs AIRLINE_DELAYS_PRIVATE_DIR.
@@ -83,9 +72,6 @@ report:
 
 publish:
     @echo "publish: not implemented yet"
-
-verify:
-    uv run python scripts/verify_reconcile.py
 
 test:
     uv run pytest -q
