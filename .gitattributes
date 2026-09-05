@@ -23,6 +23,7 @@ data/derived/** linguist-generated
 data/analysis/*.parquet linguist-generated
 data/analysis/*.csv.gz linguist-generated
 docs/dictionary.md linguist-generated
+reports/summary.json linguist-generated
 # reports/theory/figures/*.svg are drawn by theory/figures.py from fixed
 # geometry (`just theory`); the diff a reviewer wants is the Python, not the XML.
 reports/theory/figures/*.svg linguist-generated
