@@ -1,6 +1,6 @@
 {
  "sample": {
-  "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+  "panel": "data/analysis/article_panel_route_month.parquet",
   "filter_regressand": "fsc_oddsarr",
   "n_raw": 24589,
   "routes_raw": 209,

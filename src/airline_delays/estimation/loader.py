@@ -76,8 +76,16 @@ def read_panel(path: Path) -> pd.DataFrame:
         )
     frame = frame.loc[:, list(REQUIRED_COLUMNS)].copy()
     frame["ym"] = frame["ym"].astype(int)
-    frame.attrs["panel_path"] = str(path)
+    frame.attrs["panel_path"] = _relative(path)
     return frame
+
+
+def _relative(path: Path) -> str:
+    """The panel's path as recorded in the outputs: relative to the repository, never absolute."""
+    try:
+        return str(path.resolve().relative_to(paths.REPO_ROOT))
+    except ValueError:
+        return path.name
 
 
 def load_panel(panel: Path | str | None = None) -> pd.DataFrame:
