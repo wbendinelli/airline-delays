@@ -25,6 +25,9 @@ e-mail, alerta de citação ou resenha entre os documentos originais; a
 dissertação, escrita depois da publicação, nem menciona o artigo como já
 aceito. A recepção só existe fora do arco documental do próprio autor, e
 só porque um projeto de auditoria dedicado foi construído para medi-la.
+O que essa recepção significa para a teoria que o artigo pressupõe — e o
+lugar, nela, de Guo, Jiang e Wan (2018), o citante que levou a formulação
+às tarifas — está em [`../theory/04-impacto.md`](../theory/04-impacto.md).
 
 ## Exercício
 
