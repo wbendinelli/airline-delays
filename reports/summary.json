@@ -306,7 +306,7 @@
    "max_abs_correlation_difference": 0.012330873335682085
   },
   "bandwidth": 4,
-  "seconds": 41.0
+  "seconds": 39.3
  },
  "prediction": {
   "rows": 10200560,
@@ -444,11 +444,11 @@
   ]
  },
  "decisions": {
-  "n_adrs": 19
+  "n_adrs": 21
  },
  "meta": {
   "generated_by": "airline-delays summary",
-  "git_commit": "1bad3b9",
+  "git_commit": "04e0102",
   "inputs": [
    "data/raw/manifest.json",
    "data/staged/manifest.json (when present)",

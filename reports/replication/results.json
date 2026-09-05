@@ -201,7 +201,7 @@
   },
   "replicated": {
    "sample": {
-    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+    "panel": "data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -1006,7 +1006,7 @@
   },
   "replicated": {
    "sample": {
-    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+    "panel": "data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -2761,7 +2761,7 @@
   },
   "replicated": {
    "sample": {
-    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+    "panel": "data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -4631,7 +4631,7 @@
   },
   "replicated": {
    "sample": {
-    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+    "panel": "data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -6317,7 +6317,7 @@
   },
   "replicated": {
    "sample": {
-    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+    "panel": "data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -7877,7 +7877,7 @@
   },
   "replicated": {
    "sample": {
-    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+    "panel": "data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsdep",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -9297,7 +9297,7 @@
   "with_seasonality": true,
   "published_json": "src/airline_delays/estimation/published.json",
   "sample": {
-   "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
+   "panel": "data/analysis/article_panel_route_month.parquet",
    "filter_regressand": "fsc_oddsarr",
    "n_raw": 24589,
    "routes_raw": 209,
@@ -9312,6 +9312,6 @@
    "months": 144,
    "singleton_cutoff": 5
   },
-  "seconds": 41.0
+  "seconds": 39.3
  }
 }
