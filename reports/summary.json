@@ -1,0 +1,469 @@
+{
+ "reconstruction": {
+  "raw": {
+   "files": 168,
+   "bytes": 2166489628,
+   "gigabytes": 2.17,
+   "years": [
+    2000,
+    2013
+   ],
+   "retrieved_on": "2026-09-05",
+   "fetch_minutes": 17.0
+  },
+  "staged": {
+   "rows": 13652322,
+   "years": 14,
+   "files": 14,
+   "carried_over": false
+  },
+  "fact": {
+   "rows": 165763,
+   "columns": 87,
+   "route_months": 201055,
+   "node_day_hours": 4269847,
+   "outlier_threshold_min": 313.25,
+   "seconds": 12.57
+  },
+  "panel": {
+   "rows": 31313,
+   "columns": 228,
+   "routes": 310,
+   "months": 168,
+   "ym_range": [
+    200001,
+    201312
+   ],
+   "nodes": 27,
+   "parquet_bytes": 9941234,
+   "csv_bytes": 11788958,
+   "seconds": 8.01
+  },
+  "city_month": {
+   "rows": 21231,
+   "columns": 91
+  },
+  "airline_city_month": {
+   "rows": 49801,
+   "columns": 81
+  },
+  "flights_by_year": {
+   "2000": {
+    "scheduled": 659301,
+    "realised": 587007
+   },
+   "2001": {
+    "scheduled": 691582,
+    "realised": 610676
+   },
+   "2002": {
+    "scheduled": 678949,
+    "realised": 564375
+   },
+   "2003": {
+    "scheduled": 565672,
+    "realised": 431646
+   },
+   "2004": {
+    "scheduled": 536555,
+    "realised": 456323
+   },
+   "2005": {
+    "scheduled": 552056,
+    "realised": 476192
+   },
+   "2006": {
+    "scheduled": 588640,
+    "realised": 493853
+   },
+   "2007": {
+    "scheduled": 641635,
+    "realised": 513081
+   },
+   "2008": {
+    "scheduled": 663781,
+    "realised": 600121
+   },
+   "2009": {
+    "scheduled": 756194,
+    "realised": 686216
+   },
+   "2010": {
+    "scheduled": 874236,
+    "realised": 796922
+   },
+   "2011": {
+    "scheduled": 983073,
+    "realised": 898923
+   },
+   "2012": {
+    "scheduled": 1023977,
+    "realised": 942587
+   },
+   "2013": {
+    "scheduled": 984956,
+    "realised": 894671
+   }
+  },
+  "flights_scheduled_first_year": 659301,
+  "flights_scheduled_last_year": 984956,
+  "flights_growth_pct": 49.4,
+  "article_columns_missing": [
+   "cshare",
+   "dailyflcong",
+   "dailyflncong",
+   "h1_maxcthhi",
+   "h2_maxcthhi",
+   "h2_rthhi",
+   "h3_maxcthhi",
+   "l1h1_maxcthhi",
+   "l1h2_maxcthhi",
+   "lnh1_maxcthhi",
+   "maxcthhi",
+   "maxprdel",
+   "rthhi"
+  ]
+ },
+ "article_panel": {
+  "rows": 24589,
+  "columns": 52,
+  "routes": 209,
+  "months": 144,
+  "ym_range": [
+   200201,
+   201312
+  ],
+  "source_header_timestamp": "2015-12-03T18:04:00",
+  "variables_in_source": 1829,
+  "rows_in_source": 24589,
+  "parquet_bytes": 2202177,
+  "csv_bytes": 2916686
+ },
+ "published": {
+  "table3": {
+   "col1": {
+    "regressand": "ODDS",
+    "n_obs": 19419,
+    "rthhi": {
+     "b": 0.805,
+     "se": 0.373,
+     "stars": "**"
+    },
+    "maxcthhi": {
+     "b": -1.4772,
+     "se": 0.523,
+     "stars": "***"
+    }
+   },
+   "col2": {
+    "regressand": "ODDS",
+    "n_obs": 19419,
+    "rthhi": {
+     "b": 0.8192,
+     "se": 0.41,
+     "stars": "**"
+    },
+    "maxcthhi": {
+     "b": -1.5144,
+     "se": 0.527,
+     "stars": "***"
+    },
+    "lcc": {
+     "b": -0.0412,
+     "se": 0.072,
+     "stars": ""
+    },
+    "maxalccfu": {
+     "b": -0.4234,
+     "se": 0.179,
+     "stars": "**"
+    }
+   }
+  },
+  "table6": {
+   "col1": {
+    "regressand": "ODDS",
+    "n_obs": 19590,
+    "rthhi": {
+     "b": -0.2086,
+     "se": 0.064,
+     "stars": "***"
+    },
+    "maxcthhi": {
+     "b": 0.1614,
+     "se": 0.201,
+     "stars": ""
+    }
+   },
+   "col2": {
+    "regressand": "ODDS",
+    "n_obs": 19590,
+    "rthhi": {
+     "b": -0.3126,
+     "se": 0.068,
+     "stars": "***"
+    },
+    "maxcthhi": {
+     "b": 0.1057,
+     "se": 0.196,
+     "stars": ""
+    },
+    "lcc": {
+     "b": -0.1636,
+     "se": 0.033,
+     "stars": "***"
+    },
+    "maxalccfu": {
+     "b": -0.1793,
+     "se": 0.137,
+     "stars": ""
+    }
+   }
+  }
+ },
+ "estimation": {
+  "tables": {
+   "table3": {
+    "n_coefficients": 60,
+    "sign_agreement": 60,
+    "within_half_se": 53,
+    "median_difference_in_se": 0.24045809260607834,
+    "max_difference_in_se": 0.691485871146235,
+    "median_se_ratio": 0.9464661275236322
+   },
+   "table4": {
+    "n_coefficients": 66,
+    "sign_agreement": 65,
+    "within_half_se": 51,
+    "median_difference_in_se": 0.22101303505676234,
+    "max_difference_in_se": 0.9069070596302974,
+    "median_se_ratio": 0.9922087980260978
+   },
+   "table5": {
+    "n_coefficients": 60,
+    "sign_agreement": 59,
+    "within_half_se": 53,
+    "median_difference_in_se": 0.22853243096533565,
+    "max_difference_in_se": 0.6745907194841212,
+    "median_se_ratio": 0.9424219446919284
+   },
+   "table6": {
+    "n_coefficients": 60,
+    "sign_agreement": 59,
+    "within_half_se": 51,
+    "median_difference_in_se": 0.11964170405851908,
+    "max_difference_in_se": 0.9413303101213228,
+    "median_se_ratio": 0.971220075501664
+   },
+   "table7": {
+    "n_coefficients": 60,
+    "sign_agreement": 59,
+    "within_half_se": 51,
+    "median_difference_in_se": 0.24112090413789777,
+    "max_difference_in_se": 0.660166107492968,
+    "median_se_ratio": 0.9411288789701324
+   }
+  },
+  "totals": {
+   "coefficients": 306,
+   "sign_agreement": 302,
+   "within_half_se": 259,
+   "max_difference_in_se": 0.9413303101213228,
+   "within_half_se_pct": 84.6
+  },
+  "hhi": {
+   "n_comparisons": 12,
+   "n_inverted_published": 4,
+   "n_inverted_replicated": 4,
+   "n_inversion_replicates": 4,
+   "n_pattern_agrees": 12,
+   "columns_with_inversion": [
+    "1",
+    "2"
+   ]
+  },
+  "sample": {
+   "n_raw": 24589,
+   "routes_raw": 209,
+   "n_after_missing_regressand": 20655,
+   "n_after_singleton_cut": 20630,
+   "routes": 190,
+   "months": 144
+  },
+  "n_obs_published_range": [
+   19408,
+   19590
+  ],
+  "n_obs_replicated_range": [
+   20447,
+   20630
+  ],
+  "n_obs_excess_pct": 5.3,
+  "table2": {
+   "n_variables": 13,
+   "n_correlations": 91,
+   "median_abs_correlation_difference": 0.0023125395205345067,
+   "max_abs_correlation_difference": 0.012330873335682085
+  },
+  "bandwidth": 4,
+  "seconds": 41.0
+ },
+ "prediction": {
+  "rows": 10200560,
+  "years": [
+   2000,
+   2013
+  ],
+  "features_d1": 46,
+  "features_h1_only": 3,
+  "targets": 5,
+  "leakage_checks": 9,
+  "rolling": {
+   "target": "late15_arr",
+   "test_years": [
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "folds": 8,
+   "horizons": {
+    "D-1": {
+     "auc_min": 0.7149273965850342,
+     "auc_median": 0.7258507937091526,
+     "auc_max": 0.7411317401956993,
+     "pr_auc_median": 0.46215192157550045,
+     "brier_median": 0.16257217614490316,
+     "linked_subset_auc_min": 0.7049870659736495,
+     "linked_subset_auc_max": 0.7599531361182528
+    },
+    "H-1": {
+     "auc_min": 0.7567742990192701,
+     "auc_median": 0.7879505203985055,
+     "auc_max": 0.8241598589608223,
+     "pr_auc_median": 0.6042223884712614,
+     "brier_median": 0.14250970128574733,
+     "linked_subset_auc_min": 0.8690858401338916,
+     "linked_subset_auc_max": 0.9340315346944257
+    }
+   },
+   "baselines": {
+    "route_prevalence_l1": {
+     "auc_min": 0.6079358659166793,
+     "auc_max": 0.672765590887621
+    },
+    "group_prevalence_l1": {
+     "auc_min": 0.5485410946107846,
+     "auc_max": 0.6412135143410647
+    }
+   },
+   "linked_share_min": 0.19835621650049795,
+   "linked_share_max": 0.3506981243617993,
+   "learner": "xgboost"
+  },
+  "fixed": {
+   "late15_arr": {
+    "D-1": 0.7200179775665343,
+    "H-1": 0.7616497673048487
+   },
+   "late30_arr": {
+    "D-1": 0.7036014009465972,
+    "H-1": 0.7646176550519471
+   },
+   "late15_dep": {
+    "D-1": 0.6756963826229971,
+    "H-1": 0.7442871813364712
+   },
+   "cancelled": {
+    "D-1": 0.7230630116220311,
+    "H-1": 0.7907435689698696
+   }
+  },
+  "legacy_window": {
+   "years": [
+    2000,
+    2009
+   ],
+   "realised_in_scope": 5106100,
+   "realised_out_of_scope": 313366,
+   "null_arrival_rate_in_scope": 0.7286856896653023,
+   "null_arrival_rate_out_of_scope": 0.8303006707811313,
+   "targets_available": 5156450
+  },
+  "runtime_seconds": 2344.2,
+  "dataset_build_seconds": 24.73
+ },
+ "theory": {
+  "n_identities": 29,
+  "n_holding": 29,
+  "n_figures": 11,
+  "leader_toll_share_linear": 0.75,
+  "cournot_toll_share": 0.5,
+  "atomistic_toll_share": 1.0,
+  "leader_follower": "f1 = f2/(1 - lambda) >= 2 f2; equality under linear cost"
+ },
+ "registry": {
+  "layers": 7,
+  "columns_total": 636,
+  "columns_by_layer": {
+   "staged": 32,
+   "fact": 87,
+   "city": 91,
+   "airline_city": 81,
+   "panel": 228,
+   "article_panel": 52,
+   "ml": 65
+  }
+ },
+ "external": {
+  "airports_br": 8035,
+  "capacity": 1,
+  "cause_codes": 49,
+  "di_codes": 12,
+  "distances_km": 702,
+  "events": 29,
+  "groups": 50,
+  "holidays": 92,
+  "line_types": 8,
+  "monograph_airports": 38,
+  "nodes": 31,
+  "observances": 56,
+  "slots": 2
+ },
+ "fixture": {
+  "legs": 19910,
+  "routes": 3,
+  "years": [
+   2004,
+   2009,
+   2012
+  ]
+ },
+ "decisions": {
+  "n_adrs": 19
+ },
+ "meta": {
+  "generated_by": "airline-delays summary",
+  "git_commit": "f4652c9",
+  "inputs": [
+   "data/raw/manifest.json",
+   "data/staged/manifest.json (when present)",
+   "data/analysis/manifest.json",
+   "data/analysis/panel_manifest.json",
+   "data/analysis/article_panel_manifest.json",
+   "data/analysis/*.parquet",
+   "src/airline_delays/estimation/published.json",
+   "reports/replication/{summary,results}.json",
+   "reports/prediction/{dataset,rolling,fixed,leakage}.json",
+   "reports/theory/{model,figures}.json",
+   "data/external/*.csv",
+   "tests/fixtures/vra_sample.parquet",
+   "DECISIONS.md"
+  ],
+  "note": "No timestamp on purpose: a rerun on an unchanged tree changes nothing but meta."
+ }
+}

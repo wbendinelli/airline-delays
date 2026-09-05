@@ -329,14 +329,27 @@ def dictionary(
     out: Annotated[
         Path | None, typer.Option(help="Destination; defaults to docs/dictionary.md.")
     ] = None,
+    check: Annotated[
+        bool,
+        typer.Option(
+            "--check", help="Compare the committed file with a rebuild; exit 1 on a difference."
+        ),
+    ] = False,
 ) -> None:
     """Generate docs/dictionary.md from the schema. Never edit it by hand."""
 
     root = repo_root()
     layers = schema.built_layers(root)
     target = out or root / "docs" / "dictionary.md"
+    rendered = schema.dictionary_markdown(layers)
+    if check:
+        if target.exists() and target.read_text(encoding="utf-8") == rendered:
+            typer.echo(f"dictionary: {target} is in step with the registry")
+            return
+        typer.echo(f"dictionary: {target} is stale; run `airline-delays dictionary`", err=True)
+        raise typer.Exit(code=1)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(schema.dictionary_markdown(layers), encoding="utf-8")
+    target.write_text(rendered, encoding="utf-8")
     total = sum(len(columns) for columns in layers.values())
     typer.echo(f"dictionary: {total} columns across {len(layers)} layers -> {target}")
 
@@ -346,13 +359,26 @@ def datapackage(
     out: Annotated[
         Path | None, typer.Option(help="Destination; defaults to datapackage.json.")
     ] = None,
+    check: Annotated[
+        bool,
+        typer.Option(
+            "--check", help="Compare the committed file with a rebuild; exit 1 on a difference."
+        ),
+    ] = False,
 ) -> None:
     """Generate datapackage.json (Frictionless v2) from the schema."""
 
     root = repo_root()
     descriptor = schema.build_datapackage(root)
     target = out or root / "datapackage.json"
-    target.write_text(json.dumps(descriptor, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    rendered = json.dumps(descriptor, indent=2, ensure_ascii=False) + "\n"
+    if check:
+        if target.exists() and target.read_text(encoding="utf-8") == rendered:
+            typer.echo(f"datapackage: {target} is in step with the registry and the tables")
+            return
+        typer.echo(f"datapackage: {target} is stale; run `airline-delays datapackage`", err=True)
+        raise typer.Exit(code=1)
+    target.write_text(rendered, encoding="utf-8")
     typer.echo(f"datapackage: {len(descriptor['resources'])} resources -> {target}")
 
 
@@ -419,6 +445,48 @@ def theory(ctx: typer.Context) -> None:
     from airline_delays.theory import run as theory_run
 
     _passthrough(theory_run.main, ctx)
+
+
+@app.command()
+def summary(
+    out: Annotated[
+        Path | None, typer.Option(help="Destination; defaults to reports/summary.json.")
+    ] = None,
+    check: Annotated[
+        bool,
+        typer.Option(
+            "--check", help="Compare the committed file with a rebuild; exit 1 on a difference."
+        ),
+    ] = False,
+) -> None:
+    """reports/summary.json: every headline number the READMEs quote, read from the artefacts."""
+    from airline_delays import reporting
+
+    target = out or reporting.SUMMARY_PATH
+    if check:
+        problems = reporting.check(target)
+        if problems:
+            for problem in problems:
+                typer.echo(f"summary: {problem}", err=True)
+            raise typer.Exit(code=1)
+        typer.echo(f"summary: {target} is fresh")
+        return
+    reporting.write(target)
+    typer.echo(f"summary -> {target}")
+
+
+@app.command()
+def report(
+    only: Annotated[
+        list[str] | None,
+        typer.Option(help="Compile only these reports (replication, prediction, theory)."),
+    ] = None,
+) -> None:
+    """Compile the Typst reports into reports/build/ (needs typst on the PATH)."""
+    from airline_delays import reporting
+
+    for pdf in reporting.compile_all(tuple(only) if only else None):
+        typer.echo(f"report -> {pdf}")
 
 
 def main() -> None:

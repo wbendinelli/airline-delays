@@ -10,6 +10,14 @@ version numbers, mark progress.
 
 ### Added
 
+- **`reports/summary.json`, the numbers manifest** (`airline-delays summary`): every headline
+  number the READMEs quote, read from the committed manifests, tables and reports -- the
+  reconstruction's counts and flights by year, the article panel's shape, the published Table 3
+  and Table 6 cells the README discusses, the replication scorecard and HHI sign-inversion
+  count, the prediction AUC ranges and baselines, the theory's identities, the registry and
+  external-table sizes. No timestamp; `tests/test_summary.py` fails when it is stale.
+  `airline-delays report` compiles the three Typst reports; `dictionary`, `datapackage` and
+  `summary` gain `--check`.
 - **The article's estimation panel is published** (ADR-0020):
   `data/analysis/article_panel_route_month.parquet` (canonical, zstd) and `.csv.gz`, 24,589
   route-months x 52 columns curated once from the authors' final base (December 2015) by
