@@ -348,6 +348,17 @@ def panel(
     )
 
 
+RESOURCE_NOTES: dict[str, str] = {
+    "ml": (
+        "Flight-level modelling table for delay prediction: one row per scheduled "
+        "flight of the replication universe (ADR-0002), pre-departure features only "
+        "(ADR-0009), targets null where ADR-0012 leaves no actual timestamp. "
+        "Partitioned by year, about 313 MB, rebuilt in 33 seconds by `just ml-dataset` and "
+        "therefore not tracked in git (ADR-0004)."
+    ),
+}
+
+
 def _built_layers(root: Path) -> dict[str, list]:
     """Registry entries for every table that currently exists on disk."""
     import pandas as pd
@@ -366,6 +377,11 @@ def _built_layers(root: Path) -> dict[str, list]:
         if path.exists():
             frame = pd.read_parquet(path)
             layers[layer] = registry.describe_frame(frame, layer)
+    # The flight-level modelling table is 313 MB and never enters git (ADR-0004),
+    # so its entry is the registry's declared list rather than a built file --
+    # a reader of the dictionary must be able to see the columns of a table they
+    # will rebuild, not only of the tables that ship.
+    layers["ml"] = list(registry.ML)
     return layers
 
 
@@ -411,9 +427,10 @@ def datapackage(
             ["ym", "node", "group"],
         ),
         "panel": ("panel_route_month", "data/analysis/panel_route_month.parquet", ["route", "ym"]),
+        "ml": ("flights_features", "data/derived/ml/year=*/part-0.parquet", []),
     }
     resources = [
-        registry.resource(name, path, layers[layer], key)
+        registry.resource(name, path, layers[layer], key, description=RESOURCE_NOTES.get(layer))
         for layer, (name, path, key) in paths.items()
         if layer in layers
     ]

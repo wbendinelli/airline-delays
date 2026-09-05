@@ -427,7 +427,11 @@ DTYPE_ALIASES: dict[str, tuple[str, ...]] = {
     "int64": ("int64", "bigint"),
     "float32": ("float", "float32", "real"),
     "float64": ("double", "float64"),
-    "string": ("string", "large_string", "varchar", "object"),
+    # `category` and `dictionary<...>` are how a *string* column arrives once it
+    # has been dictionary-encoded -- which is what the flight-level table does to
+    # every label, because ten million repetitions of "MRSP-MRRJ" as Python
+    # objects is a gigabyte and as codes is ten megabytes. Same logical type.
+    "string": ("string", "large_string", "varchar", "object", "category", "dictionary"),
     "bool": ("bool", "boolean"),
     "timestamp[s]": (
         "timestamp[s]",
@@ -1688,9 +1692,18 @@ def _panel_doc(name: str) -> _Doc:
     return _measure_doc(name)
 
 
+def _resolver(layer: Layer):
+    """The definition resolver of one layer."""
+    if layer == "ml":
+        return _ml_doc
+    if layer in {"panel", "city", "airline_city"}:
+        return _panel_doc
+    return _measure_doc
+
+
 def build_layer(names: list[str], layer: Layer, source: str) -> list[Column]:
     """Registry entries for one table, in the table's own column order."""
-    resolver = _panel_doc if layer == "panel" else _measure_doc
+    resolver = _panel_doc if layer == "panel" else _resolver(layer)
     return [_column(name, resolver(name), layer, source) for name in names]
 
 
@@ -1704,16 +1717,561 @@ def fact_columns() -> list[Column]:
 
 FACT: list[Column] = fact_columns()
 
-_BY_NAME_ALL: dict[str, Column] = {column.name: column for column in (*STAGED, *FACT)}
+_ML_SRC = "derived in ml.dataset_flights from data/staged and the fact table"
+
+ML_NAMES: tuple[str, ...] = (
+    "flight_date",
+    "year",
+    "ym",
+    "flight_number",
+    "route",
+    "month",
+    "dow",
+    "is_weekend",
+    "is_holiday",
+    "is_observance",
+    "is_holiday_window",
+    "is_high_season",
+    "sched_dep_hour",
+    "sched_arr_hour",
+    "sched_block_min",
+    "leg_index",
+    "origin_icao",
+    "dest_icao",
+    "origin_node",
+    "dest_node",
+    "route_kind",
+    "distance_km",
+    "origin_metro",
+    "dest_metro",
+    "origin_slot_coordinated",
+    "dest_slot_coordinated",
+    "origin_movements_hour",
+    "dest_movements_hour",
+    "origin_movements_day",
+    "dest_movements_day",
+    "origin_p90_hour",
+    "dest_p90_hour",
+    "airline",
+    "group",
+    "class",
+    "airline_route_share_l1",
+    "airline_origin_share_l1",
+    "months_on_route",
+    "is_new_on_route",
+    "route_late15_l1",
+    "route_obs_l1",
+    "route_late15_l12",
+    "group_late15_l1",
+    "flight_no_late15_l3",
+    "flight_no_obs_l3",
+    "origin_late15_l1",
+    "dest_late15_l1",
+    "origin_weather_l1",
+    "dest_weather_l1",
+    "prev_leg",
+    "prev_turnaround_min",
+    "prev_arr_delay_min",
+    "prev_late15",
+    "prev_cancelled",
+    "is_realized",
+    "has_arr_actual",
+    "has_dep_actual",
+    "actual_time_suspect",
+    "prev_arr_known_h1",
+    "late15_arr",
+    "late30_arr",
+    "arr_delay_min",
+    "late15_dep",
+    "cancelled",
+)
+"""Column order of `data/derived/ml/year=YYYY/part-0.parquet`.
+
+Kept here rather than imported from `ml.dataset_flights` so that `src/vra`
+never depends on the modelling package that depends on it;
+`tests/test_leakage.py` asserts the two lists are identical, in order, which
+is the same closed loop `tests/test_registry.py` runs for the fact table.
+"""
+
+_ML_DOCS: dict[str, _Doc] = {
+    "flight_date": _Doc(
+        "date32",
+        "date",
+        "Scheduled departure date. Rows without a scheduled departure are not in this table.",
+        "Data da partida prevista. Linhas sem partida prevista não entram nesta tabela.",
+        "none",
+    ),
+    "year": _Doc(
+        "int16",
+        "year",
+        "Calendar year of the scheduled departure.",
+        "Ano civil da partida prevista.",
+        "none",
+    ),
+    "ym": _Doc(
+        "int32",
+        "YYYYMM",
+        "Year-month key of the scheduled departure; the key every closed lag window is joined on.",
+        "Chave ano-mês da partida prevista; é a chave de junção de toda janela defasada fechada.",
+        "none",
+    ),
+    "flight_number": _Doc(
+        "int32",
+        "count",
+        "Flight number, carried as an identifier; the model sees its lagged delay rate, not the number itself.",
+        "Número do voo, mantido como identificador; o modelo vê a taxa de atraso defasada dele, não o número.",
+        "none",
+    ),
+    "route": _Doc(
+        "string",
+        "node pair",
+        "Directional route key origin_node-dest_node; the unit the rolling-origin subsample is drawn on.",
+        "Chave direcional da rota origin_node-dest_node; é a unidade em que a subamostra da origem rolante é sorteada.",
+        "none",
+    ),
+    "month": _Doc(
+        "int8",
+        "month",
+        "Calendar month of the scheduled departure, 1-12.",
+        "Mês civil da partida prevista, 1-12.",
+        "none",
+    ),
+    "dow": _Doc(
+        "int8",
+        "day",
+        "Day of week of the scheduled departure, 0 = Monday.",
+        "Dia da semana da partida prevista, 0 = segunda-feira.",
+        "none",
+    ),
+    "is_weekend": _Doc(
+        "int8",
+        "flag",
+        "1 when the scheduled departure falls on a Saturday or Sunday.",
+        "1 quando a partida prevista cai em sábado ou domingo.",
+        "sum",
+    ),
+    "is_holiday": _Doc(
+        "int8",
+        "flag",
+        "1 when the date is a national holiday by federal law (data/external/holidays.csv).",
+        "1 quando a data é feriado nacional por lei federal (data/external/holidays.csv).",
+        "sum",
+    ),
+    "is_observance": _Doc(
+        "int8",
+        "flag",
+        "1 on Carnival Monday/Tuesday, Good Friday or Corpus Christi (data/external/observances.csv): days that move schedules without being holidays by law.",
+        "1 na segunda e terça de Carnaval, Sexta-Feira Santa ou Corpus Christi (data/external/observances.csv): dias que mexem na malha sem serem feriados por lei.",
+        "sum",
+    ),
+    "is_holiday_window": _Doc(
+        "int8",
+        "flag",
+        "1 on a holiday or observance and on the day before and after it.",
+        "1 no feriado ou ponto facultativo e também na véspera e no dia seguinte.",
+        "sum",
+    ),
+    "is_high_season": _Doc(
+        "int8",
+        "flag",
+        "1 in January, July and December, the Brazilian school-holiday months. A declared convention, not a measurement.",
+        "1 em janeiro, julho e dezembro, meses de férias escolares no Brasil. Convenção declarada, não medida.",
+        "sum",
+    ),
+    "sched_dep_hour": _Doc(
+        "int8",
+        "hour",
+        "Hour of the scheduled departure, 0-23, computed from sched_dep alone -- unlike the staged dep_hour, which falls back to the actual departure.",
+        "Hora da partida prevista, 0-23, calculada só a partir de sched_dep -- ao contrário de dep_hour da camada staged, que recorre à partida real.",
+        "none",
+    ),
+    "sched_arr_hour": _Doc(
+        "int8",
+        "hour",
+        "Hour of the scheduled arrival, 0-23, computed from sched_arr alone.",
+        "Hora da chegada prevista, 0-23, calculada só a partir de sched_arr.",
+        "none",
+    ),
+    "sched_block_min": _Doc(
+        "int16",
+        "minutes",
+        "Scheduled block time: minutes between the scheduled departure and the scheduled arrival.",
+        "Tempo de bloco previsto: minutos entre a partida prevista e a chegada prevista.",
+        "mean",
+    ),
+    "leg_index": _Doc(
+        "int8",
+        "count",
+        "Position of this leg in the day's chain for the same airline and flight number, 1 for the first.",
+        "Posição desta etapa na cadeia do dia da mesma empresa e número de voo, 1 para a primeira.",
+        "mean",
+    ),
+    "origin_icao": _Doc(
+        "string",
+        "ICAO code",
+        "ICAO code of the origin aerodrome.",
+        "Código ICAO do aeródromo de origem.",
+        "none",
+    ),
+    "dest_icao": _Doc(
+        "string",
+        "ICAO code",
+        "ICAO code of the destination aerodrome.",
+        "Código ICAO do aeródromo de destino.",
+        "none",
+    ),
+    "origin_node": _Doc(
+        "string",
+        "node code",
+        "Origin node (ADR-0001).",
+        "Nó de origem (ADR-0001).",
+        "none",
+    ),
+    "dest_node": _Doc(
+        "string",
+        "node code",
+        "Destination node (ADR-0001).",
+        "Nó de destino (ADR-0001).",
+        "none",
+    ),
+    "route_kind": _Doc(
+        "string",
+        "category",
+        "shuttle (MRSP-MRRJ either way), metro (both ends metropolitan nodes), capital (both ends in nodes.csv), mixed (one end), other.",
+        "shuttle (MRSP-MRRJ nos dois sentidos), metro (as duas pontas em nós metropolitanos), capital (as duas pontas em nodes.csv), mixed (uma ponta), other.",
+        "none",
+    ),
+    "distance_km": _Doc(
+        "float32",
+        "km",
+        "Great-circle distance between the two nodes (data/external/distances_km.csv); null off the 27-node network.",
+        "Distância ortodrômica entre os dois nós (data/external/distances_km.csv); nula fora da rede de 27 nós.",
+        "mean",
+    ),
+    "origin_metro": _Doc(
+        "int8",
+        "flag",
+        "1 when the origin airport belongs to one of the three metropolitan nodes (ADR-0001).",
+        "1 quando o aeroporto de origem pertence a um dos três nós metropolitanos (ADR-0001).",
+        "sum",
+    ),
+    "dest_metro": _Doc(
+        "int8",
+        "flag",
+        "1 when the destination airport belongs to one of the three metropolitan nodes.",
+        "1 quando o aeroporto de destino pertence a um dos três nós metropolitanos.",
+        "sum",
+    ),
+    "origin_slot_coordinated": _Doc(
+        "int8",
+        "flag",
+        "1 when the origin airport was slot-coordinated at this month (data/external/slots.csv: SBGR from 2009-01, SBRJ from 2009-03). Congonhas is absent because no act or date was found for it.",
+        "1 quando o aeroporto de origem era coordenado por slots neste mês (data/external/slots.csv: SBGR desde 2009-01, SBRJ desde 2009-03). Congonhas não está na tabela porque nenhum ato ou data foi localizado.",
+        "sum",
+    ),
+    "dest_slot_coordinated": _Doc(
+        "int8",
+        "flag",
+        "1 when the destination airport was slot-coordinated at this month.",
+        "1 quando o aeroporto de destino era coordenado por slots neste mês.",
+        "sum",
+    ),
+    "origin_movements_hour": _Doc(
+        "int16",
+        "movements",
+        "Movements scheduled at the origin airport in the flight's own scheduled departure hour, counted over every staged row of the year -- extras, international and cargo included, because they occupy the same runway.",
+        "Movimentos previstos no aeroporto de origem na hora prevista de partida do próprio voo, contados sobre todas as linhas staged do ano -- extras, internacionais e cargueiros incluídos, porque ocupam a mesma pista.",
+        "recompute",
+    ),
+    "dest_movements_hour": _Doc(
+        "int16",
+        "movements",
+        "Movements scheduled at the destination airport in the flight's scheduled arrival hour, on the same rule.",
+        "Movimentos previstos no aeroporto de destino na hora prevista de chegada, pela mesma regra.",
+        "recompute",
+    ),
+    "origin_movements_day": _Doc(
+        "int16",
+        "movements",
+        "Movements scheduled at the origin airport on the whole day.",
+        "Movimentos previstos no aeroporto de origem no dia inteiro.",
+        "recompute",
+    ),
+    "dest_movements_day": _Doc(
+        "int16",
+        "movements",
+        "Movements scheduled at the destination airport on the arrival day.",
+        "Movimentos previstos no aeroporto de destino no dia da chegada.",
+        "recompute",
+    ),
+    "origin_p90_hour": _Doc(
+        "float32",
+        "flag",
+        "1 when origin_movements_hour reaches the airport's p90 of scheduled movements per day-hour in the PREVIOUS calendar year (ADR-0007 proxy with the window closed, ADR-0009); null in the first year of a build, which has no previous year.",
+        "1 quando origin_movements_hour atinge o p90 de movimentos previstos por dia-hora do próprio aeroporto no ano civil ANTERIOR (proxy da ADR-0007 com a janela fechada, ADR-0009); nulo no primeiro ano da construção, que não tem ano anterior.",
+        "recompute",
+    ),
+    "dest_p90_hour": _Doc(
+        "float32",
+        "flag",
+        "The same busy-hour flag at the destination airport.",
+        "A mesma marca de hora cheia no aeroporto de destino.",
+        "recompute",
+    ),
+    "airline": _Doc(
+        "string",
+        "ICAO designator",
+        "Three-letter ICAO designator of the operating airline.",
+        "Designador ICAO de três letras da empresa operadora.",
+        "none",
+    ),
+    "group": _Doc(
+        "string",
+        "group code",
+        "Airline economic group at this month (ADR-0003); an unlabelled airline keeps its own ICAO code.",
+        "Grupo econômico da empresa neste mês (ADR-0003); empresa sem rótulo mantém o próprio ICAO.",
+        "none",
+    ),
+    "class": _Doc(
+        "string",
+        "class",
+        "Business-model class: FSC, LCC, regional or other (ADR-0011).",
+        "Classe de modelo de negócio: FSC, LCC, regional ou other (ADR-0011).",
+        "none",
+    ),
+    "airline_route_share_l1": _Doc(
+        "float32",
+        "share",
+        "The group's share of the route's flights in the PREVIOUS month, from the fact table.",
+        "Participação do grupo nos voos da rota no mês ANTERIOR, a partir da tabela de fatos.",
+        "recompute",
+    ),
+    "airline_origin_share_l1": _Doc(
+        "float32",
+        "share",
+        "The group's share of the departures from the origin node in the previous month.",
+        "Participação do grupo nas partidas do nó de origem no mês anterior.",
+        "recompute",
+    ),
+    "months_on_route": _Doc(
+        "float32",
+        "months",
+        "Months the group had been continuously on the route as of the previous month, counted from the fact table's is_entry (a gap in the calendar restarts the count). Null when the group was not on the route last month.",
+        "Meses que o grupo estava continuamente na rota até o mês anterior, contados a partir do is_entry da tabela de fatos (uma lacuna no calendário reinicia a contagem). Nulo quando o grupo não estava na rota no mês anterior.",
+        "recompute",
+    ),
+    "is_new_on_route": _Doc(
+        "int8",
+        "flag",
+        "1 when months_on_route is null: the group did not fly this route in the previous month.",
+        "1 quando months_on_route é nulo: o grupo não voou esta rota no mês anterior.",
+        "sum",
+    ),
+    "route_late15_l1": _Doc(
+        "float32",
+        "share",
+        "Share of the route's observed arrivals more than 15 minutes late in the PREVIOUS month. Denominator arr_delay_obs, so legacy_missing_actual_as_zero = False (ADR-0012).",
+        "Proporção das chegadas observadas da rota com mais de 15 minutos de atraso no mês ANTERIOR. Denominador arr_delay_obs, ou seja legacy_missing_actual_as_zero = False (ADR-0012).",
+        "recompute",
+    ),
+    "route_obs_l1": _Doc(
+        "int32",
+        "flights",
+        "Arrivals with an actual timestamp on the route in the previous month: the support behind route_late15_l1, so a rate over three flights is distinguishable from one over three hundred.",
+        "Chegadas com horário real na rota no mês anterior: o suporte de route_late15_l1, para distinguir uma taxa sobre três voos de uma sobre trezentos.",
+        "recompute",
+    ),
+    "route_late15_l12": _Doc(
+        "float32",
+        "share",
+        "The same rate twelve months before, which carries the seasonality the one-month lag cannot.",
+        "A mesma taxa doze meses antes, que carrega a sazonalidade que a defasagem de um mês não carrega.",
+        "recompute",
+    ),
+    "group_late15_l1": _Doc(
+        "float32",
+        "share",
+        "Share of the airline group's observed arrivals more than 15 minutes late in the previous month, over its whole network.",
+        "Proporção das chegadas observadas do grupo com mais de 15 minutos de atraso no mês anterior, em toda a sua malha.",
+        "recompute",
+    ),
+    "flight_no_late15_l3": _Doc(
+        "float32",
+        "share",
+        "Share of arrivals more than 15 minutes late for this airline and flight number over the three previous months (t-3, t-2, t-1).",
+        "Proporção de chegadas com mais de 15 minutos de atraso desta empresa e número de voo nos três meses anteriores (t-3, t-2, t-1).",
+        "recompute",
+    ),
+    "flight_no_obs_l3": _Doc(
+        "int32",
+        "flights",
+        "Observations behind flight_no_late15_l3.",
+        "Observações por trás de flight_no_late15_l3.",
+        "recompute",
+    ),
+    "origin_late15_l1": _Doc(
+        "float32",
+        "share",
+        "Share of departures from the origin node more than 15 minutes late in the previous month.",
+        "Proporção das partidas do nó de origem com mais de 15 minutos de atraso no mês anterior.",
+        "recompute",
+    ),
+    "dest_late15_l1": _Doc(
+        "float32",
+        "share",
+        "Share of arrivals at the destination node more than 15 minutes late in the previous month.",
+        "Proporção das chegadas no nó de destino com mais de 15 minutos de atraso no mês anterior.",
+        "recompute",
+    ),
+    "origin_weather_l1": _Doc(
+        "float32",
+        "share",
+        "Share of departures from the origin node carrying a weather justification code (ADR-0005 category 'weather') in the previous month: the closed-window stand-in for a METAR the VRA does not have.",
+        "Proporção das partidas do nó de origem com código de justificativa de clima (categoria 'weather' da ADR-0005) no mês anterior: o substituto de janela fechada para um METAR que o VRA não tem.",
+        "recompute",
+    ),
+    "dest_weather_l1": _Doc(
+        "float32",
+        "share",
+        "The same weather-code share among arrivals at the destination node.",
+        "A mesma proporção de códigos de clima entre as chegadas no nó de destino.",
+        "recompute",
+    ),
+    "prev_leg": _Doc(
+        "int8",
+        "flag",
+        "1 when a previous leg of the same airline and flight number, on the same day, is scheduled to arrive at this flight's origin airport before it departs.",
+        "1 quando existe etapa anterior da mesma empresa e número de voo, no mesmo dia, prevista para chegar ao aeroporto de origem deste voo antes da sua partida.",
+        "sum",
+    ),
+    "prev_turnaround_min": _Doc(
+        "float32",
+        "minutes",
+        "Scheduled turnaround: minutes between the inbound leg's scheduled arrival and this flight's scheduled departure. Null without a linked leg.",
+        "Folga programada: minutos entre a chegada prevista da etapa anterior e a partida prevista deste voo. Nulo sem etapa ligada.",
+        "mean",
+    ),
+    "prev_arr_delay_min": _Doc(
+        "float32",
+        "minutes",
+        "H-1 only. Signed arrival delay of the inbound leg, in minutes. Known at the gate, never the day before.",
+        "Só no horizonte H-1. Atraso de chegada com sinal da etapa anterior, em minutos. Conhecido no portão, nunca na véspera.",
+        "mean",
+    ),
+    "prev_late15": _Doc(
+        "float32",
+        "flag",
+        "H-1 only. 1 when the inbound leg arrived more than 15 minutes late.",
+        "Só no horizonte H-1. 1 quando a etapa anterior chegou com mais de 15 minutos de atraso.",
+        "sum",
+    ),
+    "prev_cancelled": _Doc(
+        "float32",
+        "flag",
+        "H-1 only. 1 when the inbound leg was cancelled.",
+        "Só no horizonte H-1. 1 quando a etapa anterior foi cancelada.",
+        "sum",
+    ),
+    "is_realized": _Doc(
+        "bool",
+        "flag",
+        "Whether the flight operated. A diagnostic, never a feature: it is known only after the fact.",
+        "Se o voo operou. Diagnóstico, nunca variável explicativa: só se sabe depois do fato.",
+        "sum",
+    ),
+    "has_arr_actual": _Doc(
+        "bool",
+        "flag",
+        "Whether an actual arrival timestamp exists. Diagnostic: it is what decides whether the arrival targets exist (ADR-0012).",
+        "Se existe horário real de chegada. Diagnóstico: é o que decide se os alvos de chegada existem (ADR-0012).",
+        "sum",
+    ),
+    "has_dep_actual": _Doc(
+        "bool",
+        "flag",
+        "Whether an actual departure timestamp exists.",
+        "Se existe horário real de partida.",
+        "sum",
+    ),
+    "actual_time_suspect": _Doc(
+        "bool",
+        "flag",
+        "ADR-0015: an actual timestamp a whole day or more away from the schedule (|delay| >= 1440 minutes), which in the raw files is a month typo, not an operation. Excluded from every delay target, counted per year; kept as a row, because the flight was still scheduled and still occupied its slot.",
+        "ADR-0015: horário real a um dia ou mais do previsto (|atraso| >= 1440 minutos), que nos arquivos brutos é erro de digitação de mês, não operação. Excluído de todo alvo de atraso, contado por ano; mantido como linha, porque o voo foi programado e ocupou o slot.",
+        "sum",
+    ),
+    "prev_arr_known_h1": _Doc(
+        "float32",
+        "flag",
+        "Diagnostic: 1 when the inbound leg's ACTUAL arrival happened at least 60 minutes before this flight's scheduled departure, so prev_arr_delay_min would really be known at H-1. Reported per year rather than used to null the feature, because ADR-0009 defines the horizon.",
+        "Diagnóstico: 1 quando a chegada REAL da etapa anterior ocorreu ao menos 60 minutos antes da partida prevista deste voo, de modo que prev_arr_delay_min seria mesmo conhecido em H-1. Reportado por ano em vez de usado para anular a variável, porque a ADR-0009 define o horizonte.",
+        "recompute",
+    ),
+    "late15_arr": _Doc(
+        "float32",
+        "flag",
+        "TARGET. 1 when the arrival delay exceeds 15 minutes. Null on a cancelled flight, on a realised flight with no actual arrival time (ADR-0012) and on a flight whose timestamps are suspect (ADR-0015), never zero.",
+        "ALVO. 1 quando o atraso de chegada passa de 15 minutos. Nulo em voo cancelado, em voo realizado sem horário real de chegada (ADR-0012) e em voo com horário suspeito (ADR-0015), nunca zero.",
+        "sum",
+    ),
+    "late30_arr": _Doc(
+        "float32",
+        "flag",
+        "TARGET. 1 when the arrival delay exceeds 30 minutes, ANAC's own second band.",
+        "ALVO. 1 quando o atraso de chegada passa de 30 minutos, a segunda faixa da própria ANAC.",
+        "sum",
+    ),
+    "arr_delay_min": _Doc(
+        "float32",
+        "minutes",
+        "TARGET, regression. Signed arrival delay in minutes, actual minus scheduled, early arrivals negative (ADR-0008). Suspect timestamps are already out (ADR-0015); the symmetric outlier threshold of ADR-0015 is not applied here, because trimming a regression target is the consumer's decision.",
+        "ALVO de regressão. Atraso de chegada com sinal, real menos previsto, chegada adiantada negativa (ADR-0008). Horários suspeitos já saíram (ADR-0015); o corte simétrico de outlier da ADR-0015 não é aplicado aqui, porque aparar um alvo de regressão é decisão de quem consome.",
+        "mean",
+    ),
+    "late15_dep": _Doc(
+        "float32",
+        "flag",
+        "TARGET. 1 when the departure delay exceeds 15 minutes.",
+        "ALVO. 1 quando o atraso de partida passa de 15 minutos.",
+        "sum",
+    ),
+    "cancelled": _Doc(
+        "int8",
+        "flag",
+        "TARGET. 1 when the flight was cancelled. Defined on every row, because the table is the SCHEDULED universe, not the realised one -- this is the only target with no ADR-0012 exclusion.",
+        "ALVO. 1 quando o voo foi cancelado. Definido em todas as linhas, porque a tabela é o universo PROGRAMADO e não o realizado -- é o único alvo sem exclusão da ADR-0012.",
+        "sum",
+    ),
+}
+
+
+def _ml_doc(name: str) -> _Doc:
+    """Definition of one column of the flight-level modelling table."""
+    try:
+        return _ML_DOCS[name]
+    except KeyError as exc:
+        raise KeyError(
+            f"{name!r} is not a registered ml column; add it to registry._ML_DOCS"
+        ) from exc
+
+
+def ml_columns() -> list[Column]:
+    """Registry entries for the flight-level modelling table, in column order."""
+    return [_column(name, _ml_doc(name), "ml", _ML_SRC) for name in ML_NAMES]
+
+
+ML: list[Column] = ml_columns()
+
+
+_BY_NAME_ALL: dict[str, Column] = {column.name: column for column in (*STAGED, *FACT, *ML)}
 
 
 def describe(name: str, layer: Layer = "panel") -> Column:
     """The registry entry a table column would get, resolved by name and layer."""
-    resolver = _panel_doc if layer in {"panel", "city", "airline_city"} else _measure_doc
-    source = {"staged": _DERIVED, "fact": _ANALYSIS}.get(layer, _PANEL_SRC)
+    source = {"staged": _DERIVED, "fact": _ANALYSIS, "ml": _ML_SRC}.get(layer, _PANEL_SRC)
     if layer == "staged":
         return get(name)
-    return _column(name, resolver(name), layer, source)
+    return _column(name, _resolver(layer)(name), layer, source)
 
 
 def describe_frame(frame: Any, layer: Layer, source: str | None = None) -> list[Column]:
@@ -1724,9 +2282,8 @@ def describe_frame(frame: Any, layer: Layer, source: str | None = None) -> list[
     from this module, and `tests/test_registry.py` fails if any name has none.
     """
     names, _ = _schema_of(frame)
-    resolver = _panel_doc if layer in {"panel", "city", "airline_city"} else _measure_doc
-    chosen = source or {"fact": _ANALYSIS, "staged": _DERIVED}.get(layer, _PANEL_SRC)
-    return [_column(name, resolver(name), layer, chosen) for name in names]
+    chosen = source or {"fact": _ANALYSIS, "staged": _DERIVED, "ml": _ML_SRC}.get(layer, _PANEL_SRC)
+    return [_column(name, _resolver(layer)(name), layer, chosen) for name in names]
 
 
 # ------------------------------------------------------------------ generated docs
@@ -1737,6 +2294,7 @@ LAYER_TITLES: dict[str, str] = {
     "city": "City-month (`data/analysis/city_month.parquet`)",
     "airline_city": "Airline x city x month (`data/analysis/airline_city_month.parquet`)",
     "panel": "Route-month panel (`data/analysis/panel_route_month.parquet`)",
+    "ml": "Flight-level modelling table (`data/derived/ml/year=YYYY/part-0.parquet`)",
 }
 
 
@@ -1841,8 +2399,19 @@ def datapackage(resources: list[dict[str, Any]], doi: str = "10.5281/zenodo.PEND
     }
 
 
-def resource(name: str, path: str, columns: list[Column], primary_key: list[str]) -> dict:
-    """One Frictionless resource whose schema is the registry's own entries."""
+def resource(
+    name: str,
+    path: str,
+    columns: list[Column],
+    primary_key: list[str],
+    description: str | None = None,
+) -> dict:
+    """One Frictionless resource whose schema is the registry's own entries.
+
+    `primary_key` may be empty: the flight-level table has no key that is unique
+    in the source data (the raw VRA repeats rows), and declaring one that is not
+    would be a claim, not a schema.
+    """
     fields = []
     for column in columns:
         field_type, field_format = _FRICTIONLESS_TYPES.get(column.dtype, ("any", None))
@@ -1858,10 +2427,16 @@ def resource(name: str, path: str, columns: list[Column], primary_key: list[str]
         field["x-aggregation"] = column.aggregation
         field["x-source"] = column.source
         fields.append(field)
-    return {
+    schema: dict[str, Any] = {"fields": fields}
+    if primary_key:
+        schema["primaryKey"] = primary_key
+    out = {
         "name": name,
         "path": path,
         "format": Path(path).suffix.lstrip("."),
         "mediatype": "application/vnd.apache.parquet" if path.endswith(".parquet") else "text/csv",
-        "schema": {"fields": fields, "primaryKey": primary_key},
+        "schema": schema,
     }
+    if description:
+        out["description"] = description
+    return out

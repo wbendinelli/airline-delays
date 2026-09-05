@@ -4474,6 +4474,593 @@
           "ym"
         ]
       }
+    },
+    {
+      "name": "flights_features",
+      "path": "data/derived/ml/year=*/part-0.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "schema": {
+        "fields": [
+          {
+            "name": "flight_date",
+            "type": "date",
+            "title": "date",
+            "description": "Scheduled departure date. Rows without a scheduled departure are not in this table.",
+            "x-definition-pt": "Data da partida prevista. Linhas sem partida prevista não entram nesta tabela.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "year",
+            "type": "integer",
+            "title": "year",
+            "description": "Calendar year of the scheduled departure.",
+            "x-definition-pt": "Ano civil da partida prevista.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "ym",
+            "type": "integer",
+            "title": "YYYYMM",
+            "description": "Year-month key of the scheduled departure; the key every closed lag window is joined on.",
+            "x-definition-pt": "Chave ano-mês da partida prevista; é a chave de junção de toda janela defasada fechada.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "flight_number",
+            "type": "integer",
+            "title": "count",
+            "description": "Flight number, carried as an identifier; the model sees its lagged delay rate, not the number itself.",
+            "x-definition-pt": "Número do voo, mantido como identificador; o modelo vê a taxa de atraso defasada dele, não o número.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "route",
+            "type": "string",
+            "title": "node pair",
+            "description": "Directional route key origin_node-dest_node; the unit the rolling-origin subsample is drawn on.",
+            "x-definition-pt": "Chave direcional da rota origin_node-dest_node; é a unidade em que a subamostra da origem rolante é sorteada.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "month",
+            "type": "integer",
+            "title": "month",
+            "description": "Calendar month of the scheduled departure, 1-12.",
+            "x-definition-pt": "Mês civil da partida prevista, 1-12.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dow",
+            "type": "integer",
+            "title": "day",
+            "description": "Day of week of the scheduled departure, 0 = Monday.",
+            "x-definition-pt": "Dia da semana da partida prevista, 0 = segunda-feira.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "is_weekend",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when the scheduled departure falls on a Saturday or Sunday.",
+            "x-definition-pt": "1 quando a partida prevista cai em sábado ou domingo.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "is_holiday",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when the date is a national holiday by federal law (data/external/holidays.csv).",
+            "x-definition-pt": "1 quando a data é feriado nacional por lei federal (data/external/holidays.csv).",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "is_observance",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 on Carnival Monday/Tuesday, Good Friday or Corpus Christi (data/external/observances.csv): days that move schedules without being holidays by law.",
+            "x-definition-pt": "1 na segunda e terça de Carnaval, Sexta-Feira Santa ou Corpus Christi (data/external/observances.csv): dias que mexem na malha sem serem feriados por lei.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "is_holiday_window",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 on a holiday or observance and on the day before and after it.",
+            "x-definition-pt": "1 no feriado ou ponto facultativo e também na véspera e no dia seguinte.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "is_high_season",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 in January, July and December, the Brazilian school-holiday months. A declared convention, not a measurement.",
+            "x-definition-pt": "1 em janeiro, julho e dezembro, meses de férias escolares no Brasil. Convenção declarada, não medida.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "sched_dep_hour",
+            "type": "integer",
+            "title": "hour",
+            "description": "Hour of the scheduled departure, 0-23, computed from sched_dep alone -- unlike the staged dep_hour, which falls back to the actual departure.",
+            "x-definition-pt": "Hora da partida prevista, 0-23, calculada só a partir de sched_dep -- ao contrário de dep_hour da camada staged, que recorre à partida real.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "sched_arr_hour",
+            "type": "integer",
+            "title": "hour",
+            "description": "Hour of the scheduled arrival, 0-23, computed from sched_arr alone.",
+            "x-definition-pt": "Hora da chegada prevista, 0-23, calculada só a partir de sched_arr.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "sched_block_min",
+            "type": "integer",
+            "title": "minutes",
+            "description": "Scheduled block time: minutes between the scheduled departure and the scheduled arrival.",
+            "x-definition-pt": "Tempo de bloco previsto: minutos entre a partida prevista e a chegada prevista.",
+            "x-aggregation": "mean",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "leg_index",
+            "type": "integer",
+            "title": "count",
+            "description": "Position of this leg in the day's chain for the same airline and flight number, 1 for the first.",
+            "x-definition-pt": "Posição desta etapa na cadeia do dia da mesma empresa e número de voo, 1 para a primeira.",
+            "x-aggregation": "mean",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_icao",
+            "type": "string",
+            "title": "ICAO code",
+            "description": "ICAO code of the origin aerodrome.",
+            "x-definition-pt": "Código ICAO do aeródromo de origem.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_icao",
+            "type": "string",
+            "title": "ICAO code",
+            "description": "ICAO code of the destination aerodrome.",
+            "x-definition-pt": "Código ICAO do aeródromo de destino.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_node",
+            "type": "string",
+            "title": "node code",
+            "description": "Origin node (ADR-0001).",
+            "x-definition-pt": "Nó de origem (ADR-0001).",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_node",
+            "type": "string",
+            "title": "node code",
+            "description": "Destination node (ADR-0001).",
+            "x-definition-pt": "Nó de destino (ADR-0001).",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "route_kind",
+            "type": "string",
+            "title": "category",
+            "description": "shuttle (MRSP-MRRJ either way), metro (both ends metropolitan nodes), capital (both ends in nodes.csv), mixed (one end), other.",
+            "x-definition-pt": "shuttle (MRSP-MRRJ nos dois sentidos), metro (as duas pontas em nós metropolitanos), capital (as duas pontas em nodes.csv), mixed (uma ponta), other.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "distance_km",
+            "type": "number",
+            "title": "km",
+            "description": "Great-circle distance between the two nodes (data/external/distances_km.csv); null off the 27-node network.",
+            "x-definition-pt": "Distância ortodrômica entre os dois nós (data/external/distances_km.csv); nula fora da rede de 27 nós.",
+            "x-aggregation": "mean",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_metro",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when the origin airport belongs to one of the three metropolitan nodes (ADR-0001).",
+            "x-definition-pt": "1 quando o aeroporto de origem pertence a um dos três nós metropolitanos (ADR-0001).",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_metro",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when the destination airport belongs to one of the three metropolitan nodes.",
+            "x-definition-pt": "1 quando o aeroporto de destino pertence a um dos três nós metropolitanos.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_slot_coordinated",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when the origin airport was slot-coordinated at this month (data/external/slots.csv: SBGR from 2009-01, SBRJ from 2009-03). Congonhas is absent because no act or date was found for it.",
+            "x-definition-pt": "1 quando o aeroporto de origem era coordenado por slots neste mês (data/external/slots.csv: SBGR desde 2009-01, SBRJ desde 2009-03). Congonhas não está na tabela porque nenhum ato ou data foi localizado.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_slot_coordinated",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when the destination airport was slot-coordinated at this month.",
+            "x-definition-pt": "1 quando o aeroporto de destino era coordenado por slots neste mês.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_movements_hour",
+            "type": "integer",
+            "title": "movements",
+            "description": "Movements scheduled at the origin airport in the flight's own scheduled departure hour, counted over every staged row of the year -- extras, international and cargo included, because they occupy the same runway.",
+            "x-definition-pt": "Movimentos previstos no aeroporto de origem na hora prevista de partida do próprio voo, contados sobre todas as linhas staged do ano -- extras, internacionais e cargueiros incluídos, porque ocupam a mesma pista.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_movements_hour",
+            "type": "integer",
+            "title": "movements",
+            "description": "Movements scheduled at the destination airport in the flight's scheduled arrival hour, on the same rule.",
+            "x-definition-pt": "Movimentos previstos no aeroporto de destino na hora prevista de chegada, pela mesma regra.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_movements_day",
+            "type": "integer",
+            "title": "movements",
+            "description": "Movements scheduled at the origin airport on the whole day.",
+            "x-definition-pt": "Movimentos previstos no aeroporto de origem no dia inteiro.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_movements_day",
+            "type": "integer",
+            "title": "movements",
+            "description": "Movements scheduled at the destination airport on the arrival day.",
+            "x-definition-pt": "Movimentos previstos no aeroporto de destino no dia da chegada.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_p90_hour",
+            "type": "number",
+            "title": "flag",
+            "description": "1 when origin_movements_hour reaches the airport's p90 of scheduled movements per day-hour in the PREVIOUS calendar year (ADR-0007 proxy with the window closed, ADR-0009); null in the first year of a build, which has no previous year.",
+            "x-definition-pt": "1 quando origin_movements_hour atinge o p90 de movimentos previstos por dia-hora do próprio aeroporto no ano civil ANTERIOR (proxy da ADR-0007 com a janela fechada, ADR-0009); nulo no primeiro ano da construção, que não tem ano anterior.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_p90_hour",
+            "type": "number",
+            "title": "flag",
+            "description": "The same busy-hour flag at the destination airport.",
+            "x-definition-pt": "A mesma marca de hora cheia no aeroporto de destino.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "airline",
+            "type": "string",
+            "title": "ICAO designator",
+            "description": "Three-letter ICAO designator of the operating airline.",
+            "x-definition-pt": "Designador ICAO de três letras da empresa operadora.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "group",
+            "type": "string",
+            "title": "group code",
+            "description": "Airline economic group at this month (ADR-0003); an unlabelled airline keeps its own ICAO code.",
+            "x-definition-pt": "Grupo econômico da empresa neste mês (ADR-0003); empresa sem rótulo mantém o próprio ICAO.",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "class",
+            "type": "string",
+            "title": "class",
+            "description": "Business-model class: FSC, LCC, regional or other (ADR-0011).",
+            "x-definition-pt": "Classe de modelo de negócio: FSC, LCC, regional ou other (ADR-0011).",
+            "x-aggregation": "none",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "airline_route_share_l1",
+            "type": "number",
+            "title": "share",
+            "description": "The group's share of the route's flights in the PREVIOUS month, from the fact table.",
+            "x-definition-pt": "Participação do grupo nos voos da rota no mês ANTERIOR, a partir da tabela de fatos.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "airline_origin_share_l1",
+            "type": "number",
+            "title": "share",
+            "description": "The group's share of the departures from the origin node in the previous month.",
+            "x-definition-pt": "Participação do grupo nas partidas do nó de origem no mês anterior.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "months_on_route",
+            "type": "number",
+            "title": "months",
+            "description": "Months the group had been continuously on the route as of the previous month, counted from the fact table's is_entry (a gap in the calendar restarts the count). Null when the group was not on the route last month.",
+            "x-definition-pt": "Meses que o grupo estava continuamente na rota até o mês anterior, contados a partir do is_entry da tabela de fatos (uma lacuna no calendário reinicia a contagem). Nulo quando o grupo não estava na rota no mês anterior.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "is_new_on_route",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when months_on_route is null: the group did not fly this route in the previous month.",
+            "x-definition-pt": "1 quando months_on_route é nulo: o grupo não voou esta rota no mês anterior.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "route_late15_l1",
+            "type": "number",
+            "title": "share",
+            "description": "Share of the route's observed arrivals more than 15 minutes late in the PREVIOUS month. Denominator arr_delay_obs, so legacy_missing_actual_as_zero = False (ADR-0012).",
+            "x-definition-pt": "Proporção das chegadas observadas da rota com mais de 15 minutos de atraso no mês ANTERIOR. Denominador arr_delay_obs, ou seja legacy_missing_actual_as_zero = False (ADR-0012).",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "route_obs_l1",
+            "type": "integer",
+            "title": "flights",
+            "description": "Arrivals with an actual timestamp on the route in the previous month: the support behind route_late15_l1, so a rate over three flights is distinguishable from one over three hundred.",
+            "x-definition-pt": "Chegadas com horário real na rota no mês anterior: o suporte de route_late15_l1, para distinguir uma taxa sobre três voos de uma sobre trezentos.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "route_late15_l12",
+            "type": "number",
+            "title": "share",
+            "description": "The same rate twelve months before, which carries the seasonality the one-month lag cannot.",
+            "x-definition-pt": "A mesma taxa doze meses antes, que carrega a sazonalidade que a defasagem de um mês não carrega.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "group_late15_l1",
+            "type": "number",
+            "title": "share",
+            "description": "Share of the airline group's observed arrivals more than 15 minutes late in the previous month, over its whole network.",
+            "x-definition-pt": "Proporção das chegadas observadas do grupo com mais de 15 minutos de atraso no mês anterior, em toda a sua malha.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "flight_no_late15_l3",
+            "type": "number",
+            "title": "share",
+            "description": "Share of arrivals more than 15 minutes late for this airline and flight number over the three previous months (t-3, t-2, t-1).",
+            "x-definition-pt": "Proporção de chegadas com mais de 15 minutos de atraso desta empresa e número de voo nos três meses anteriores (t-3, t-2, t-1).",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "flight_no_obs_l3",
+            "type": "integer",
+            "title": "flights",
+            "description": "Observations behind flight_no_late15_l3.",
+            "x-definition-pt": "Observações por trás de flight_no_late15_l3.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_late15_l1",
+            "type": "number",
+            "title": "share",
+            "description": "Share of departures from the origin node more than 15 minutes late in the previous month.",
+            "x-definition-pt": "Proporção das partidas do nó de origem com mais de 15 minutos de atraso no mês anterior.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_late15_l1",
+            "type": "number",
+            "title": "share",
+            "description": "Share of arrivals at the destination node more than 15 minutes late in the previous month.",
+            "x-definition-pt": "Proporção das chegadas no nó de destino com mais de 15 minutos de atraso no mês anterior.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "origin_weather_l1",
+            "type": "number",
+            "title": "share",
+            "description": "Share of departures from the origin node carrying a weather justification code (ADR-0005 category 'weather') in the previous month: the closed-window stand-in for a METAR the VRA does not have.",
+            "x-definition-pt": "Proporção das partidas do nó de origem com código de justificativa de clima (categoria 'weather' da ADR-0005) no mês anterior: o substituto de janela fechada para um METAR que o VRA não tem.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "dest_weather_l1",
+            "type": "number",
+            "title": "share",
+            "description": "The same weather-code share among arrivals at the destination node.",
+            "x-definition-pt": "A mesma proporção de códigos de clima entre as chegadas no nó de destino.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "prev_leg",
+            "type": "integer",
+            "title": "flag",
+            "description": "1 when a previous leg of the same airline and flight number, on the same day, is scheduled to arrive at this flight's origin airport before it departs.",
+            "x-definition-pt": "1 quando existe etapa anterior da mesma empresa e número de voo, no mesmo dia, prevista para chegar ao aeroporto de origem deste voo antes da sua partida.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "prev_turnaround_min",
+            "type": "number",
+            "title": "minutes",
+            "description": "Scheduled turnaround: minutes between the inbound leg's scheduled arrival and this flight's scheduled departure. Null without a linked leg.",
+            "x-definition-pt": "Folga programada: minutos entre a chegada prevista da etapa anterior e a partida prevista deste voo. Nulo sem etapa ligada.",
+            "x-aggregation": "mean",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "prev_arr_delay_min",
+            "type": "number",
+            "title": "minutes",
+            "description": "H-1 only. Signed arrival delay of the inbound leg, in minutes. Known at the gate, never the day before.",
+            "x-definition-pt": "Só no horizonte H-1. Atraso de chegada com sinal da etapa anterior, em minutos. Conhecido no portão, nunca na véspera.",
+            "x-aggregation": "mean",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "prev_late15",
+            "type": "number",
+            "title": "flag",
+            "description": "H-1 only. 1 when the inbound leg arrived more than 15 minutes late.",
+            "x-definition-pt": "Só no horizonte H-1. 1 quando a etapa anterior chegou com mais de 15 minutos de atraso.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "prev_cancelled",
+            "type": "number",
+            "title": "flag",
+            "description": "H-1 only. 1 when the inbound leg was cancelled.",
+            "x-definition-pt": "Só no horizonte H-1. 1 quando a etapa anterior foi cancelada.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "is_realized",
+            "type": "boolean",
+            "title": "flag",
+            "description": "Whether the flight operated. A diagnostic, never a feature: it is known only after the fact.",
+            "x-definition-pt": "Se o voo operou. Diagnóstico, nunca variável explicativa: só se sabe depois do fato.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "has_arr_actual",
+            "type": "boolean",
+            "title": "flag",
+            "description": "Whether an actual arrival timestamp exists. Diagnostic: it is what decides whether the arrival targets exist (ADR-0012).",
+            "x-definition-pt": "Se existe horário real de chegada. Diagnóstico: é o que decide se os alvos de chegada existem (ADR-0012).",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "has_dep_actual",
+            "type": "boolean",
+            "title": "flag",
+            "description": "Whether an actual departure timestamp exists.",
+            "x-definition-pt": "Se existe horário real de partida.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "actual_time_suspect",
+            "type": "boolean",
+            "title": "flag",
+            "description": "ADR-0015: an actual timestamp a whole day or more away from the schedule (|delay| >= 1440 minutes), which in the raw files is a month typo, not an operation. Excluded from every delay target, counted per year; kept as a row, because the flight was still scheduled and still occupied its slot.",
+            "x-definition-pt": "ADR-0015: horário real a um dia ou mais do previsto (|atraso| >= 1440 minutos), que nos arquivos brutos é erro de digitação de mês, não operação. Excluído de todo alvo de atraso, contado por ano; mantido como linha, porque o voo foi programado e ocupou o slot.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "prev_arr_known_h1",
+            "type": "number",
+            "title": "flag",
+            "description": "Diagnostic: 1 when the inbound leg's ACTUAL arrival happened at least 60 minutes before this flight's scheduled departure, so prev_arr_delay_min would really be known at H-1. Reported per year rather than used to null the feature, because ADR-0009 defines the horizon.",
+            "x-definition-pt": "Diagnóstico: 1 quando a chegada REAL da etapa anterior ocorreu ao menos 60 minutos antes da partida prevista deste voo, de modo que prev_arr_delay_min seria mesmo conhecido em H-1. Reportado por ano em vez de usado para anular a variável, porque a ADR-0009 define o horizonte.",
+            "x-aggregation": "recompute",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "late15_arr",
+            "type": "number",
+            "title": "flag",
+            "description": "TARGET. 1 when the arrival delay exceeds 15 minutes. Null on a cancelled flight, on a realised flight with no actual arrival time (ADR-0012) and on a flight whose timestamps are suspect (ADR-0015), never zero.",
+            "x-definition-pt": "ALVO. 1 quando o atraso de chegada passa de 15 minutos. Nulo em voo cancelado, em voo realizado sem horário real de chegada (ADR-0012) e em voo com horário suspeito (ADR-0015), nunca zero.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "late30_arr",
+            "type": "number",
+            "title": "flag",
+            "description": "TARGET. 1 when the arrival delay exceeds 30 minutes, ANAC's own second band.",
+            "x-definition-pt": "ALVO. 1 quando o atraso de chegada passa de 30 minutos, a segunda faixa da própria ANAC.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "arr_delay_min",
+            "type": "number",
+            "title": "minutes",
+            "description": "TARGET, regression. Signed arrival delay in minutes, actual minus scheduled, early arrivals negative (ADR-0008). Suspect timestamps are already out (ADR-0015); the symmetric outlier threshold of ADR-0015 is not applied here, because trimming a regression target is the consumer's decision.",
+            "x-definition-pt": "ALVO de regressão. Atraso de chegada com sinal, real menos previsto, chegada adiantada negativa (ADR-0008). Horários suspeitos já saíram (ADR-0015); o corte simétrico de outlier da ADR-0015 não é aplicado aqui, porque aparar um alvo de regressão é decisão de quem consome.",
+            "x-aggregation": "mean",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "late15_dep",
+            "type": "number",
+            "title": "flag",
+            "description": "TARGET. 1 when the departure delay exceeds 15 minutes.",
+            "x-definition-pt": "ALVO. 1 quando o atraso de partida passa de 15 minutos.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
+            "name": "cancelled",
+            "type": "integer",
+            "title": "flag",
+            "description": "TARGET. 1 when the flight was cancelled. Defined on every row, because the table is the SCHEDULED universe, not the realised one -- this is the only target with no ADR-0012 exclusion.",
+            "x-definition-pt": "ALVO. 1 quando o voo foi cancelado. Definido em todas as linhas, porque a tabela é o universo PROGRAMADO e não o realizado -- é o único alvo sem exclusão da ADR-0012.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          }
+        ]
+      },
+      "description": "Flight-level modelling table for delay prediction: one row per scheduled flight of the replication universe (ADR-0002), pre-departure features only (ADR-0009), targets null where ADR-0012 leaves no actual timestamp. Partitioned by year, about 313 MB, rebuilt in 33 seconds by `just ml-dataset` and therefore not tracked in git (ADR-0004)."
     }
   ]
 }

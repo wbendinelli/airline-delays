@@ -10,6 +10,40 @@ version numbers, mark progress.
 
 ### Added
 
+- Flight-level delay prediction (`ml/`, `just ml`, `reports/prediction/`,
+  `reports/prediction.typ`, `docs/notes/prediction.md`). `ml/dataset_flights.py`
+  makes one DuckDB scan per staged year and writes
+  `data/derived/ml/year=YYYY/part-0.parquet`: 10,200,578 rows, one per
+  **scheduled** flight of the replication universe (ADR-0002), 46 pre-departure
+  features for the D-1 horizon plus 3 inbound-leg features for H-1, five
+  targets, 313 MB in about 33 seconds. The delay targets are null where
+  ADR-0012 leaves no actual timestamp (4.97 M of the 10.2 M rows keep one) and
+  where ADR-0015 marks the timestamp suspect (|delay| >= 1,440 minutes: 5,349
+  flights, 0.1%); `cancelled` is defined on every row, because the table is the
+  scheduled universe. Every column is registered under the new
+  `ml` layer of `src/vra/registry.py` and described in `docs/dictionary.md` and
+  `datapackage.json`; the table itself stays out of git (ADR-0004), so the
+  resource is a description of a table the reader rebuilds. `ml/split.py` holds
+  the rolling origin 2006-2013 and the fixed 2002-2010 / 2011 / 2012-2013 split
+  of ADR-0009, plus route-hash subsampling that keeps whole routes together;
+  `ml/train_xgb.py` fits XGBoost `hist` with early stopping on each fold's
+  validation year (LightGBM optional); `ml/evaluate.py` reports AUC, PR-AUC,
+  Brier, a calibration table, the two naive baselines and permutation
+  importance; `ml/run.py` writes `reports/prediction/*.json` and `results.md`.
+
+- Leakage rule as executable checks (`ml/leakage_tests.py`,
+  `tests/test_leakage.py`, `reports/prediction/leakage.json`). Nine checks run
+  on the committed fixture in the test suite and on the real dataset in
+  `just ml`: no post-departure column in either horizon's feature list, targets
+  and diagnostics kept out of both, D-1 a strict subset of H-1 whose additions
+  are all about the inbound leg, every lagged rate equal to the fact table's
+  `t-1` value and not its `t` value, the airport day-hour movement counts
+  recounted from the staged **schedule**, the rotation link scheduled to land
+  before the flight departs, no target where ADR-0012 leaves no actual
+  timestamp, no busy-hour flag in the build's first year, and holidays taken
+  from `data/external/holidays.csv` by date. A tenth test plants a leak (the
+  same month's route prevalence) and asserts the checks catch it.
+
 - `data/analysis/*.parquet` and `*.csv.gz` are tracked in git (`DECISIONS.md`
   ADR-0014): the fact table and panel run 8-12 MB, city and airline-city
   projections 2-4 MB, all under the pre-commit `check-added-large-files`
@@ -128,6 +162,28 @@ version numbers, mark progress.
   `tests/`) described in `DECISIONS.md` and the architecture review.
 
 ### Fixed
+
+- `ml.dataset_flights.collapse_fact` enforces the ADR-0016 key invariant on its
+  input before joining it. `vra.features.build_fact` groups within each **file**
+  year and concatenates, so the 3,723 staged rows whose derived year differs
+  from the year of the file they came from (`docs/notes/staging.md` section 5)
+  emit the same `group x route x month` cell twice -- 844 rows over 422 keys in
+  the committed table, 0.5% of 166,203. Joined as a lag table, those cells
+  duplicated flights in the modelling table: 1,128 extra rows in 2001 alone,
+  measured before the collapse existed. The collapse sums the counts and takes
+  the minimum of `is_entry`/`is_exit`, and is a no-op once the fact table
+  satisfies ADR-0016 on its own.
+
+- `registry.DTYPE_ALIASES` accepts `category` and `dictionary` as physical forms
+  of a declared `string`. The flight-level table dictionary-encodes every label
+  -- ten million repetitions of `MRSP-MRRJ` as Python objects is a gigabyte and
+  as codes is ten megabytes -- and `validate_schema` was reading that as a type
+  mismatch.
+
+- `registry.resource` omits `primaryKey` when none is given, instead of writing
+  an empty one: the flight-level table has no key that is unique in the source
+  data (the raw VRA repeats rows), and declaring one would be a claim, not a
+  schema.
 
 - `fsc_*` panel columns now use the article's own FSC carrier set (TAM group,
   Varig group until 2007-03, Transbrasil, Vasp); the class-based family

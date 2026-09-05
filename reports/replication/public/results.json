@@ -609,7 +609,13 @@
  },
  "meta": {
   "source": "public",
-  "tables_not_estimated": {},
+  "tables_not_estimated": {
+   "table3": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel.",
+   "table4": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel.",
+   "table5": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel.",
+   "table6": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel.",
+   "table7": "this column of the published specification needs ['maxprdel', 'cshare', 'dailyflcong', 'dailyflncong', 'h3_maxcthhi', 'lnh1_maxcthhi', 'l1h1_maxcthhi', 'l1h2_maxcthhi', 'h2_rthhi'], which this panel does not carry. A near-equivalent column is not a substitute: see `docs/declared-differences.md`. Run `--source private` for the benchmark, or add the variables to the panel."
+  },
   "bandwidth": 4,
   "debiased": true,
   "with_seasonality": true,
@@ -643,6 +649,6 @@
    "months": 144,
    "singleton_cutoff": 5
   },
-  "seconds": 0.2
+  "seconds": 0.3
  }
 }

@@ -37,7 +37,7 @@ close yet.
    does not carry yet (`docs/declared-differences.md`).
 5. **Prediction** (`just ml`) — **done.** `ml/dataset_flights.py` builds the
    flight-level table (10,200,578 scheduled flights, 46 D-1 features plus 3
-   for H-1, five targets, one DuckDB scan per staged year, about 25 s);
+   for H-1, five targets, one DuckDB scan per staged year, about 33 s);
    `ml/split.py` holds the rolling origin 2006-2013 and the fixed
    2002-2010 / 2011 / 2012-2013 split of ADR-0009; XGBoost `hist` with
    early stopping on each fold's validation year, LightGBM optional. The
@@ -81,17 +81,23 @@ close yet.
   the benchmark at 56.0% (stable vintage) against 87.7% for departures
   under the identical rule; declared in `DECISIONS.md` ADR-0002 and still
   unexplained.
-- **Duplicate fact cells across file years** (phase 3) — `build_fact` groups
-  within each file year and concatenates, so a staged row whose derived
-  year differs from the year of its source file (3,723 rows, 0.03%,
-  `docs/notes/staging.md` §5) can produce the same
-  `group x route x month` cell twice: 844 of 166,203 rows of
-  `data/analysis/fact_group_route_month.parquet` share their key with
-  another row. Sums over the table are unaffected; joins on the key are
-  not, and the prediction layer collapses the table before using it
-  (`ml.dataset_flights.collapse_fact`). Re-grouping the fact table itself
-  across years would move the panel and the replication, so it has not
-  been done here.
+- **ADR-0016 not yet implemented in `features`** (phase 3) — the fact
+  table's `(group, route, ym)` key is decided to be unique
+  (`DECISIONS.md` ADR-0016) but `build_fact` still groups within each file
+  year and concatenates, so a staged row whose derived year differs from
+  the year of its source file (3,723 rows, 0.03%, `docs/notes/staging.md`
+  §5) produces the same cell twice: 844 rows over 422 keys in the
+  committed `data/analysis/fact_group_route_month.parquet`. Sums over the
+  table are unaffected; joins on the key are not, and the prediction layer
+  collapses its input before joining
+  (`ml.dataset_flights.collapse_fact`), which becomes a no-op once the
+  invariant holds upstream.
+- **ADR-0015 not yet implemented in `stage`** (phase 2/5) — `stage.py`
+  does not write the `actual_time_suspect` boolean the ADR describes, so
+  `ml/dataset_flights.py` computes the same rule itself (|departure or
+  arrival delay| >= 1,440 minutes) and excludes those 5,349 flights from
+  the targets, counted per year in `data/derived/ml/manifest.json`. When
+  staging adds the column the two definitions must be checked to agree.
 - **KP fixture status** (phase 4) — `replication/kp.py`'s algebraic
   self-check (`tests/test_replication_kp.py`, the Wald-to-Cragg-Donald and
   LM-to-Anderson collapses) runs in CI on synthetic data and needs no

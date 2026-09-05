@@ -1,0 +1,54 @@
+{
+  "years": [
+    2000,
+    2013
+  ],
+  "rows": 1644260,
+  "checks": [
+    {
+      "name": "features_exclude_post_departure",
+      "passed": true,
+      "detail": "49 features checked against 13 forbidden names and 3 prefixes"
+    },
+    {
+      "name": "targets_are_not_features",
+      "passed": true,
+      "detail": "5 targets and 5 diagnostics kept out of both horizons"
+    },
+    {
+      "name": "horizons_are_nested",
+      "passed": true,
+      "detail": "H-1 adds ['prev_arr_delay_min', 'prev_late15', 'prev_cancelled'] to D-1's 46 features"
+    },
+    {
+      "name": "lag_windows_closed",
+      "passed": true,
+      "detail": "over 1,427,305 rows where t-1 and t differ: 1.0000 match t-1, 0.0000 match t (pandas 2.3.3)"
+    },
+    {
+      "name": "movements_from_schedule",
+      "passed": true,
+      "detail": "1.0000 of 1,644,260 rows match a recount from sched_dep/sched_arr (a dataset reusing the staged dep_hour, which falls back to actual_dep, would not)"
+    },
+    {
+      "name": "previous_leg_precedes_departure",
+      "passed": true,
+      "detail": "453,524 linked legs, 0 with a negative turnaround, 0 with none, 0 turnarounds on unlinked flights"
+    },
+    {
+      "name": "targets_null_without_actual",
+      "passed": true,
+      "detail": "470,294 realised flights with no actual arrival time (ADR-0012) and 1,235 with a suspect timestamp (ADR-0015) are excluded from the arrival target; 0 rows disagreeing"
+    },
+    {
+      "name": "first_year_has_no_p90",
+      "passed": true,
+      "detail": "2000: 0 rows carry a p90 flag (must be 0); later years: 983,957 of 984,962"
+    },
+    {
+      "name": "calendar_matches_the_table",
+      "passed": true,
+      "detail": "92 dated holidays, 27,386 flagged flights, 0 wrong"
+    }
+  ]
+}

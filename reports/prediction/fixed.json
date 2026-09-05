@@ -1,0 +1,482 @@
+{
+  "meta": {
+    "learner": "xgboost",
+    "sample_rate": 1.0,
+    "horizons": [
+      "D-1",
+      "H-1"
+    ],
+    "horizon_labels": {
+      "D-1": "day before (schedule and closed history only)",
+      "H-1": "at the gate (adds the inbound leg's realised arrival)"
+    },
+    "params": {
+      "tree_method": "hist",
+      "enable_categorical": true,
+      "max_cat_to_onehot": 4,
+      "max_bin": 128,
+      "n_estimators": 1200,
+      "learning_rate": 0.08,
+      "max_depth": 7,
+      "min_child_weight": 20.0,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "reg_lambda": 1.0,
+      "random_state": 0
+    },
+    "early_stopping_rounds": 40,
+    "git_commit": "e0bfc94",
+    "tool_versions": {
+      "python": "3.12.13",
+      "duckdb": "1.5.5",
+      "pyarrow": "25.0.1",
+      "platform": "Darwin arm64"
+    },
+    "generated_at": "2026-09-05T04:01:11-0300",
+    "seconds": 1426.5
+  },
+  "labels": {
+    "late15_arr": "arrival more than 15 minutes late",
+    "late30_arr": "arrival more than 30 minutes late",
+    "late15_dep": "departure more than 15 minutes late",
+    "cancelled": "flight cancelled"
+  },
+  "folds": [
+    {
+      "name": "fixed",
+      "kind": "fixed",
+      "train_years": [
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "valid_year": 2011,
+      "test_years": [
+        2012,
+        2013
+      ],
+      "target": "late15_arr",
+      "n_train": 1967956,
+      "n_valid": 898100,
+      "n_test": 1835761,
+      "base_rate_train": 0.6205981969833374,
+      "base_rate_test": 0.18942444032747183,
+      "linked_share_test": 0.22478961041224865,
+      "sample_rate": 1.0,
+      "models": {
+        "D-1": {
+          "learner": "xgboost",
+          "horizon": "D-1",
+          "target": "late15_arr",
+          "n_features": 46,
+          "n_train": 1967956,
+          "n_valid": 898100,
+          "base_rate_train": 0.6205981969833374,
+          "best_iteration": 149,
+          "seconds": 52.34,
+          "n": 1835761,
+          "base_rate": 0.18942444032747183,
+          "auc": 0.702188522067182,
+          "pr_auc": 0.3722969359425848,
+          "brier": 0.1397376359205671
+        },
+        "H-1": {
+          "learner": "xgboost",
+          "horizon": "H-1",
+          "target": "late15_arr",
+          "n_features": 49,
+          "n_train": 1967956,
+          "n_valid": 898100,
+          "base_rate_train": 0.6205981969833374,
+          "best_iteration": 200,
+          "seconds": 70.36,
+          "n": 1835761,
+          "base_rate": 0.18942444032747183,
+          "auc": 0.7513957085670389,
+          "pr_auc": 0.49861097491805006,
+          "brier": 0.12654083592536644
+        }
+      },
+      "linked_subset": {
+        "D-1": {
+          "n": 412660,
+          "base_rate": 0.21203654340134737,
+          "auc": 0.690088836746851,
+          "pr_auc": 0.3784329134710488,
+          "brier": 0.15382134000075753
+        },
+        "H-1": {
+          "n": 412660,
+          "base_rate": 0.21203654340134737,
+          "auc": 0.8623256893023441,
+          "pr_auc": 0.748448961997799,
+          "brier": 0.09618484047178588
+        }
+      },
+      "baselines": {
+        "route_prevalence_l1": {
+          "n": 1835761,
+          "base_rate": 0.18942444032747183,
+          "auc": 0.6209143769152915,
+          "pr_auc": 0.28354635737463046,
+          "brier": 0.14999217635318413,
+          "linked_subset": {
+            "n": 412660,
+            "base_rate": 0.21203654340134737,
+            "auc": 0.6371062768681746,
+            "pr_auc": 0.3308512037045106,
+            "brier": 0.16168854682313635
+          }
+        },
+        "group_prevalence_l1": {
+          "n": 1835761,
+          "base_rate": 0.18942444032747183,
+          "auc": 0.575392384011622,
+          "pr_auc": 0.24585478210573103,
+          "brier": 0.15197104010567256,
+          "linked_subset": {
+            "n": 412660,
+            "base_rate": 0.21203654340134737,
+            "auc": 0.5935030193494572,
+            "pr_auc": 0.2891134992018777,
+            "brier": 0.16368744163931667
+          }
+        }
+      },
+      "seconds": 130.7
+    },
+    {
+      "name": "fixed",
+      "kind": "fixed",
+      "train_years": [
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "valid_year": 2011,
+      "test_years": [
+        2012,
+        2013
+      ],
+      "target": "late30_arr",
+      "n_train": 1967956,
+      "n_valid": 898100,
+      "n_test": 1835761,
+      "base_rate_train": 0.39942052960395813,
+      "base_rate_test": 0.08984666304600654,
+      "linked_share_test": 0.22478961041224865,
+      "sample_rate": 1.0,
+      "models": {
+        "D-1": {
+          "learner": "xgboost",
+          "horizon": "D-1",
+          "target": "late30_arr",
+          "n_features": 46,
+          "n_train": 1967956,
+          "n_valid": 898100,
+          "base_rate_train": 0.39942052960395813,
+          "best_iteration": 138,
+          "seconds": 50.52,
+          "n": 1835761,
+          "base_rate": 0.08984666304600654,
+          "auc": 0.684013187562965,
+          "pr_auc": 0.18981845942688994,
+          "brier": 0.07875890410768233
+        },
+        "H-1": {
+          "learner": "xgboost",
+          "horizon": "H-1",
+          "target": "late30_arr",
+          "n_features": 49,
+          "n_train": 1967956,
+          "n_valid": 898100,
+          "base_rate_train": 0.39942052960395813,
+          "best_iteration": 240,
+          "seconds": 82.03,
+          "n": 1835761,
+          "base_rate": 0.08984666304600654,
+          "auc": 0.7518248365959195,
+          "pr_auc": 0.36032274783223717,
+          "brier": 0.06972288911390247
+        }
+      },
+      "linked_subset": {
+        "D-1": {
+          "n": 412660,
+          "base_rate": 0.10512770804051762,
+          "auc": 0.6831481740596645,
+          "pr_auc": 0.21192608754904724,
+          "brier": 0.08998257754200865
+        },
+        "H-1": {
+          "n": 412660,
+          "base_rate": 0.10512770804051762,
+          "auc": 0.9006964668493813,
+          "pr_auc": 0.7240812317268663,
+          "brier": 0.04914889223457746
+        }
+      },
+      "baselines": {
+        "route_prevalence_l1": {
+          "n": 1835761,
+          "base_rate": 0.08984666304600654,
+          "auc": 0.6144262357461279,
+          "pr_auc": 0.1518411199628364,
+          "brier": 0.09550548426649483,
+          "linked_subset": {
+            "n": 412660,
+            "base_rate": 0.10512770804051762,
+            "auc": 0.6359274188305049,
+            "pr_auc": 0.1923350609014289,
+            "brier": 0.10787852066468906
+          }
+        },
+        "group_prevalence_l1": {
+          "n": 1835761,
+          "base_rate": 0.08984666304600654,
+          "auc": 0.5789709649151501,
+          "pr_auc": 0.13078566771543598,
+          "brier": 0.09338475324580799,
+          "linked_subset": {
+            "n": 412660,
+            "base_rate": 0.10512770804051762,
+            "auc": 0.6014032477756869,
+            "pr_auc": 0.1664664190322226,
+            "brier": 0.10441127166897542
+          }
+        }
+      },
+      "seconds": 141.1
+    },
+    {
+      "name": "fixed",
+      "kind": "fixed",
+      "train_years": [
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "valid_year": 2011,
+      "test_years": [
+        2012,
+        2013
+      ],
+      "target": "late15_dep",
+      "n_train": 1967895,
+      "n_valid": 898102,
+      "n_test": 1835761,
+      "base_rate_train": 0.5339593887329102,
+      "base_rate_test": 0.1642866364412361,
+      "linked_share_test": 0.22478961041224865,
+      "sample_rate": 1.0,
+      "models": {
+        "D-1": {
+          "learner": "xgboost",
+          "horizon": "D-1",
+          "target": "late15_dep",
+          "n_features": 46,
+          "n_train": 1967895,
+          "n_valid": 898102,
+          "base_rate_train": 0.5339593887329102,
+          "best_iteration": 126,
+          "seconds": 48.66,
+          "n": 1835761,
+          "base_rate": 0.1642866364412361,
+          "auc": 0.6584979502103498,
+          "pr_auc": 0.27911651180613345,
+          "brier": 0.13097122331306188
+        },
+        "H-1": {
+          "learner": "xgboost",
+          "horizon": "H-1",
+          "target": "late15_dep",
+          "n_features": 49,
+          "n_train": 1967895,
+          "n_valid": 898102,
+          "base_rate_train": 0.5339593887329102,
+          "best_iteration": 164,
+          "seconds": 59.75,
+          "n": 1835761,
+          "base_rate": 0.1642866364412361,
+          "auc": 0.73247568661427,
+          "pr_auc": 0.45085413498811205,
+          "brier": 0.11508486466566811
+        }
+      },
+      "linked_subset": {
+        "D-1": {
+          "n": 412660,
+          "base_rate": 0.18214995395725295,
+          "auc": 0.6665360795949213,
+          "pr_auc": 0.31319864859602753,
+          "brier": 0.1407334963140171
+        },
+        "H-1": {
+          "n": 412660,
+          "base_rate": 0.18214995395725295,
+          "auc": 0.8958926690657094,
+          "pr_auc": 0.8021131801851502,
+          "brier": 0.06994600322359477
+        }
+      },
+      "baselines": {
+        "route_prevalence_l1": {
+          "n": 1835761,
+          "base_rate": 0.1642866364412361,
+          "auc": 0.5887583020225392,
+          "pr_auc": 0.22688991712445372,
+          "brier": 0.13937063993403642,
+          "linked_subset": {
+            "n": 412660,
+            "base_rate": 0.18214995395725295,
+            "auc": 0.6120331012339315,
+            "pr_auc": 0.26935391000651454,
+            "brier": 0.15000121745689168
+          }
+        },
+        "group_prevalence_l1": {
+          "n": 1835761,
+          "base_rate": 0.1642866364412361,
+          "auc": 0.5556758993774576,
+          "pr_auc": 0.2008720402728396,
+          "brier": 0.13863156010025052,
+          "linked_subset": {
+            "n": 412660,
+            "base_rate": 0.18214995395725295,
+            "auc": 0.5723999611366003,
+            "pr_auc": 0.23856471158542042,
+            "brier": 0.14888382385699955
+          }
+        }
+      },
+      "seconds": 115.3
+    },
+    {
+      "name": "fixed",
+      "kind": "fixed",
+      "train_years": [
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "valid_year": 2011,
+      "test_years": [
+        2012,
+        2013
+      ],
+      "target": "cancelled",
+      "n_train": 5857722,
+      "n_valid": 983031,
+      "n_test": 2008922,
+      "base_rate_train": 0.14322854515799827,
+      "base_rate_test": 0.08545578175757944,
+      "linked_share_test": 0.22532283483380638,
+      "sample_rate": 1.0,
+      "models": {
+        "D-1": {
+          "learner": "xgboost",
+          "horizon": "D-1",
+          "target": "cancelled",
+          "n_features": 46,
+          "n_train": 5857722,
+          "n_valid": 983031,
+          "base_rate_train": 0.14322854578495026,
+          "best_iteration": 133,
+          "seconds": 109.35,
+          "n": 2008922,
+          "base_rate": 0.08545578175757944,
+          "auc": 0.692948171350432,
+          "pr_auc": 0.2102052955684899,
+          "brier": 0.07481907759245411
+        },
+        "H-1": {
+          "learner": "xgboost",
+          "horizon": "H-1",
+          "target": "cancelled",
+          "n_features": 49,
+          "n_train": 5857722,
+          "n_valid": 983031,
+          "base_rate_train": 0.14322854578495026,
+          "best_iteration": 144,
+          "seconds": 123.78,
+          "n": 2008922,
+          "base_rate": 0.08545578175757944,
+          "auc": 0.7694378579735158,
+          "pr_auc": 0.3703721849478701,
+          "brier": 0.06581742711212824
+        }
+      },
+      "linked_subset": {
+        "D-1": {
+          "n": 452656,
+          "base_rate": 0.0872030857869994,
+          "auc": 0.6949184577645926,
+          "pr_auc": 0.23390107790978146,
+          "brier": 0.0759543827598353
+        },
+        "H-1": {
+          "n": 452656,
+          "base_rate": 0.0872030857869994,
+          "auc": 0.9262491900294321,
+          "pr_auc": 0.7538185042398959,
+          "brier": 0.03546341044126825
+        }
+      },
+      "baselines": {
+        "route_prevalence_l1": {
+          "n": 2008922,
+          "base_rate": 0.08545578175757944,
+          "auc": 0.4903255740672724,
+          "pr_auc": 0.0902664084118395,
+          "brier": 0.10146877466805705,
+          "linked_subset": {
+            "n": 452656,
+            "base_rate": 0.0872030857869994,
+            "auc": 0.5050752712985309,
+            "pr_auc": 0.10516521857465795,
+            "brier": 0.11033309868395592
+          }
+        },
+        "group_prevalence_l1": {
+          "n": 2008922,
+          "base_rate": 0.08545578175757944,
+          "auc": 0.5062643032989108,
+          "pr_auc": 0.10583813200188746,
+          "brier": 0.09373537943546682,
+          "linked_subset": {
+            "n": 452656,
+            "base_rate": 0.0872030857869994,
+            "auc": 0.541186936326502,
+            "pr_auc": 0.12899692811878077,
+            "brier": 0.09803357290923012
+          }
+        }
+      },
+      "seconds": 240.6
+    }
+  ]
+}

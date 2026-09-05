@@ -88,11 +88,11 @@ years (`data/staged/manifest.json`); `features` about 11.1 seconds
 (`data/analysis/manifest.json`); `panel` about 7.5 seconds
 (`data/analysis/panel_manifest.json`); `replicate` (public panel) about 0.3
 seconds (`reports/replication/public/tables.md`); `replicate private`
-about 38.1 seconds (`reports/replication/private/tables.md`). The
-prediction phase (`ml`) is still in progress; its headline numbers and
-wall time land in
-<!-- PREDICTION: filled after phase 5 --> `reports/prediction/results.md`
-once it does.
+about 38.1 seconds (`reports/replication/private/tables.md`); `ml`
+about 1,427 seconds end to end -- 33 seconds to build the
+10,200,578-row flight table and the rest to fit 24 models over the eight
+rolling-origin folds and the fixed split
+(`reports/prediction/results.md`).
 
 **What does not reproduce from this repository alone.** The private
 benchmark (`proj18.dta`, the LABTAR/NECTAR laboratory bases, `vra.dta`) is

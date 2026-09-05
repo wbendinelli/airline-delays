@@ -1,0 +1,582 @@
+{
+  "fold": "rolling_2013",
+  "target": "late15_arr",
+  "repeats": 3,
+  "sample": 250000,
+  "horizons": {
+    "D-1": [
+      {
+        "feature": "flight_no_late15_l3",
+        "auc_drop": 0.10351527237614822,
+        "auc_drop_sd": 0.0017976433126460918,
+        "total_gain": 5805373.0
+      },
+      {
+        "feature": "sched_block_min",
+        "auc_drop": 0.06346203820028136,
+        "auc_drop_sd": 0.0005519798206832879,
+        "total_gain": 65672.8515625
+      },
+      {
+        "feature": "distance_km",
+        "auc_drop": 0.04119620069575839,
+        "auc_drop_sd": 0.0006913637699041811,
+        "total_gain": 38579.76171875
+      },
+      {
+        "feature": "month",
+        "auc_drop": 0.015623788651724979,
+        "auc_drop_sd": 0.0002018592807591002,
+        "total_gain": 358188.15625
+      },
+      {
+        "feature": "origin_movements_hour",
+        "auc_drop": 0.010236238459236269,
+        "auc_drop_sd": 5.2889908191073264e-05,
+        "total_gain": 22792.61328125
+      },
+      {
+        "feature": "dow",
+        "auc_drop": 0.006772131537273518,
+        "auc_drop_sd": 0.00039688159451790433,
+        "total_gain": 45646.7578125
+      },
+      {
+        "feature": "origin_icao",
+        "auc_drop": 0.005198156417429896,
+        "auc_drop_sd": 0.0002117952187136577,
+        "total_gain": 291829.6875
+      },
+      {
+        "feature": "sched_dep_hour",
+        "auc_drop": 0.004065998207571327,
+        "auc_drop_sd": 0.00012590419774148246,
+        "total_gain": 42147.3125
+      },
+      {
+        "feature": "route_late15_l1",
+        "auc_drop": 0.0034759580654308473,
+        "auc_drop_sd": 5.0065321788750786e-05,
+        "total_gain": 1618853.125
+      },
+      {
+        "feature": "dest_icao",
+        "auc_drop": 0.003025633696414213,
+        "auc_drop_sd": 0.00022832685568245094,
+        "total_gain": 251354.8125
+      },
+      {
+        "feature": "flight_no_obs_l3",
+        "auc_drop": 0.002453638219326648,
+        "auc_drop_sd": 7.179233953336333e-05,
+        "total_gain": 82396.8046875
+      },
+      {
+        "feature": "dest_movements_hour",
+        "auc_drop": 0.0012319169637315202,
+        "auc_drop_sd": 0.0001116020734193693,
+        "total_gain": 9021.7177734375
+      },
+      {
+        "feature": "is_holiday_window",
+        "auc_drop": 0.0012167506525584033,
+        "auc_drop_sd": 4.767178548826371e-05,
+        "total_gain": 9848.2421875
+      },
+      {
+        "feature": "origin_movements_day",
+        "auc_drop": 0.0009687735885959281,
+        "auc_drop_sd": 3.227744682372453e-05,
+        "total_gain": 13139.85546875
+      },
+      {
+        "feature": "sched_arr_hour",
+        "auc_drop": 0.000938783342816718,
+        "auc_drop_sd": 6.654692738764284e-05,
+        "total_gain": 15946.0498046875
+      },
+      {
+        "feature": "prev_turnaround_min",
+        "auc_drop": 0.0009380581779584451,
+        "auc_drop_sd": 8.460356495114372e-05,
+        "total_gain": 28907.30078125
+      },
+      {
+        "feature": "route_obs_l1",
+        "auc_drop": 0.0006149890790143978,
+        "auc_drop_sd": 0.00010067331572783186,
+        "total_gain": 11831.64453125
+      },
+      {
+        "feature": "origin_p90_hour",
+        "auc_drop": 0.00047132842625004684,
+        "auc_drop_sd": 0.00012041608143962168,
+        "total_gain": 8802.2890625
+      },
+      {
+        "feature": "dest_weather_l1",
+        "auc_drop": 0.0004030796841608675,
+        "auc_drop_sd": 7.09696689054814e-05,
+        "total_gain": 18318.90234375
+      },
+      {
+        "feature": "origin_late15_l1",
+        "auc_drop": 0.0003758467328762727,
+        "auc_drop_sd": 5.746329645312554e-05,
+        "total_gain": 73233.9375
+      },
+      {
+        "feature": "group_late15_l1",
+        "auc_drop": 0.00034766159620532494,
+        "auc_drop_sd": 0.0001077632617556565,
+        "total_gain": 479771.90625
+      },
+      {
+        "feature": "leg_index",
+        "auc_drop": 0.00029108752589272296,
+        "auc_drop_sd": 3.736344898547782e-05,
+        "total_gain": 15816.3134765625
+      },
+      {
+        "feature": "dest_late15_l1",
+        "auc_drop": 0.00026287080596495055,
+        "auc_drop_sd": 3.1684583200741935e-05,
+        "total_gain": 77882.140625
+      },
+      {
+        "feature": "is_observance",
+        "auc_drop": 0.00025504018960402036,
+        "auc_drop_sd": 5.91005294894282e-05,
+        "total_gain": 10414.044921875
+      },
+      {
+        "feature": "is_weekend",
+        "auc_drop": 0.0001763296938984693,
+        "auc_drop_sd": 3.0134161689717184e-05,
+        "total_gain": 1822.1219482421875
+      },
+      {
+        "feature": "dest_movements_day",
+        "auc_drop": 0.00013753023909720183,
+        "auc_drop_sd": 1.8792971601866127e-05,
+        "total_gain": 8052.07958984375
+      },
+      {
+        "feature": "is_high_season",
+        "auc_drop": 8.466185945599225e-05,
+        "auc_drop_sd": 3.0026928985533905e-05,
+        "total_gain": 40624.70703125
+      },
+      {
+        "feature": "airline_origin_share_l1",
+        "auc_drop": 6.0623250875302404e-05,
+        "auc_drop_sd": 2.770569074312498e-05,
+        "total_gain": 12153.0458984375
+      },
+      {
+        "feature": "dest_p90_hour",
+        "auc_drop": 5.1499010097488807e-05,
+        "auc_drop_sd": 1.44257206178034e-05,
+        "total_gain": 1649.9267578125
+      },
+      {
+        "feature": "months_on_route",
+        "auc_drop": 4.5885764936211736e-05,
+        "auc_drop_sd": 2.533093520701084e-05,
+        "total_gain": 37106.265625
+      },
+      {
+        "feature": "route_kind",
+        "auc_drop": 3.5092103909136384e-05,
+        "auc_drop_sd": 3.087899491567657e-05,
+        "total_gain": 1309.6771240234375
+      },
+      {
+        "feature": "origin_weather_l1",
+        "auc_drop": 3.0782327296548693e-05,
+        "auc_drop_sd": 3.48101385801096e-05,
+        "total_gain": 12540.2548828125
+      },
+      {
+        "feature": "origin_metro",
+        "auc_drop": 2.514746019199876e-07,
+        "auc_drop_sd": 1.2404589864044272e-07,
+        "total_gain": 917.11767578125
+      },
+      {
+        "feature": "is_new_on_route",
+        "auc_drop": 0.0,
+        "auc_drop_sd": 0.0,
+        "total_gain": 0.0
+      },
+      {
+        "feature": "dest_metro",
+        "auc_drop": -4.898627588752665e-08,
+        "auc_drop_sd": 3.5763357202273663e-08,
+        "total_gain": 75.2379150390625
+      },
+      {
+        "feature": "dest_slot_coordinated",
+        "auc_drop": -1.1453178807204385e-06,
+        "auc_drop_sd": 1.931349449045413e-06,
+        "total_gain": 908.0742797851562
+      },
+      {
+        "feature": "class",
+        "auc_drop": -1.990409267553043e-06,
+        "auc_drop_sd": 1.5916833252395345e-06,
+        "total_gain": 731.4074096679688
+      },
+      {
+        "feature": "origin_slot_coordinated",
+        "auc_drop": -2.5837330723070076e-06,
+        "auc_drop_sd": 1.0851256928700267e-06,
+        "total_gain": 125.69010162353516
+      },
+      {
+        "feature": "airline_route_share_l1",
+        "auc_drop": -4.703190316165025e-06,
+        "auc_drop_sd": 4.516274364569837e-05,
+        "total_gain": 11155.1806640625
+      },
+      {
+        "feature": "prev_leg",
+        "auc_drop": -1.9911553902351997e-05,
+        "auc_drop_sd": 2.8257830346181267e-06,
+        "total_gain": 1870.315185546875
+      },
+      {
+        "feature": "route_late15_l12",
+        "auc_drop": -8.230331090323488e-05,
+        "auc_drop_sd": 2.4538770515897415e-05,
+        "total_gain": 27732.126953125
+      },
+      {
+        "feature": "is_holiday",
+        "auc_drop": -0.00016304050634707856,
+        "auc_drop_sd": 6.822955776304073e-06,
+        "total_gain": 1461.0904541015625
+      },
+      {
+        "feature": "dest_node",
+        "auc_drop": -0.00016494352941109902,
+        "auc_drop_sd": 5.138989828326014e-05,
+        "total_gain": 67510.7265625
+      },
+      {
+        "feature": "origin_node",
+        "auc_drop": -0.00037966729128643034,
+        "auc_drop_sd": 2.805420289433705e-05,
+        "total_gain": 81824.3359375
+      },
+      {
+        "feature": "group",
+        "auc_drop": -0.0005950561961595898,
+        "auc_drop_sd": 8.766371149720716e-05,
+        "total_gain": 121479.2578125
+      },
+      {
+        "feature": "airline",
+        "auc_drop": -0.0012625008848917707,
+        "auc_drop_sd": 0.00025821242431054884,
+        "total_gain": 172162.515625
+      }
+    ],
+    "H-1": [
+      {
+        "feature": "sched_block_min",
+        "auc_drop": 0.07924731345039904,
+        "auc_drop_sd": 0.0005755003971405034,
+        "total_gain": 93032.3515625
+      },
+      {
+        "feature": "flight_no_late15_l3",
+        "auc_drop": 0.06169049060910492,
+        "auc_drop_sd": 0.0012623268622629755,
+        "total_gain": 6139916.0
+      },
+      {
+        "feature": "distance_km",
+        "auc_drop": 0.05871760003356489,
+        "auc_drop_sd": 0.00033712532373535544,
+        "total_gain": 52136.6640625
+      },
+      {
+        "feature": "prev_arr_delay_min",
+        "auc_drop": 0.04795069166569114,
+        "auc_drop_sd": 0.000336943485426157,
+        "total_gain": 1313005.75
+      },
+      {
+        "feature": "origin_movements_hour",
+        "auc_drop": 0.01759617335263493,
+        "auc_drop_sd": 0.00029970674789769696,
+        "total_gain": 51344.1484375
+      },
+      {
+        "feature": "month",
+        "auc_drop": 0.011162902679436204,
+        "auc_drop_sd": 0.00016287268298144315,
+        "total_gain": 276006.75
+      },
+      {
+        "feature": "origin_icao",
+        "auc_drop": 0.009077774677829368,
+        "auc_drop_sd": 0.00012862160252967076,
+        "total_gain": 341423.96875
+      },
+      {
+        "feature": "dest_icao",
+        "auc_drop": 0.006686695858727572,
+        "auc_drop_sd": 0.00019111059711484366,
+        "total_gain": 346899.78125
+      },
+      {
+        "feature": "dow",
+        "auc_drop": 0.00636187452382068,
+        "auc_drop_sd": 0.00033835395135466774,
+        "total_gain": 44852.29296875
+      },
+      {
+        "feature": "prev_turnaround_min",
+        "auc_drop": 0.005278477542040953,
+        "auc_drop_sd": 5.6495501125716614e-05,
+        "total_gain": 63262.2578125
+      },
+      {
+        "feature": "sched_dep_hour",
+        "auc_drop": 0.003282065248602861,
+        "auc_drop_sd": 0.000102423430473047,
+        "total_gain": 39546.44921875
+      },
+      {
+        "feature": "route_late15_l1",
+        "auc_drop": 0.002685762480633606,
+        "auc_drop_sd": 8.351138863971985e-05,
+        "total_gain": 1195890.5
+      },
+      {
+        "feature": "group_late15_l1",
+        "auc_drop": 0.0025353209983381233,
+        "auc_drop_sd": 0.0001743298412231836,
+        "total_gain": 421049.5
+      },
+      {
+        "feature": "origin_movements_day",
+        "auc_drop": 0.001332187260892163,
+        "auc_drop_sd": 2.9624165866727e-05,
+        "total_gain": 24791.3125
+      },
+      {
+        "feature": "prev_late15",
+        "auc_drop": 0.001270674600503859,
+        "auc_drop_sd": 6.259246993864041e-05,
+        "total_gain": 171964.296875
+      },
+      {
+        "feature": "dest_movements_hour",
+        "auc_drop": 0.0012346761528310157,
+        "auc_drop_sd": 0.00015767321177117527,
+        "total_gain": 12704.8857421875
+      },
+      {
+        "feature": "is_holiday_window",
+        "auc_drop": 0.001126945292731681,
+        "auc_drop_sd": 4.6244536561289384e-05,
+        "total_gain": 7076.21630859375
+      },
+      {
+        "feature": "sched_arr_hour",
+        "auc_drop": 0.001072264049775044,
+        "auc_drop_sd": 3.455729478785302e-05,
+        "total_gain": 23550.5625
+      },
+      {
+        "feature": "flight_no_obs_l3",
+        "auc_drop": 0.0008787674787917125,
+        "auc_drop_sd": 6.458422947111121e-05,
+        "total_gain": 77709.0234375
+      },
+      {
+        "feature": "route_obs_l1",
+        "auc_drop": 0.0005416627570813404,
+        "auc_drop_sd": 8.420217666611494e-05,
+        "total_gain": 16306.9345703125
+      },
+      {
+        "feature": "prev_cancelled",
+        "auc_drop": 0.0005326411960692908,
+        "auc_drop_sd": 7.135627916677552e-05,
+        "total_gain": 11360.1552734375
+      },
+      {
+        "feature": "dest_movements_day",
+        "auc_drop": 0.00048467328002429105,
+        "auc_drop_sd": 0.00012616699630162563,
+        "total_gain": 10195.41796875
+      },
+      {
+        "feature": "dest_weather_l1",
+        "auc_drop": 0.00040017701293137975,
+        "auc_drop_sd": 5.156300822955643e-05,
+        "total_gain": 15813.337890625
+      },
+      {
+        "feature": "is_high_season",
+        "auc_drop": 0.0003625080121527254,
+        "auc_drop_sd": 8.133586912791163e-05,
+        "total_gain": 35484.36328125
+      },
+      {
+        "feature": "origin_p90_hour",
+        "auc_drop": 0.0003475445604138964,
+        "auc_drop_sd": 7.476488208433181e-05,
+        "total_gain": 6635.79541015625
+      },
+      {
+        "feature": "leg_index",
+        "auc_drop": 0.0003334431538448331,
+        "auc_drop_sd": 4.336616347647767e-05,
+        "total_gain": 27742.54296875
+      },
+      {
+        "feature": "airline_route_share_l1",
+        "auc_drop": 0.0003246350581473563,
+        "auc_drop_sd": 6.442714555889316e-05,
+        "total_gain": 15306.09375
+      },
+      {
+        "feature": "airline_origin_share_l1",
+        "auc_drop": 0.0002892687834428938,
+        "auc_drop_sd": 2.635711098849195e-05,
+        "total_gain": 17064.10546875
+      },
+      {
+        "feature": "is_observance",
+        "auc_drop": 0.00027042281776490373,
+        "auc_drop_sd": 1.1281064499850025e-05,
+        "total_gain": 9126.4921875
+      },
+      {
+        "feature": "origin_weather_l1",
+        "auc_drop": 0.00023119068992409156,
+        "auc_drop_sd": 4.4685576140023876e-05,
+        "total_gain": 16309.3056640625
+      },
+      {
+        "feature": "is_weekend",
+        "auc_drop": 0.00015684766838245748,
+        "auc_drop_sd": 1.1905661399457709e-05,
+        "total_gain": 1677.5389404296875
+      },
+      {
+        "feature": "route_kind",
+        "auc_drop": 0.00013585634601809282,
+        "auc_drop_sd": 2.5775804805755584e-05,
+        "total_gain": 936.3302001953125
+      },
+      {
+        "feature": "months_on_route",
+        "auc_drop": 0.0001193317594819036,
+        "auc_drop_sd": 8.13781647742387e-05,
+        "total_gain": 51340.58203125
+      },
+      {
+        "feature": "route_late15_l12",
+        "auc_drop": 2.8014876157889113e-05,
+        "auc_drop_sd": 4.1228680595056975e-05,
+        "total_gain": 33362.58984375
+      },
+      {
+        "feature": "class",
+        "auc_drop": 7.982301934476391e-06,
+        "auc_drop_sd": 1.6824435920724674e-06,
+        "total_gain": 304.4663391113281
+      },
+      {
+        "feature": "is_new_on_route",
+        "auc_drop": 0.0,
+        "auc_drop_sd": 0.0,
+        "total_gain": 0.0
+      },
+      {
+        "feature": "dest_metro",
+        "auc_drop": -2.426656664130296e-07,
+        "auc_drop_sd": 9.400187050529551e-08,
+        "total_gain": 18.73896026611328
+      },
+      {
+        "feature": "dest_slot_coordinated",
+        "auc_drop": -4.420288713317492e-06,
+        "auc_drop_sd": 6.719577221676937e-07,
+        "total_gain": 78.92105102539062
+      },
+      {
+        "feature": "origin_metro",
+        "auc_drop": -4.528203057074798e-06,
+        "auc_drop_sd": 2.1762723388970113e-06,
+        "total_gain": 71.33622741699219
+      },
+      {
+        "feature": "dest_p90_hour",
+        "auc_drop": -1.5083788439655224e-05,
+        "auc_drop_sd": 9.372322811236486e-06,
+        "total_gain": 1692.246826171875
+      },
+      {
+        "feature": "prev_leg",
+        "auc_drop": -1.930664761688276e-05,
+        "auc_drop_sd": 4.500887982530824e-06,
+        "total_gain": 2052.87060546875
+      },
+      {
+        "feature": "origin_slot_coordinated",
+        "auc_drop": -2.2418975419657983e-05,
+        "auc_drop_sd": 4.856504425605195e-06,
+        "total_gain": 312.43505859375
+      },
+      {
+        "feature": "dest_late15_l1",
+        "auc_drop": -2.5386492915502323e-05,
+        "auc_drop_sd": 7.32795002634278e-05,
+        "total_gain": 82298.765625
+      },
+      {
+        "feature": "origin_late15_l1",
+        "auc_drop": -2.6240510429986763e-05,
+        "auc_drop_sd": 4.1731299041787193e-05,
+        "total_gain": 77082.6484375
+      },
+      {
+        "feature": "is_holiday",
+        "auc_drop": -8.843200575362846e-05,
+        "auc_drop_sd": 1.561474485950314e-05,
+        "total_gain": 1930.3177490234375
+      },
+      {
+        "feature": "dest_node",
+        "auc_drop": -0.000339247382979672,
+        "auc_drop_sd": 1.4673488771563977e-05,
+        "total_gain": 56979.51953125
+      },
+      {
+        "feature": "origin_node",
+        "auc_drop": -0.0005786278242944087,
+        "auc_drop_sd": 6.861030879810062e-05,
+        "total_gain": 85089.796875
+      },
+      {
+        "feature": "group",
+        "auc_drop": -0.0006359913197712489,
+        "auc_drop_sd": 5.601909517063889e-05,
+        "total_gain": 77777.125
+      },
+      {
+        "feature": "airline",
+        "auc_drop": -0.0011673714512809112,
+        "auc_drop_sd": 0.00014462122022676076,
+        "total_gain": 181337.25
+      }
+    ]
+  }
+}
