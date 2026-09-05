@@ -65,3 +65,13 @@ Evidence base: `docs/notes/` (Portuguese) and the reconstruction reports produce
 ## ADR-0010 — Governance of divergences (2026-09-05)
 
 **Decision.** When two implementation options diverge and the evidence does not settle it, a panel of independent reviewers evaluates both and the recommended option is adopted; the divergence and the panel's reasoning are recorded here.
+
+## ADR-0011 — Airline classes include `other` (2026-09-05)
+
+**Decision.** `groups.csv` carries four classes: FSC, LCC, regional and other. `other` covers carriers with scheduled domestic legs that are neither incumbents, low-cost nor regional by business model (foreign carriers' domestic legs, charter or cargo operators appearing under N/R/E, small operators without a public profile). Unlabelled codes are treated as `other`. Amends ADR-0003, whose "the rest" now reads `other`. Class follows the absorbing group after a merger.
+
+## ADR-0012 — Missing actual times in the legacy files (2026-09-05)
+
+**Evidence.** In the 2000–2009 raw files a realised flight with no reported occurrence has empty actual departure and arrival times. The private 2019 vintage that produced the benchmark panel read empty as "on time" (actual = scheduled): in 72,375 of 72,381 sampled disagreements the vintage's actual time equals the scheduled time (`reports/reconciliation.md`). The vintage also truncated delays at zero.
+
+**Decision.** The staged data keeps nulls and signed delays. Delay computations take a named parameter `legacy_missing_actual_as_zero`: `True` for the replication panel, so that it reproduces the benchmark and the published tables under their own convention, declared in the registry and in `docs/declared-differences.md`; `False` everywhere else, including the prediction dataset. The share of realised flights with missing actual times is reported per year.
