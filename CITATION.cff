@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this repository, please cite it as below."
 title: "airline-delays: Brazil's scheduled domestic flights 2000-2013, from ANAC's raw records to a published article's tables, its theory, and a flight-level delay predictor"
 type: software
-version: 0.1.0
+version: 1.0.0
 date-released: '2026-09-05'
 authors:
   - family-names: "Bendinelli"

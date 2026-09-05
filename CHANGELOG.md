@@ -9,6 +9,12 @@ dates mark progress until then.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.0.0] - 2026-09-05
+
+The first published release: the repository as an open research compendium of the article. The `0.1.0` entry below is the development history before publication; it was never tagged.
+
 The restructure: the article's estimation panel published, one stage-ordered
 package, one narrative in two languages (`DECISIONS.md` ADR-0020, ADR-0021).
 

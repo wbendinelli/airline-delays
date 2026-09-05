@@ -247,7 +247,7 @@ replicação, previsão, teoria). Repositórios irmãos:
   author  = {Bendinelli, William Eduardo},
   year    = {2026},
   url     = {https://github.com/wbendinelli/airline-delays},
-  version = {0.1.0}
+  version = {1.0.0}
 }
 ```
 
