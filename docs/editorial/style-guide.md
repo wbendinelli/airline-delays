@@ -35,7 +35,8 @@ who review a change.
    gabarito, NECTAR, LABTAR, proj18, vra.dta, "private benchmark", "laboratory
    base" / "base de laboratório", "declared difference(s)" /
    "declared-differences", "not adjusted away", `AIRLINE_DELAYS_PRIVATE_DIR`,
-   `data/private`, `taxas.csv`, `reconciliation.md`, "vintage" / "safra" in
+   the retired private directory under `data/`, the retired agreement-rate CSV and
+   reconciliation report file names, "vintage" / "safra" in
    the data sense, "honest" / "honesta" / "honestidade", "nota honesta", "top
    journal". The word "benchmark" appears only in its economics sense inside the
    theory chapters (the Cournot, atomistic and monopoly reference cases); new

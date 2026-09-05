@@ -3,3 +3,8 @@
 16    RAM of the reference machine, in GB (README "Reproducing")
 10    cores of the reference machine (README "Reproducing")
 3.12  the Python version
+85    volume of the article (a citation, not a measurement)
+39    first page of the article, 39-52 (a citation, not a measurement)
+52    last page of the article, 39-52 (a citation, not a measurement)
+4.0   the version of the CC BY licence
+1504  the number of ANAC's instrument IAC 1504 (a document identifier)

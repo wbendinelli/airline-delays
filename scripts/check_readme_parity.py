@@ -21,7 +21,7 @@ PAIRS = [
 ]
 FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 CODE_RE = re.compile(r"`([^`\n]+)`")
-NUMBER_RE = re.compile(r"(?<![\w./-])\d[\d.,]*")
+NUMBER_RE = re.compile(r"(?<![\w.,/-])\d[\d.,]*")
 YEAR_RE = re.compile(r"^(19|20)\d\d$")
 
 

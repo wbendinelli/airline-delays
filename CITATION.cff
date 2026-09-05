@@ -31,20 +31,25 @@ keywords:
   - ANAC VRA
   - open data
 abstract: >-
-  Reconstructs Brazil's Voo Regular Ativo (VRA) flight-leg records (ANAC,
-  2000-2013, about 13.5 million legs) into a single canonical flight table,
-  replicates the tables of Bendinelli, Bettini & Oliveira (2016,
-  Transportation Research Part A, doi:10.1016/j.tra.2016.01.001) from public
-  data only, and trains a flight-level delay predictor evaluated by a
-  rolling-origin split (2006-2013). Every column that reaches a public table
-  is declared in a single registry (`src/vra/registry.py`); every number in
-  the README and the reports is printed by a versioned script; every
-  divergence against the original article or against a private laboratory
-  benchmark is declared rather than absorbed into a redefinition. Engineered
-  under SAPIANS's software-engineering standard (golden path, tier C, class
-  Research -- see .sapians-repo.yml); SAPIANS is William Eduardo
-  Bendinelli's research-infrastructure practice, independent of, and with
-  no bearing on, the 2016 article's other co-authors or their institutions.
+  Brazil's scheduled domestic flights of 2000-2013, from the Voo Regular Ativo
+  (VRA) flight-leg records that ANAC publishes -- 13,652,322 legs in 168
+  monthly files -- to the questions Bendinelli, Bettini & Oliveira (2016,
+  Transportation Research Part A 85, 39-52, doi:10.1016/j.tra.2016.01.001)
+  asked of them. Four products: the article's own estimation panel (24,589
+  route-months x 52 columns, 2002-2013), the open reconstruction of the VRA
+  into a fact table, a route-month panel of 31,313 route-months x 228 columns
+  and two city projections, the congestion game the article draws on --
+  Brueckner and Van Dender (2008) as set out in the author's 2013 monograph --
+  derived symbolically with its 29 identities checked, and a flight-level delay
+  predictor. Tables 2-7 re-estimated on the estimation panel track the
+  published tables: of 306 coefficients, 302 carry the published sign, 259 sit
+  within half a published standard error and the largest gap is 0.94 standard
+  errors; the re-estimated samples are 5.3 per cent larger than the published
+  ones. The predictor is evaluated out
+  of time over eight rolling-origin folds (2006-2013) at two horizons,
+  day-ahead and at the gate, with leakage checks in the test suite. Code under
+  MIT; text and curated data under CC BY 4.0; tables derived from the VRA
+  attributed to ANAC, Voo Regular Ativo (VRA), via dados.gov.br.
 preferred-citation:
   type: article
   title: "Airline delays, congestion internalization and non-price spillover effects of low cost carrier entry"

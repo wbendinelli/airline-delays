@@ -1,40 +1,56 @@
 # reports/
 
-Typst sources for the four reports this repository produces --
-reconstruction, replication, prediction, theory -- plus their generated figures
-and tables. Written in **Portuguese** (a deliberate exception to the
-repository's English default; see `CLAUDE.md` and `DECISIONS.md` ADR-0006).
+The three Typst reports of `airline-delays` -- replication, prediction and
+theory -- with the generated JSON, Markdown and figures they read, and
+`summary.json`, the numbers manifest the READMEs quote. The reports are written
+in **Portuguese** (`DECISIONS.md`, ADR-0006); this page is the English index.
 
-Every number in the report prose is printed by a versioned script under
-`replication/`, `ml/` or `theory/`, never typed by hand -- the same rule the README
-follows for `## Declared differences` and `## Use and limits`. Compiled
-output (`reports/**/build`) is git-ignored; the Typst sources and the small
-figures/tables they depend on are not.
+No number in a report is typed by hand: each report reads its inputs with
+Typst's `json()` from the files a stage of the pipeline wrote. Compiled PDFs
+land in a git-ignored `build` directory under `reports/`.
 
-| source | inputs | built by | compile |
+| Report | Inputs | Written by | Compile |
 |---|---|---|---|
-| `reconciliation.md` | the private `vra.dta` via `AIRLINE_DELAYS_PRIVATE_DIR` | `scripts/verify_reconcile.py` | already Markdown |
-| `replication.typ` | `replication/{private,public}/*.json` | `uv run python -m replication.run` | `typst compile reports/replication.typ reports/build/replication.pdf` |
-| `prediction.typ` | `prediction/*.json` | `just ml` (`uv run python -m ml.run`) | `typst compile reports/prediction.typ reports/build/prediction.pdf` |
-| `theory.typ` | `theory/{model,figures}.json`, `theory/figures/*.svg` | `just theory` (`uv run python -m theory.run`) | `typst compile reports/theory.typ reports/build/theory.pdf` |
+| `replication.typ` | `reports/replication/{results,summary,sensitivity}.json` | `just estimate` | `typst compile --root . reports/replication.typ reports/build/replication.pdf` |
+| `prediction.typ` | `reports/prediction/{rolling,fixed,calibration,importance,dataset,leakage}.json` and `rolling_reading_A.json` | `just predict` | `typst compile --root . reports/prediction.typ reports/build/prediction.pdf` |
+| `theory.typ` | `reports/theory/{model,figures}.json` and `reports/theory/figures/*.svg` | `just theory` | `typst compile --root . reports/theory.typ reports/build/theory.pdf` |
 
-`sapians/` is the SAPIANS design package for Typst (`@local/sapians:0.1.0`), vendored
-from `sapians-latex` (MIT) so that `reports/theory.typ` compiles from a clean clone
-with `typst compile --root . reports/theory.typ reports/build/theory.pdf`; the Inter
-font is used when installed, with Helvetica Neue or Arial as the fallback the
-package declares. `theory/figures/*.svg` are drawn by `theory/figures.py` with
-matplotlib in the SAPIANS figure style (`theory/sapians_style.py`).
+`just report` (`airline-delays report`) compiles the three in one go; it needs
+`typst` on the PATH.
 
-`theory/` holds `model.json` (every identity of the Stackelberg congestion
-model with whether it holds, the reaction-slope bounds, the tolls of
-Proposition 1, three numeric examples, comparative statics, the low-cost
-entrant extension and the bridge to the article's published signs),
-`figures.json` (the coordinates of every labelled point of the five redrawn
-diagrams), `figures/*.svg` and a `results.md`; all written by `just theory`,
-without a timestamp, so a second run on an unchanged tree changes nothing.
+`sapians/` is the SAPIANS design package for Typst (`@local/sapians:0.1.0`),
+vendored from `sapians-latex` (MIT) so that `reports/theory.typ` compiles from
+a clean clone with the `--root .` flag above. The Inter font is used when
+installed, with Helvetica Neue or Arial as the fallback the package declares.
+The figures under `reports/theory/figures/` are drawn by
+`src/airline_delays/theory/figures.py` with matplotlib in the SAPIANS figure
+style (`src/airline_delays/theory/sapians_style.py`).
 
-`prediction/` holds six JSON files and a `results.md`: `rolling.json` (the
-headline, one entry per test year 2006-2013 and both horizons), `fixed.json`
-(the illustrative split, four targets), `calibration.json`, `importance.json`,
-`dataset.json` (the per-year ADR-0012 accounting) and `leakage.json` (the nine
-checks of `ml/leakage_tests.py` run against the real dataset, not the fixture).
+## What each directory holds
+
+- `replication/` -- `results.json` (every re-estimated cell of Tables 2-7 next
+  to its published value), `summary.json` (the scorecard: sign agreement,
+  gaps in published standard errors, the HHI sign-inversion count),
+  `sensitivity.json` (the main coefficients across outlier thresholds) and
+  `tables.md`, the same tables rendered for reading. Written by
+  `airline-delays estimate` from the article's estimation panel.
+- `prediction/` -- `rolling.json` (the headline: one entry per test year
+  2006-2013, both horizons), `fixed.json` (the illustrative split, four
+  targets), `calibration.json`, `importance.json`, `dataset.json` (the
+  per-year accounting of the modelling table), `leakage.json` (the nine
+  checks run against the real dataset), the sensitivity files
+  `rolling_reading_A.json` and `dataset_reading_A.json`,
+  `null_actual_by_carrier.csv` and `results.md`. Written by
+  `airline-delays predict`.
+- `theory/` -- `model.json` (every identity of the congestion model with
+  whether it holds, the reaction-slope bounds, the tolls, numeric examples,
+  comparative statics, the low-cost entrant extension and the bridge to the
+  article's published signs), `figures.json` (the parameters and labelled
+  points of every figure), `figures/*.svg` (eleven figures) and `results.md`.
+  Written by `airline-delays theory` without a timestamp, so a second run on
+  an unchanged tree changes nothing.
+- `summary.json` -- every headline number the two READMEs, `data/README.md`
+  and `CONTRIBUTING.md` quote, read from the manifests, the tables and the
+  report files above by `airline-delays summary`; `scripts/check_prose_numbers.py`
+  accepts no other number on those pages, and `tests/test_summary.py` fails
+  when the committed file is stale.

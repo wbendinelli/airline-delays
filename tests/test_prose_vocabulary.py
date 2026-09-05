@@ -32,6 +32,7 @@ BENCHMARK_ALLOWED_DIRS = (
     "reports/theory",
     "reports/theory.typ",
     "src/airline_delays/theory/",
+    "tests/test_theory.py",
 )
 EXTENSIONS = {".md", ".typ", ".cff", ".yml", ".yaml", ".toml", ".py", ".json", ".sql", ".txt"}
 EXEMPT = {"tests/test_prose_vocabulary.py", "docs/editorial/style-guide.md", "CHANGELOG.md"}

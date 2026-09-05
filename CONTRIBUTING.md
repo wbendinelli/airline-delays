@@ -1,92 +1,86 @@
 # Contributing
 
-This repository reconstructs a public flight-delay dataset, replicates a
-published econometric result on it, and trains a delay predictor on top of
-it. The page below is the practical guide — it is also what CI checks on
-every pull request, so nobody has to police it by hand.
-
-Corrections and independent replications are welcome from anyone. The most
-valuable thing you can send is a measurement showing that something here is
-wrong.
+`airline-delays` publishes the estimation panel of Bendinelli, Bettini &
+Oliveira (2016, *Transportation Research Part A* 85, 39-52, doi
+10.1016/j.tra.2016.01.001), re-estimates its tables, reconstructs ANAC's flight
+records into an open panel, derives the article's theory and trains a delay
+predictor. Corrections, extensions and independent re-estimations are welcome.
+This page is the practical guide; CI checks most of it on every pull request.
 
 ## Your first contribution
 
 1. **Fork** the repository and clone your fork.
-2. **Set up the environment** (Python 3.12, managed by `uv`; never the
-   system `python3` — it lacks pandas):
+2. **Set up the environment.** Python 3.12, managed by `uv`:
 
    ```bash
    uv sync
    uv run pre-commit install
    ```
 
-3. **Run the smallest reproduction.** `just demo` runs the pipeline end
-   to end over the fixture committed in `tests/fixtures/` — staged legs to
-   fact table to route-month panel to Table 2 — in about a second, with no
-   network, no `data/raw/` and no private directory, writing only under
-   the git-ignored `data/derived/demo/` (`scripts/demo.py`).
-   `just replicate` then reproduces Table 2 over the full public panel,
-   which is committed (`data/analysis/panel_route_month.parquet`,
-   `DECISIONS.md` ADR-0014), also in under a second.
-4. **Branch, change, open a pull request.** CI runs `ruff` (lint),
-   `pytest` against the fixture (test), validates `CITATION.cff`
-   (citation), checks the README against the `research` doclint profile
-   (docs), scans for secrets (security), and confirms every path and
-   `just`/`vra` command in `README.md` and `docs/tutorial/*.md` resolves
-   to something real (`docs-paths`, `scripts/check_docs_paths.py`) — if
-   something is wrong, it says exactly what, before anyone reviews by
-   hand.
+3. **Run the two reproductions.** `just demo` runs the pipeline end to end on
+   the committed fixture of 19,910 flight legs (staged legs to fact table to
+   reconstruction panel to Table 2) in about a second, offline, writing only
+   under the git-ignored `data/derived/demo/`. `just estimate` re-estimates
+   Tables 2-7 on the committed article panel,
+   `data/analysis/article_panel_route_month.parquet`, in under a minute, and writes
+   `reports/replication/`.
+4. **Branch, change, open a pull request.** `just check` runs pre-commit over
+   the tree and the docs-paths check before you push.
+
+## What CI runs
+
+| Job | What it guarantees |
+|---|---|
+| `lint` | `ruff check` and `ruff format --check` over the whole tree |
+| `test` | `pytest` against the committed fixture and the committed tables; no network, no `data/raw/` |
+| `citation` | `CITATION.cff` is schema-valid |
+| `docs-paths` | every backticked path and every `just` or `airline-delays` command in the READMEs, `docs/` and the data guides resolves to something real (`scripts/check_docs_paths.py`) |
+| `metadata` | `docs/dictionary.md`, `datapackage.json`, `.zenodo.json` and `reports/summary.json` are rebuilds of the registry and the tables, and the Data Package validates |
+| `docs-lint` | `README.md` matches the documentation profile declared in `.sapians-repo.yml` |
+| `security` | `gitleaks` scans the full history for secrets |
+
+A red job is fixed at its cause, never by weakening the check.
 
 ## The hard rules
 
-1. **No column reaches a public table without an entry in
-   `src/vra/registry.py`.** The dictionary, `datapackage.json`, and the
-   registry-completeness test are all generated from it — never
-   hand-write them.
-2. **No number in prose (the README, `docs/`, the Typst reports) without a
-   versioned script that prints it.** A number without a script behind it
-   is a bug: either the script is missing, or the number should be.
-3. **Never commit anything under `data/raw/`, `data/staged/`,
-   `data/derived/` or `data/private/`**, except their `README.md` (and,
-   for `data/raw/`, `manifest.json`). The private benchmark
-   (`proj18.dta`, the LABTAR/NECTAR laboratory bases, `vra.dta`) is
-   reached only through the `AIRLINE_DELAYS_PRIVATE_DIR` environment
-   variable, by `replication/gabarito/` or a `scripts/verify*.py`, and
-   only its derived agreement rate (`data/analysis/taxas.csv`) is ever
-   committed.
-4. **When a measurement contradicts prose, the prose changes and the old
-   value stays in the text, marked corrected.** A divergence against the
-   original article or the private benchmark is declared in
-   `docs/declared-differences.md`, never resolved by adjusting a
-   definition until the numbers match (see `CLAUDE.md`).
-5. **Changing the replication universe, an outlier threshold, or the
-   airline-grouping table is an ADR**, recorded in `DECISIONS.md` — not a
-   parameter to tune until a benchmark cell agrees.
-
-## Data availability while you work
-
-`data/raw/`, `data/staged/` and `data/derived/` are git-ignored on purpose
-— you regenerate them locally (`just fetch`, `just stage`) instead of
-pulling them from git. Two exceptions: `data/external/*.csv`, small
-hand-curated reference tables (the node map, airline groups, the IAC 1504
-taxonomy), each row citing its own source and URL, committed because
-their diff is exactly what needs to stay reviewable in a pull request;
-and `data/analysis/*.parquet`/`*.csv.gz` (the fact table, the panel and
-its two projections — `DECISIONS.md` ADR-0014), committed so a
-contributor can run `just replicate` without rebuilding the pipeline
-first. `just check-analysis` fails a commit where those tables drift from
-what `registry.py` and the fact table would produce.
+1. **No column without an entry in `src/airline_delays/schema/columns.py`.**
+   The dictionary, `datapackage.json` and the schema tests are generated from
+   the registry; `just panel` regenerates the first two.
+2. **No number on the entry pages that is not a value of `reports/summary.json`**
+   (`airline-delays summary`) or marked as a transcription from an outside
+   document. `scripts/check_prose_numbers.py` enforces it; a number without a
+   script behind it is removed, not defended.
+3. **Never commit anything under `data/raw/`, `data/staged/` or `data/derived/`**
+   beyond their `README.md` and `data/raw/manifest.json`. They are regenerated
+   from ANAC's files. The tracked data live in `data/analysis/` and
+   `data/external/`, and `just check-analysis` fails when a tracked table
+   drifts from what the code would produce.
+4. **A measurement that contradicts prose changes the prose.** The correction
+   is a `fix` commit, never a `docs` one, even when the diff is only text.
+5. **The universe, the outlier threshold, the delay-cause taxonomy and the
+   carrier sets are decisions**, recorded in `DECISIONS.md`. Changing one is a
+   new ADR, not an edit to a constant.
 
 ## Documentation changes
 
-A path or a `just`/`vra` command in `README.md` or `docs/tutorial/*.md`
-must exist — `scripts/check_docs_paths.py` proves it, in CI and locally
-(`uv run python scripts/check_docs_paths.py`). A number in either file
-must cite the JSON, CSV or `.md` report it comes from, next to the number
-— see `docs/declared-differences.md` for the pattern.
+`README.md` and `README.pt-BR.md` share one skeleton (`docs/editorial/readme-outline.md`)
+and change together; `scripts/check_readme_parity.py` fails when they quote
+different numbers, paths or recipes. The prose follows
+`docs/editorial/style-guide.md`. Before opening a pull request that touches
+prose, run the three checks:
+
+```bash
+uv run python scripts/check_docs_paths.py
+uv run python scripts/check_prose_numbers.py
+uv run python scripts/check_readme_parity.py
+```
+
+The Typst reports, the tutorial, the notes and the theory chapters are written
+in Portuguese by decision (`DECISIONS.md`, ADR-0006); everything else is English.
 
 ## Style
 
-Commit messages: `type(scope): summary`, scopes `vra data replication ml
-theory docs ci`. A fix to a number already in prose is always `fix`, never
-`docs`, even when the diff is only text.
+Commit messages read `type(scope): summary`, with the scope a stage name:
+`ingest`, `staging`, `reference`, `fact`, `panel`, `estimation`, `prediction`,
+`theory`, `reporting`, `schema`, `docs` or `ci`. One line per notable change to
+the code or the curated data goes into `CHANGELOG.md`.

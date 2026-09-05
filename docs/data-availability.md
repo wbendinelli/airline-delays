@@ -3,445 +3,361 @@
 Data Availability Statement for `airline-delays`, source by source: who
 holds each source, how to obtain it, what restricts its use, and what it
 costs in money and time. The README's "Data availability" section is the
-short version of this file; `data/external/*.csv` is the machine-readable
-version — every row there carries its own `source`, `url`, `retrieved_at`
-and `confidence` fields, validated by `uv run vra refs`.
+short version of this page. `data/external/*.csv` is the machine-readable
+version -- every row there carries its own `source`, `url`, `retrieved_at`
+and `confidence`, validated by `uv run airline-delays reference` -- and
+`datapackage.json` describes every published table with its hashes, licence
+and sources.
 
-Two rules govern everything below (`CLAUDE.md`, `DECISIONS.md` ADR-0010):
-a source that is not public is never redistributed here, under any name or
-in any derived column, and a restriction is stated, never quietly designed
-around. Where a number depends on a non-public source, the affected column
-is documented as unavailable rather than filled with a substitute
-(`docs/declared-differences.md`).
+Two data products come out of these sources, and this page says which source
+feeds which. The **article's estimation panel** -- the final base of Bendinelli, Bettini &
+Oliveira (2016, *Transportation Research Part A* 85, 39-52, doi
+10.1016/j.tra.2016.01.001), from which Tables 2-7 were estimated, curated to
+52 columns and published here as source 12 -- carries the authors' own variables, among them terms
+built from sources this repository does not collect. The **open
+reconstruction panel** is built from source 1 and the reference tables
+alone. The two panels share the universe, the node map and the carrier sets recorded
+in `DECISIONS.md`; the reconstruction follows the article's empty-actual-time
+convention (ADR-0012) and declares its own delay threshold (ADR-0008,
+ADR-0015). Every number
+on this page is a value of `reports/summary.json`.
 
 ## Summary table
 
 | # | Source | Holder | Redistributed here | Cost / time |
 |---|---|---|---|---|
-| 1 | VRA — Voo Regular Ativo (flight-leg CSVs, 2000-2013) | ANAC | Yes — raw snapshot and derived tables, CC BY with attribution | Free; ~17 minutes / 2.17 GB to download the 168 monthly files (`data/raw/manifest.json`) |
-| 2 | IAC 1504 (delay-cause code taxonomy) | ANAC | Derived tables only, not the instrument's text | Free |
-| 3 | ANAC statistical data (paid passengers by airline-route-month) | ANAC | Not yet collected | Free; not yet spent |
-| 4 | ANAC tariff microdata (`yield`, `fare`, ticket counts) | ANAC | Not yet collected | Free; not yet spent |
-| 5 | BNDES/McKinsey (2010) airport-capacity study | BNDES | One transcribed figure (Congonhas) | Free; manual-transcription time |
-| 6 | ANAC seasonal declared-capacity bulletins | ANAC | Not yet collected | Free; not yet spent |
-| 7 | ANAC slot-coordination acts (Relatórios de Atividades) | ANAC | Two transcribed rows (Guarulhos, Santos Dumont) | Free; PDF-extraction time |
-| 8 | CADE/ANAC merger and grouping decisions | CADE / ANAC | Cited per row of `groups.csv`, not the decisions themselves | Free |
-| 9 | METAR weather (REDEMET/DECEA) | DECEA | Not yet integrated | Free; ~4.2M observations, not yet fetched |
-| 10 | OurAirports (airport geography) | OurAirports (community) | Yes — filtered table, public domain / CC0 | Free |
-| 11 | Federal holiday laws | Diário Oficial da União | Yes — derived calendar table | Free |
-| 12 | Private benchmark (`proj18.dta`, LABTAR/NECTAR, `vra.dta` 2019) | ITA/LABTAR laboratory | **Not redistributed** — only the derived agreement rate | Not applicable — declared omission |
-| 13 | Infraero connections report | Infraero | **Not redistributed, not reproduced** | Not applicable — declared omission |
-| 14 | Published article (Elsevier) | Elsevier Ltd | **Not redistributed** — DOI link only | Not applicable |
-| 15 | Undergraduate monograph (Bendinelli 2013, USP/ESALQ) | The author | One derived table (`data/external/monograph_airports.csv`, 38 rows) and quoted passages; the document itself is not redistributed | Not applicable |
+| 1 | VRA -- Voo Regular Ativo (flight-leg CSVs, 2000-2013) | ANAC | Derived tables, CC BY with attribution; the raw files are refetched, not redistributed | Free; about 17 minutes and 2.17 GB for the 168 monthly files |
+| 2 | IAC 1504 (delay-cause code taxonomy) | ANAC | Derived code tables, not the instrument's text | Free |
+| 3 | ANAC statistical data (paid passengers by airline-route-month) | ANAC | Not collected here; the article panel carries the authors' concentration terms and instruments built from it | Free; not spent |
+| 4 | ANAC tariff microdata (tickets sold by airline and route) | ANAC | Not collected here; the article panel carries the authors' low-cost presence dummies built from it | Free; not spent |
+| 5 | BNDES/McKinsey (2010) airport-capacity study | BNDES | One transcribed row (Congonhas) | Free; transcription time |
+| 6 | ANAC seasonal declared-capacity bulletins | ANAC | Not collected; the article panel carries the authors' congestion counts | Free; not spent |
+| 7 | ANAC slot-coordination acts (Relatórios de Atividades) | ANAC | Two transcribed rows (Guarulhos, Santos Dumont) | Free; PDF-reading time |
+| 8 | CADE/ANAC merger and grouping decisions | CADE / ANAC | Cited per row of `data/external/groups.csv`, not the decisions themselves | Free |
+| 9 | METAR weather (REDEMET/DECEA) | DECEA | Not integrated; the authors' weather columns are excluded from the published panel | Free; not spent |
+| 10 | OurAirports (airport geography) | OurAirports (community) | Yes -- filtered table, public domain / CC0 | Free |
+| 11 | Federal holiday laws | Diário Oficial da União | Yes -- derived calendar tables | Free |
+| 12 | The article's estimation panel (route x month, 2002-2013) | The article's authors; released by the first author | **Yes** -- `data/analysis/article_panel_route_month.parquet` and `.csv.gz`, CC BY 4.0 | Free |
+| 13 | Infraero connections report | Infraero | Not public; feeds no published column | Not applicable |
+| 14 | Published article (Elsevier) | Elsevier Ltd | DOI only | Not applicable |
+| 15 | The author's 2013 undergraduate monograph (USP/ESALQ) | The author | One derived table and quoted passages; Zenodo deposit pending | Not applicable |
 
-## 1. VRA — Voo Regular Ativo
+## 1. VRA -- Voo Regular Ativo
 
 **Holder.** ANAC (Agência Nacional de Aviação Civil), published through
 `https://siros.anac.gov.br/siros/registros/diversos/vra/{year}/` and
 catalogued at `dados.gov.br`.
 
-**How to obtain.** `uv run vra fetch` downloads all 168 monthly CSVs
-(2000-2013) directly from the SIROS listing; `data/raw/manifest.json`
-records the source URL, retrieval timestamp and sha256 of every file. No
-authentication, no request form.
+**How to obtain.** `uv run airline-delays fetch` (`just fetch`) downloads the
+168 monthly CSVs for 2000-2013 into `data/raw/` and checks each file against
+the sha256 committed in `data/raw/manifest.json`, which also records the
+source URL and the retrieval timestamp of every file. No authentication. All
+168 files were retrieved on 2026-09-05; the download took about 17 minutes
+for 2,166,489,628 bytes (2.17 GB), and `just stage` parses them into
+13,652,322 flight legs over the 14 years.
 
-**Composition.** The clearest statement of what the VRA *is* comes from the
-author's own 2013 undergraduate monograph (source 15): the VRA is built from
-the **HOTRAN** — the approved schedule document, normed by IAC 1223 and
-Portaria DGAC nº 33/2000 — plus the **Boletins de Alteração de Voo** the
-airlines file under IAC 1504. ANAC's published delay and cancellation
-percentages are computed from it under Resolução ANAC nº 218, following the
-models of Portaria ANAC nº 464/SER, and are published in **two cuts**: 30
-minutes or more, and 60 minutes or more (cancellations over *scheduled* legs,
-delays over *realised* legs). The panel's `fsc_prdelarr30m` is that 30-minute
-cut under this repository's own naming; the 15-minute cut the 2016 article
-uses is the United States convention, which the monograph contrasts
-explicitly with Brazil's 30 minutes. See `docs/notes/monografia-2013.md` §2.
+**Composition.** The VRA is built from the HOTRAN -- the approved schedule
+document, normed by IAC 1223 and Portaria DGAC nº 33/2000 -- plus the
+Boletins de Alteração de Voo the airlines file under IAC 1504 (source 2).
+ANAC's own delay and cancellation percentages are computed from it under
+Resolução ANAC nº 218 in two cuts, 30 minutes or more and 60 minutes or
+more, with cancellations over scheduled legs and delays over realised legs;
+the reconstruction panel's `fsc_prdelarr30m` is that 30-minute cut, and the
+article's 15-minute cut is the United States convention. The author's 2013
+monograph (source 15) is the earliest description of this composition in the
+project's material (`docs/notes/monografia-2013.md`).
 
-**Restrictions.** The ANAC website's own footer states "Creative Commons
-Atribuição-SemDerivações 3.0" (CC BY-ND) for "todo o conteúdo deste sítio",
-which would forbid derivatives if read as covering the dataset itself; no
-ANAC page for the VRA dataset declares its own licence. The federal
-open-data catalogue, however, declares `Licença: Creative Commons
-Attribution` for this exact dataset (catalogued 2019-03-01, metadata
-updated 2024-01-25, responsible unit GOPE; read 2026-09-05) — see
-`DECISIONS.md` ADR-0000 for the full evidence trail. This repository
-follows the catalogue's more specific and more recent declaration: CC BY,
-attributed as "ANAC, Voo Regular Ativo (VRA), via dados.gov.br". A written
-confirmation has also been requested from ANAC via e-SIC in parallel
-(`docs/notes/esic-licenca-vra.md`); redistribution here does not block on
-that reply.
+**Restrictions.** ANAC's website footer states CC BY-ND 3.0 for "todo o
+conteúdo deste sítio"; no ANAC page for the VRA dataset declares its own
+licence. The federal open-data catalogue declares `Licença: Creative Commons
+Attribution` for this exact dataset (catalogued 2019-03-01, metadata updated
+2024-01-25, responsible unit GOPE; read 2026-09-05). This repository follows
+the catalogue's more specific and more recent declaration: CC BY, attributed
+as "ANAC, Voo Regular Ativo (VRA), via dados.gov.br" (`DECISIONS.md`
+ADR-0000). A written confirmation has been drafted for ANAC's e-SIC channel
+(`docs/notes/esic-licenca-vra.md`); nothing here blocks on that reply.
 
-**Cost and time.** Free. The 168 files total 2,166,489,628 bytes (2.17 GB,
-`data/raw/manifest.json`); a sequential, polite download took about 17
-minutes end to end in this session. Parsing into the canonical flight
-table (`uv run vra stage`) takes about 8.4 seconds total across the 14
-years (`data/staged/manifest.json`, sum of the per-year `seconds` field).
+**Redistributed here.** The derived tables under `data/analysis/` -- the
+fact table, the reconstruction panel and its two city projections, with their
+manifests -- and the description of the staged layer in `datapackage.json`.
+The raw files themselves are not in git and not in the Zenodo record: a
+reader refetches them from ANAC with the command above, and the committed
+hashes prove the files are the same.
 
-**Redistributed here.** Yes: the raw monthly snapshot (via
-`data/raw/manifest.json`'s hashes, not the CSVs themselves — see
-"What is not in git" below) and every derived table under
-`data/analysis/`.
+## 2. IAC 1504 -- delay-cause code taxonomy
 
-## 2. IAC 1504 — delay-cause code taxonomy
+**Holder.** ANAC. The instrument (Instrução de Aviação Civil 1504, 30 Apr
+2000) is public regulatory text, PDF at
+`https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf`; download it
+directly, no authentication, free.
 
-**Holder.** ANAC. The instrument (`Instrução de Aviação Civil 1504`, 30
-Apr 2000) is public regulatory text, PDF at
-`https://pergamum.anac.gov.br/pergamum/vinculos/IAC1504.pdf`.
+**Restrictions.** ANAC states the IAC 1504 was revoked around April 2020 and
+that the "Justificativa" field stopped being required from then on; the
+revoking instrument and its replacement code table were not located
+(`docs/notes/references.md`). This does not affect the 2000-2013 window; it
+limits any extension past 2020.
 
-**How to obtain.** Download the PDF directly; no authentication.
-
-**Restrictions.** ANAC states the IAC 1504 was revoked around April 2020
-and that the "Justificativa" field stopped being required from then on;
-the revoking instrument and its replacement code table were not located
-this session (`docs/notes/references.md` §3, `docs/notes/esic-licenca-vra.md`
-question 4). This does not affect the 2000-2013 window this repository
-covers, but limits any future extension past 2020.
-
-**Cost and time.** Free.
-
-**Redistributed here.** The *derived* taxonomy tables
+**Redistributed here.** The derived taxonomy tables
 (`data/external/cause_codes.csv`, 49 rows; `data/external/di_codes.csv`, 12
 rows; `data/external/line_types.csv`, 8 rows), transcribed from the
-instrument's Annex 2 and body text — not the instrument's own PDF.
+instrument's Annex 2 and body text -- not the instrument's own PDF.
 
-## 3. ANAC statistical data — paid passengers by airline-route-month
+## 3. ANAC statistical data -- paid passengers by airline-route-month
 
-**Holder.** ANAC ("Dados Estatísticos do Transporte Aéreo").
+**Holder.** ANAC ("Dados Estatísticos do Transporte Aéreo"), a public
+download from the ANAC statistics portal; free; not collected in this
+repository, no restriction known.
 
-**How to obtain.** Public download from the ANAC statistics portal; not
-yet attempted in this repository.
+**What depends on it.** The article's passenger-weighted concentration
+terms -- `rthhi`, `maxcthhi` and the alternative city term `gmchhi` -- and
+the seven Hausman-type instruments the authors built from neighbouring
+city-pairs (`h1_maxcthhi`, `h2_maxcthhi`, `h3_maxcthhi`, `lnh1_maxcthhi`,
+`l1h1_maxcthhi`, `l1h2_maxcthhi`, `h2_rthhi`). The article's estimation
+panel (source 12) carries the authors' values of all of them. The
+reconstruction panel carries the flight-share counterparts `rthhi_flights`
+and `maxcthhi_flights` under their own names, and the passenger-weighted
+columns as null until this source is collected
+(`src/airline_delays/definitions/concentration.py`, `DECISIONS.md` ADR-0007).
 
-**Restrictions.** None known; not yet verified.
-
-**Cost and time.** Free to obtain; the time cost of collecting and joining
-it has not yet been spent. This is what `rthhi`, `maxcthhi` and `gmchhi`
-(the article's passenger-weighted HHIs) need —
-`src/vra/hhi.passenger_weighted_hhi` already has the right signature and
-returns `None` until this source is collected (`DECISIONS.md` ADR-0007;
-`docs/declared-differences.md` §6).
-
-**Lineage.** The 2013 undergraduate monograph (source 15) did *not* use this
-source for its passenger variables: its `prconex` (connecting passengers) and
-`amovtot` (total aircraft movements) came from Infraero's RPE report (source
-13), read at each endpoint airport and combined into a geometric mean weighted
-by the airline's planned flights on the route-month. What *this* source would
-supply here is a different quantity — paid passengers by airline-route-month,
-the traffic `rthhi` and `maxcthhi` need — so the 2013 construction is a
-precedent for the shape, not a substitute for the data
-(`docs/notes/monografia-2013.md` §3).
-
-**Redistributed here.** Not applicable yet — nothing has been collected.
+**Redistributed here.** Nothing from the source itself; the derived terms
+ship inside the article's estimation panel.
 
 ## 4. ANAC tariff microdata
 
-**Holder.** ANAC ("Microdados de Tarifas Aéreas Domésticas"), covering
-2002 onward.
+**Holder.** ANAC ("Microdados de Tarifas Aéreas Domésticas"), covering 2002
+onward, a public download from the ANAC statistics portal; free; not
+collected in this repository, no restriction known. It records tickets sold,
+not operations, and is therefore a different source from the VRA.
 
-**How to obtain.** Public download from the ANAC statistics portal; not
-yet attempted.
+**What depends on it.** The article's low-cost presence variables: `lcc`
+(Gol or Azul sold tickets on the route in the month) with its components
+`pres_glo`, `pres_azu`, `pres_tam` and `pres_web`, and `maxalccfu` with its
+components `olccfu` and `dlccfu`. The article's estimation panel carries the
+authors' values of all of them; the prices, yields, revenues and ticket
+counts of the authors' base do not ship. The reconstruction panel's own
+`lcc` and `pres_*` columns are read from VRA operation instead -- a different
+measure under the same name, documented in `docs/notes/features.md`.
 
-**Restrictions.** None known; not yet verified. This is a different source
-from the VRA (which records operations, not tickets sold) — the original
-article's `yield`, `fare`, `nyield`, `nfare` and the `pax_rev` column, and
-the tariff-base–derived `lcc`/`pres_glo`/`pres_azu`/`pres_tam` presence
-dummies, come from here
-(the author's research notes, private and not redistributed;
-class D). This repository's own `lcc`/`pres_*` columns are computed from
-VRA *operation* instead, and the two sources disagree on about 11% of
-route-months (`docs/declared-differences.md` §5) — a declared difference,
-not an error in either source.
-
-**Cost and time.** Free to obtain; not yet collected.
-
-**Redistributed here.** Not applicable yet.
+**Redistributed here.** Nothing from the source itself; the derived dummies
+ship inside the article's estimation panel.
 
 ## 5. BNDES/McKinsey (2010) airport-capacity study
 
 **Holder.** BNDES (Banco Nacional de Desenvolvimento Econômico e Social).
 *Estudo do Setor de Transporte Aéreo do Brasil*, 25 Jan 2010, public PDF at
-`www.bndes.gov.br` (cited in the original dissertation's footnote 25).
-
-**How to obtain.** Public PDF download; no authentication.
-
-**Restrictions.** None known — a public study, cited by page number.
-
-**Cost and time.** Free; the cost is manual transcription of the figures
-that matter (declared hourly capacity per airport), which the study does
-not tabulate in one place.
+`www.bndes.gov.br`, cited by page number; free, the cost being the manual
+transcription of the declared hourly capacity per airport, which the study
+does not tabulate in one place.
 
 **Redistributed here.** One row (`data/external/capacity.csv`): Congonhas
-(SBSP), 33 movements/hour for commercial aviation after the 2007-07-17 TAM
-3054 accident, at confidence grade B (a convergent news-retrospective
-summary, no regulatory act opened directly — see
-`docs/notes/references.md` §6). No pre-2007 figure and no other airport of
-the panel has a transcribed value yet; `prcongested` (ADR-0007) stays
-unreproduced until this table has one row per panel airport with a
-declared-capacity figure, not a passengers/year figure (the BNDES study
-gives 2009 passengers/year, a different unit, for GRU/CGH/SDU/VCP/GIG —
-deliberately not entered into `capacity.csv`'s numeric columns, since that
-would be filling a gap with the wrong quantity).
+(SBSP), the commercial-aviation movements per hour in force after the
+2007-07-17 accident, at confidence grade B (`docs/notes/references.md`). The
+study gives passengers per year for the large airports, a different unit,
+deliberately not entered into the table's numeric columns.
 
 ## 6. ANAC seasonal declared-capacity bulletins
 
-**Holder.** ANAC.
+**Holder.** ANAC. Not located; needed to complete `data/external/capacity.csv`
+beyond the single Congonhas row. Free in principle; not spent.
 
-**How to obtain.** Not yet located; needed to complete `capacity.csv`
-beyond the single Congonhas row above.
+**What depends on it.** The article's congestion variables `dailyflcong`,
+`dailyflncong` and `prcongested` classify each scheduled hour as congested
+or not against the airport's declared capacity. The article's estimation
+panel carries the authors' values under their declared-capacity
+classification. The reconstruction panel carries the internal p90 proxy of
+`src/airline_delays/definitions/congestion.py` instead and no `prcongested`
+(`DECISIONS.md` ADR-0007).
 
-**Restrictions.** Unknown — not yet collected.
-
-**Cost and time.** Free to obtain in principle; not yet spent.
-
-**Redistributed here.** Not applicable yet.
+**Redistributed here.** Nothing from the source; the authors' congestion
+counts ship inside the article's estimation panel.
 
 ## 7. ANAC slot-coordination acts
 
-**Holder.** ANAC. Read directly from ANAC's own annual "Relatório de
-Atividades" PDFs (2009, 2010, 2012, 2013), via `pdftotext -layout` —
-primary documents, not a search summary.
+**Holder.** ANAC. Read directly from ANAC's annual "Relatório de Atividades"
+PDFs (2009, 2010, 2012, 2013), public downloads from `gov.br/anac`, via
+`pdftotext -layout`; free, the cost being four years of activity reports to
+read.
 
-**How to obtain.** Public PDF downloads from `gov.br/anac`.
-
-**Restrictions.** None known.
-
-**Cost and time.** Free; the cost is reading four years of activity
-reports to find the relevant sections.
-
-**Redistributed here.** Two rows (`data/external/slots.csv`, confidence
-grade A): Guarulhos (coordination process from 2009, full IATA-conference
-slot allocation by 2010) and Santos Dumont (route restriction lifted,
+**Redistributed here.** Two rows (`data/external/slots.csv`, confidence grade
+A): Guarulhos (coordination process from 2009, full IATA-conference slot
+allocation by 2010) and Santos Dumont (route restriction lifted,
 hour-distribution procedures published March 2009). Congonhas, Recife and
-Brasília are declared absent, not guessed at — see
-`docs/notes/references.md` §6 for exactly what was checked and not found.
+Brasília are recorded as not found, not guessed at (`docs/notes/references.md`).
 
 ## 8. CADE/ANAC merger and grouping decisions
 
-**Holder.** CADE (Conselho Administrativo de Defesa Econômica) and ANAC.
+**Holder.** CADE (Conselho Administrativo de Defesa Econômica) and ANAC:
+public regulatory decisions and press coverage of record; free.
 
-**How to obtain.** Public regulatory decisions and press coverage of
-record.
-
-**Restrictions.** None known.
-
-**Cost and time.** Free.
-
-**Redistributed here.** Cited per row of `data/external/groups.csv` and
-`data/external/events.csv` (source + URL + confidence grade each) — not the
-decisions themselves. Most merger-date rows are confidence grade B (a
-convergent secondary source, not the regulatory act itself opened
-directly) — see `docs/notes/references.md` §2 for exactly which dates are
-grade A.
+**Redistributed here.** Cited per row of `data/external/groups.csv` (50
+rows) and `data/external/events.csv` (29 rows), with a source, a URL and a
+confidence grade each -- not the decisions themselves. Most merger-date rows
+are grade B; `docs/notes/references.md` lists which dates are grade A.
 
 ## 9. METAR weather (REDEMET/DECEA)
 
-**Holder.** DECEA (Departamento de Controle do Espaço Aéreo), published
-today through REDEMET. For the original 2016 article, the equivalent data
-was obtained by nominal cession from DECEA/ICEA, not an open download —
-and the article's own weather-delay signal did not end up using it (its
-`prwheather` comes from the VRA's own justification codes, not from METAR;
-`especificacao.md` §3.7 in the archive review).
+**Holder.** DECEA (Departamento de Controle do Espaço Aéreo), published today
+through REDEMET's public API and portal; free; not integrated into this
+repository, and REDEMET's own terms not verified.
 
-**How to obtain.** REDEMET's public API/portal; not yet integrated into
-this repository. The archive review's companion project already extracted
-about 4.2 million METAR observations for 2000-2013 from the historical
-cession (outside this repository, not redistributable from that source —
-but the same records are independently obtainable from REDEMET today).
+**What depends on it.** For the 2016 article the weather data came by
+nominal cession from DECEA/ICEA, as monthly means per airport, and the
+article's weather-delay signal did not end up using it: `prwheather` is
+built from the VRA's own justification codes and is in the published panel.
+The weather columns of the authors' base are excluded from the article's
+estimation panel, because they came from a cession and not from an open
+channel. The same records are independently obtainable from REDEMET today,
+at the station x hour grain the flight-level layer would want
+(`docs/tutorial/13-propor-melhorias.md`).
 
-**Restrictions.** REDEMET's own terms have not been verified this session.
-
-**Cost and time.** Free to obtain from REDEMET today; not yet spent.
-
-**Historical precedent.** The author's 2013 undergraduate monograph (source
-15) already carried weather, from ICEA, as **monthly means per airport**:
-temperature, wind, precipitation, visibility and ceiling, at origin and at
-destination. That is a coarser grain than anything this repository would want:
-a METAR integration here would be **station x hour**, which is the grain the
-flight-level layer needs and the one `docs/tutorial/13-propor-melhorias.md` §4
-proposes. The 2013 series is therefore a precedent for the source, not a
-substitute for the fetch.
-
-**Redistributed here.** Not applicable yet — this is one of the extensions
-listed in `docs/tutorial/13-propor-melhorias.md`.
+**Redistributed here.** No.
 
 ## 10. OurAirports (airport geography)
 
-**Holder.** OurAirports, a community-maintained mirror (not an official
-Brazilian government source).
-
-**How to obtain.**
+**Holder.** OurAirports, a community-maintained mirror, not an official
+Brazilian government source:
 `https://davidmegginson.github.io/ourairports-data/airports.csv`, a direct
-CSV download, no authentication.
+CSV download, no authentication, published as public domain / CC0-equivalent.
 
-**Restrictions.** Published as public domain / CC0-equivalent ("no rights
-reserved").
-
-**Cost and time.** Free.
-
-**Redistributed here.** Yes — `data/external/airports_br.csv` (8,035 rows,
+**Redistributed here.** Yes: `data/external/airports_br.csv` (8,035 rows,
 every OurAirports record with `iso_country == BR`), `data/external/nodes.csv`
-(the 27-node crosswalk of ADR-0001) and `data/external/distances_km.csv`
-(great-circle distances computed from it), all under CC BY 4.0 alongside
-this repository's own derived text (see License below).
+(31 rows, the airport-to-node crosswalk of the 27 nodes of ADR-0001) and
+`data/external/distances_km.csv` (702 rows, great-circle distances computed
+from it).
 
 ## 11. Federal holiday laws
 
-**Holder.** The Brazilian federal government (Diário Oficial da União);
-read directly at `planalto.gov.br`.
+**Holder.** The Brazilian federal government (Diário Oficial da União), read
+directly at `planalto.gov.br`: Lei 662/1949, Lei 10.607/2002, Lei
+9.093/1995. Public law, no restriction, free.
 
-**How to obtain.** Public law text, no authentication (Lei 662/1949, Lei
-10.607/2002, Lei 9.093/1995).
-
-**Restrictions.** None — public law.
-
-**Cost and time.** Free.
-
-**Redistributed here.** Yes — `data/external/holidays.csv` (92 rows) and
-`data/external/observances.csv` (56 rows, Carnival/Good Friday/Corpus
+**Redistributed here.** Yes: `data/external/holidays.csv` (92 rows) and
+`data/external/observances.csv` (56 rows: Carnival, Good Friday and Corpus
 Christi, computed from Easter Sunday, not looked up).
 
-## 12. Private benchmark — `proj18.dta`, LABTAR/NECTAR, `vra.dta` (2019 vintage)
+## 12. The article's estimation panel
 
-**Holder.** The LABTAR/NECTAR laboratory (Instituto Tecnológico de
-Aeronáutica), specifically Alessandro V. M. Oliveira, the original
-article's co-author, orientador and the author of the underlying `.ado`
-estimation code. Full inventory and consent map in the archive review's
-`avaliacao-8-criterios.md` §C2, §C7 (external to this repository, in the
-author's private research archive).
+**Holder.** The final estimation base (a Stata file with header timestamp
+2015-12-03, 24,589 route-months and 1,829 variables) is held by the first
+author of the article, who is the author of this repository, curated it and
+releases the panel on their own responsibility (`DECISIONS.md` ADR-0020). The
+article's three authors -- W. E. Bendinelli, H. F. A. J. Bettini and
+A. V. M. Oliveira -- are credited in every citation of the panel as the authors
+of the underlying research.
 
-**How to obtain.** Not public. It is the laboratory's own final-panel file
-and two of its intermediate research bases, reached in this project only
-through the archive review that preceded this repository, not through any
-open channel.
+**How to obtain.** This repository:
+`data/analysis/article_panel_route_month.parquet` (canonical) and
+`data/analysis/article_panel_route_month.csv.gz` (the same values, for
+readers without a parquet reader). After the deposit, the Zenodo record of
+the repository. Free; `just estimate` re-estimates Tables 2-7 on it in under a
+minute.
 
-**Restrictions — absolute.** Never committed to this repository, under
-any name, in any directory, in any derived form beyond a single agreement
-statistic (`CLAUDE.md` hard rule 1). Reached only through the environment
-variable `AIRLINE_DELAYS_PRIVATE_DIR` (never a path hardcoded in code),
-and only by `replication/gabarito/compare.py` or a `scripts/verify*.py`.
-Tests that need it carry the pytest marker `gabarito` and are skipped —
-never failed — when the variable is unset (`tests/conftest.py`); CI never
-sets it, so these tests never run there. The only artefact this benchmark
-ever produces on disk is `data/analysis/taxas.csv` — a table of agreement
-rates, medians and percentiles, with a structural guard
-(`replication.gabarito.compare.assert_no_values`) that refuses to write
-anything else, tested in `tests/test_gabarito.py::test_only_agreement_statistics_may_be_written`.
-The same laboratory family holds the monograph's laboratory base — the
-regression file behind the author's 2013 undergraduate monograph (source 15)
-— equally never committed, equally reachable only through
-`AIRLINE_DELAYS_PRIVATE_DIR`, and read by nothing in this repository at all.
+**Restrictions.** CC BY 4.0. Cite the panel with its three authors (below);
+the upstream ANAC data it was built from (sources 1, 3 and 4) are attributed
+to ANAC, not relicensed.
 
-**Cost and time.** Not applicable — this is a declared omission, not a
-priced acquisition. A prospective reader cannot obtain this source through
-any channel this repository documents.
+**What it contains.** 24,589 route-months x 52 columns: 209 directional
+city-pair routes over the 144 months of 2002-2013. Keys and geography, the
+flight counts every share is built on, the six regressands of Tables 3-7,
+the nine exogenous regressors, the two concentration terms with the
+alternative city term, the seven instruments and the components of the two
+low-cost dummies. Every column is declared in the registry (layer
+`article_panel`, `src/airline_delays/schema/columns.py`), rendered in
+`docs/dictionary.md` and described in `datapackage.json`. Values are never
+rounded, imputed or clipped by the curation
+(`src/airline_delays/estimation/article_panel.py`).
 
-**Redistributed here.** No. Only the derived, aggregate comparison:
-`data/analysis/taxas.csv` and the generated block of
-`docs/declared-differences.md`.
+**What it excludes.** The generated route, time and region x month
+seasonality dummies, rebuilt exactly by `src/airline_delays/estimation/loader.py`
+when `airline-delays estimate` runs; every variable from a non-open source --
+the weather cession (source 9), the airport-operator report (source 13), the
+prices and revenues of the tariff microdata (source 4); and the base's own
+bookkeeping.
+
+**Provenance.** `data/analysis/article_panel_manifest.json` records the
+sha256 and the header timestamp of the source base, its number of rows and
+variables, the sha256 and size of both published files and the per-column
+null counts -- never a path. `airline-delays estimate` records the panel's
+path, row count and sha256 in `reports/replication/results.json`.
+
+**Citation.** Bendinelli, W. E.; Bettini, H. F. A. J.; Oliveira, A. V. M.
+(2016 data; 2026 release). *Estimation panel of "Airline delays, congestion
+internalization and non-price spillover effects of low cost carrier entry"*,
+route x month, 2002-2013. Curated and published by W. E. Bendinelli. CC BY
+4.0. DOI to follow the Zenodo deposit (`ROADMAP.md`).
 
 ## 13. Infraero connections report
 
-**Holder.** Infraero (Empresa Brasileira de Infraestrutura Aeroportuária).
-Cited in the original article's Table 1 as "Infraero, unpublished monthly
-airport movement report, 2002-2013".
-
-**How to obtain.** Not public; no channel is known.
-
-**Restrictions.** Not redistributable and not reproducible from any source
-this repository has access to. It fed the original article's `o_percon`,
-`d_percon` and `dhub` (passengers in connection); this repository's own
-hub measure (`src/vra/hub.py`) is a structural substitute built from VRA
-movement shares, published under its own name — never presented as a
-reconstruction of Infraero's figure (`DECISIONS.md`; `docs/declared-differences.md`).
-
-**Reliability caveat, stated by the author in 2013.** The figures this source
-produces rest on **RPE** forms (*Relatório de Passageiros Embarcados*) filled
-in by the airlines themselves and sent to each airport. The author's 2013
-undergraduate monograph (source 15) already declared the consequence:
-**Resolução ANAC nº 8, of 2007-03-13**, revoked the obligation to send the RPE
-that art. 7 of **Portaria 602-GC5, of 2000-09-22**, had established, so the
-series' reliability is not uniform across the window; and from 2013 the
-airports conceded to private operators stopped reporting at all, which is why
-the monograph dropped 2013 entirely and ran 2000-01 to 2012-12. The caveat
-applies to any figure derived from this source, the article's `o_percon` and
-`d_percon` included. The monograph's Table 1 dates the series 1990-2012.
-
-**Cost and time.** Not applicable — declared omission.
-
-**Redistributed here.** No, and no derived column is named as if it were.
+**Holder.** Infraero (Empresa Brasileira de Infraestrutura Aeroportuária),
+cited in the article's Table 1 as an unpublished monthly airport movement
+report. It is not public, no channel to obtain it is known, and nothing
+published here needs it: the article's connecting-passenger columns are not
+among the 52 columns of the estimation panel, and the reconstruction panel's
+hub measure (`src/airline_delays/definitions/hubs.py`) is a structural
+measure built from VRA movement shares, published under its own name. The
+author's 2013 monograph (source 15) records why the underlying RPE series is
+not uniform across the window (`docs/notes/monografia-2013.md`).
 
 ## 14. Published article (Elsevier)
 
-**Holder.** Elsevier Ltd, `© 2016`. Bendinelli, Bettini & Oliveira (2016),
+**Holder.** Elsevier Ltd. Bendinelli, Bettini & Oliveira (2016),
 *Transportation Research Part A* 85, 39-52,
-[`10.1016/j.tra.2016.01.001`](https://doi.org/10.1016/j.tra.2016.01.001).
-
-**How to obtain.** Through the DOI, subject to Elsevier's own access
-terms; a reader without institutional access should look for the accepted
-manuscript through the author's institutional repository (see below).
-
-**Restrictions.** The typeset PDF is never redistributable under any
-circumstance. Elsevier's own sharing policy would allow the *accepted
-manuscript* (the peer-reviewed but not typeset version) to be deposited
-under embargo with a CC BY-NC-ND licence — but no version of that
-manuscript exists in the archive this repository was built from
-(`avaliacao-8-criterios.md` §C1, §C8: the archive holds the Portuguese
-dissertation and the do-files, never an English-language draft of the
-article itself, published or accepted).
-
-**Cost and time.** Not applicable.
+[`10.1016/j.tra.2016.01.001`](https://doi.org/10.1016/j.tra.2016.01.001),
+obtained through the DOI under Elsevier's access terms. The typeset PDF is
+not redistributable, and no accepted manuscript exists in the material this
+repository was built from.
 
 **Redistributed here.** No. `CITATION.cff`'s `preferred-citation` and the
-README's BibTeX block point to the DOI; no PDF, typeset or accepted, is
-in this repository.
+README's BibTeX block point to the DOI; the published coefficients the
+replication compares against are parsed from the article's text into
+`src/airline_delays/estimation/published.json` and marked as the article's.
 
 ## 15. The author's 2013 undergraduate monograph
 
 **Holder.** The author. *Efeitos da entrada de uma empresa aérea de baixo
 custo na internalização das externalidades do congestionamento*, monograph
-for the Bachelor's degree in Economics, USP/ESALQ, Piracicaba, 2013 (advisors
-Márcia Azanha Ferraz Dias de Moraes and Alessandro Vinícius Marques de
-Oliveira). It is the document in which the congestion-internalisation theory
-behind the 2016 article was first worked out, and the earliest description of
-the VRA's own composition anywhere in this project's material.
+for the Bachelor's degree in Economics, USP/ESALQ, Piracicaba, 2013
+(advisors Márcia Azanha Ferraz Dias de Moraes and Alessandro Vinícius
+Marques de Oliveira): the document in which the congestion-internalisation
+theory behind the 2016 article was first worked out (`DECISIONS.md`
+ADR-0019, `docs/theory/`).
 
-**How to obtain.** Not yet obtainable: a Zenodo deposit is pending, and its
-DOI is carried as the placeholder `[DOI-MONOGRAFIA]` until it exists. Until
-then the monograph is **cited, not redistributed** — a prospective reader
-cannot download it from any channel this repository documents.
-
-**Restrictions.** The author holds the rights and intends to deposit the
-document openly; nothing bars quotation now, and nothing licenses
-redistribution of the document itself before the deposit. The regression base
-behind its Tables 5 and 6 is a separate matter and is source 12: never
-committed, never read here.
+**How to obtain.** A Zenodo deposit is pending; its DOI is carried as the
+placeholder `[DOI-MONOGRAFIA]` until it exists. Until then the monograph is
+cited, not redistributed. The author holds the rights and intends to deposit
+the document openly; the regression base behind its Tables 5 and 6 is not
+redistributed and is read by nothing here.
 
 **Redistributed here.** One derived table,
 `data/external/monograph_airports.csv` (38 rows, confidence grade A: the
-verbatim transcription of the monograph's Lista de Siglas, plus a flag for the
-37 that also appear in its Tables 3 and 4), and quoted passages in
-`docs/notes/monografia-2013.md` and `docs/theory/`. Not the document.
-
-**Cost and time.** Not applicable — the derived table already exists and the
-deposit costs nothing but the author's own time.
+verbatim transcription of the monograph's Lista de Siglas, with a flag for
+the airports that also appear in its Tables 3 and 4), and short quoted
+passages in `docs/notes/monografia-2013.md` and `docs/theory/`. Its own
+estimates are quoted there as an outside document, never as a result of
+this repository.
 
 ## What is not in git, and why
 
-Per `CLAUDE.md` and `.gitignore`: `data/raw/`, `data/staged/` and
-`data/derived/` hold only their own `README.md` (`data/raw/` also tracks
-`manifest.json`, the fetch provenance) — the actual CSVs and parquet files
-are regenerated locally by `just fetch`/`just stage`/`just features`, never
-pulled from git. `data/private/` never holds anything beyond its
-`README.md`; source 12 above is reached only through
-`AIRLINE_DELAYS_PRIVATE_DIR`, which points *outside* this repository
-entirely. `data/analysis/*.parquet` and `*.csv.gz` are the one exception
-to "generated data stays out of git" (`DECISIONS.md` ADR-0014): they are
-public, small (2-12 MB) and tracked so a reviewer can run
-`just replicate` without rebuilding anything first.
+`data/raw/`, `data/staged/` and `data/derived/` hold only their own
+`README.md` (`data/raw/` also tracks `manifest.json`): the raw CSVs, the
+staged flight table and the flight-level modelling table are regenerated
+locally by `just fetch`, `just stage`, `just fact` and `just predict-dataset`,
+never pulled from git (`DECISIONS.md` ADR-0004). Everything a reader needs
+to run the estimation and read the tables is in git (ADR-0014): the article's
+estimation panel, the reconstruction panel, the fact table, the two city
+projections, the reference tables under `data/external/` and the four
+manifests under `data/analysis/`. The Zenodo record archives the repository
+as tagged; the heavy layers are described in `datapackage.json` under
+`x-regenerated`, with the command that rebuilds each.
 
-## License, by layer
+## Licence, by layer
 
-MIT for code; CC BY 4.0 for this repository's own text and derived-data
-tables (this file included); the VRA itself redistributed under CC BY with
-attribution to ANAC, not relicensed. See the README's "License" section
-and `LICENSE-CC-BY-4.0.md` for the exact boundary.
+MIT for code (`src/`, `scripts/`, `tests/`, `sql/`, `.github/`; `LICENSE`).
+CC BY 4.0 for this repository's own text and for the curated data it
+publishes -- the article's estimation panel (credited to its three authors,
+curated and published by W. E. Bendinelli), the reconstruction panel, the
+fact table, the projections and `data/external/*.csv`
+(`LICENSE-CC-BY-4.0.md`). VRA-derived tables are attributed as "ANAC, Voo
+Regular Ativo (VRA), via dados.gov.br", not relicensed; the OurAirports rows
+keep their public-domain status. The README's "License" section states the
+same boundary.

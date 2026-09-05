@@ -1,8 +1,11 @@
 # sql/
 
-DuckDB views over the parquet layers (`data/staged/`, the fact table, the
-replication panel) -- `views.sql`, read directly by `duckdb` or by
-`src/vra/` through the `duckdb` Python package. No `.duckdb` database file
-is ever committed (see `.gitignore` and `DECISIONS.md` ADR-0004): a view is
-a query over parquet, not a copy of the data, so it stays in sync with
-whatever `data/staged/`/`data/derived/` currently hold on disk.
+DuckDB views over the parquet layers -- the staged flights under `data/staged/`,
+the fact table, the city projections, the reconstruction panel and the article's
+estimation panel under `data/analysis/`, and the reference tables under
+`data/external/` -- in `views.sql`, read directly by `duckdb` or from Python
+through `airline_delays.staging.connect()`. No `.duckdb` database file is ever
+committed (see `.gitignore` and `DECISIONS.md` ADR-0004): a view is a query over
+parquet, not a copy of the data, so it stays in step with whatever
+`data/staged/` and `data/analysis/` currently hold on disk. Paths in the views
+are relative to the repository root, so run from there.
