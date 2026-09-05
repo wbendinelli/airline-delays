@@ -684,7 +684,7 @@
     "rolling_elapsed_seconds": 1142.5,
     "rolling_fold_seconds": 1140.3,
     "fixed_fold_seconds": 1001.4,
-    "note": "total_seconds is elapsed wall time for `uv run python -m ml.run`, measured by ml/run.py itself; it exceeds the sum of the fold fits because permutation importance, calibration and I/O are inside it and are not separately timed. dataset_build_seconds is the separate `--rebuild` step recorded in data/derived/ml/manifest.json.",
+    "note": "total_seconds is elapsed wall time for `uv run airline-delays predict`, measured by src/airline_delays/prediction/run.py itself; it exceeds the sum of the fold fits because permutation importance, calibration and I/O are inside it and are not separately timed. dataset_build_seconds is the separate `--rebuild` step recorded in data/derived/ml/manifest.json.",
     "measured_by": "the run that produced rolling.json and fixed.json, read back from the last `meta.seconds` those artefacts carry -- not re-measured here"
   }
 }
