@@ -1,0 +1,44 @@
+{
+  "upload_type": "dataset",
+  "title": "airline-delays: Brazil's scheduled domestic flights 2000-2013, from ANAC's raw records to a published article's tables, its theory, and a flight-level delay predictor",
+  "description": "<p>Research compendium of Bendinelli, Bettini & Oliveira (2016, Transportation Research Part A 85, 39-52). Data: the article's estimation panel (24,589 route-months x 52 columns, curated from the authors' final base of December 2015) and the open reconstruction of ANAC's Voo Regular Ativo flight-leg records (2000-2013) into a fact table, a route-month panel and two city projections, with Frictionless Data Package metadata and a bilingual data dictionary. Code: ingestion, staging, the fact table and panel, the re-estimation of Tables 2-7, the congestion model derived symbolically, and the flight-level delay predictor. Code under MIT; curated data and text under CC BY 4.0; VRA-derived tables attributed to ANAC.</p>",
+  "creators": [
+    {
+      "name": "Bendinelli, William Eduardo",
+      "affiliation": "Universidade de São Paulo"
+    }
+  ],
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "language": "eng",
+  "version": "0.1.0",
+  "keywords": [
+    "airline delays",
+    "air transport",
+    "congestion",
+    "low cost carriers",
+    "reproducible research",
+    "econometrics",
+    "machine learning",
+    "Brazil",
+    "ANAC VRA",
+    "open data"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.1016/j.tra.2016.01.001",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-article",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://dados.gov.br/dados/conjuntos-dados/dadosabertos-areas-de-atuacao-voos-e-operacoes-aereas-voo-regular-ativo-vra",
+      "relation": "isDerivedFrom",
+      "scheme": "url"
+    }
+  ],
+  "references": [
+    "Bendinelli, W. E., Bettini, H. F. A. J., & Oliveira, A. V. M. (2016). Airline delays, congestion internalization and non-price spillover effects of low cost carrier entry. Transportation Research Part A: Policy and Practice, 85, 39-52. https://doi.org/10.1016/j.tra.2016.01.001"
+  ],
+  "notes": "Code under MIT (LICENSE); curated data and text under CC BY 4.0 (LICENSE-CC-BY-4.0.md). VRA-derived tables are attributed to 'ANAC, Voo Regular Ativo (VRA), via dados.gov.br'. The heavy layers -- the raw ANAC files, the staged flight table and the flight-level modelling table -- are not in this archive; they are regenerated from ANAC's public files by the documented commands, with sha256 provenance in data/raw/manifest.json."
+}

@@ -16,7 +16,7 @@
   "curation": {
     "module": "airline_delays.estimation.article_panel",
     "command": "airline-delays article-panel --source <the authors' base>",
-    "git_commit": "d82d723",
+    "git_commit": "62ee17f",
     "tool_versions": {
       "python": "3.12.13",
       "duckdb": "1.5.5",
@@ -50,5 +50,5 @@
       "sha256": "2f1df4f7fe31e496e793f1ac37e7a90a6a3efa9f7fa843f56837e00d620fe1f5"
     }
   },
-  "generated_at": "2026-09-05T18:56:19+00:00"
+  "generated_at": "2026-09-05T19:23:09+00:00"
 }
