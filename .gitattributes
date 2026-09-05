@@ -12,7 +12,7 @@
 data/derived/** linguist-generated
 data/analysis/*.parquet linguist-generated
 data/analysis/*.csv.gz linguist-generated
-docs/dicionario.md linguist-generated
+docs/dictionary.md linguist-generated
 
 # data/external/*.csv is NOT marked linguist-generated, on purpose: it is
 # human judgment (the node map, each merger's date, each code's class), and
