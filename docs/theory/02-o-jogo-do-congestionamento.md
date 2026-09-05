@@ -153,6 +153,10 @@ linha $q = 1$, chave `f1_over_f2`).
 
 ## 5. As tarifas que restauram o ótimo
 
+![Figura 7 — Tarifas no ótimo simétrico por estrutura de mercado](../../reports/theory/figures/fig7_tarifas_por_estrutura.svg)
+
+A Figura 7 põe as tarifas de (11) lado a lado, como fração do dano marginal, para monopólio, Cournot, a líder de Stackelberg sob custo linear e quadrático, e o comportamento atomístico (`reports/theory/figures.json`, `fig7`).
+
 Líder e seguidora erram por motivos diferentes, e as tarifas que as levariam
 ao ótimo diferem. A da líder tem de eliminar a diferença entre o termo
 $f_1 c'(1 - \lambda)$ de (9) e o termo $F c'$ de (6):
@@ -214,6 +218,10 @@ dano marginal (`.T1_over_MCD`), entre 0,5 e 0,75 porque o equilíbrio não é o
 
 ## 6. Os pontos de referência: Cournot, atomístico, monopólio
 
+![Figura 6 — A função de reação da seguidora e os equilíbrios (exemplo linear)](../../reports/theory/figures/fig6_funcao_de_reacao.svg)
+
+A Figura 6 desenha, no exemplo linear, a reação da seguidora e os pontos de Cournot, de Stackelberg e do ótimo simétrico (`reports/theory/figures.json`, `fig6`).
+
 Três estruturas calibram a escala. Sob **Cournot**,
 $p - \tau - (f_i\,c' + c)/s = 0$ (`benchmarks.cournot`): cada empresa
 internaliza a própria parcela do dano, e a tarifa é os voos da rival vezes
@@ -252,6 +260,10 @@ a ordem: Stackelberg perde **mais** que Cournot (0,25 contra 0,1111), porque
 o $1 - \lambda$ de (9) corrói o incentivo de conter voos.
 
 ## 7. Demanda inelástica e a "Pressuposição 2"
+
+![Figura 9 — Demanda inelástica: o total de Stackelberg contra o ótimo](../../reports/theory/figures/fig9_demanda_inelastica.svg)
+
+A Figura 9 mostra o total de Stackelberg contra o eficiente à medida que a demanda inclina (`reports/theory/figures.json`, `fig9`).
 
 A demanda perfeitamente elástica é simplificação forte num mercado com
 milhagem e passageiros corporativos. Relaxe-a: $p = d(sF)$, $d' < 0$. A
@@ -329,6 +341,10 @@ líder voa de menos. A Pressuposição 2 descreve o intervalo dos dois termos;
 não diz que a soma tenha sinal fixo.
 
 ## 8. A entrada de uma LCC e a "Pressuposição 3"
+
+![Figura 10 — A entrante de baixo custo e a parcela internalizada](../../reports/theory/figures/fig10_entrante_lcc.svg)
+
+A Figura 10 compara as parcelas internalizadas do dano marginal no duopólio e no triopólio com a entrante (`reports/theory/figures.json`, `fig10`).
 
 A última peça da seção 4 motiva as dummies de empresa do artigo de 2016:
 
@@ -430,6 +446,10 @@ mesmo tempo. A ponte para os regressores de 2016 está no capítulo 03
 artigo, no capítulo 04 ([04-impacto.md](04-impacto.md)).
 
 ## 10. Verificação numérica e simulação
+
+![Figura 8 — Estática comparativa na curvatura do custo de congestionamento](../../reports/theory/figures/fig8_estatica_curvatura.svg)
+
+A Figura 8 acompanha λ* e a tarifa da líder ao longo da curvatura do custo (`reports/theory/figures.json`, `fig8`).
 
 A álgebra é simbólica; os números saem de `theory/equilibrium.py`. O
 seguidor vem de busca de raiz em intervalo delimitado: para um $f_1$ dado, o

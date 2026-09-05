@@ -24,6 +24,7 @@ dependencies = [
   "requests>=2.32",
   "tqdm>=4.66",
   "sympy>=1.13,<2",
+  "matplotlib>=3.9,<4",
 ]
 
 [project.urls]

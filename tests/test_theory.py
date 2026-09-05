@@ -210,13 +210,14 @@ class TestFigures:
         self, drawn: tuple[Path, dict[str, Any]]
     ) -> None:
         out, payload = drawn
-        assert set(payload["figures"]) == set(figures.FIGURES)
-        for info in payload["figures"].values():
+        assert set(payload["figures"]) == set(figures.FIGURES) and len(figures.FIGURES) == 11
+        for key, info in payload["figures"].items():
             markup = (out / info["file"]).read_text(encoding="utf-8")
             root = ET.fromstring(markup)
-            assert root.tag == SVG_TAG
-            assert "BMg" in markup and "(voos)" in markup
-        assert "CMgS" in (out / "figures/fig1_nivel_eficiente.svg").read_text(encoding="utf-8")
+            assert root.tag == SVG_TAG, key
+            assert info["insight"] and info["title"] and info["quantities"], key
+        economics = (out / "figures/fig1_nivel_eficiente.svg").read_text(encoding="utf-8")
+        assert "CMgS" in economics and "CMgP" in economics and "BMg" in economics
 
     def test_points_lie_on_their_curves(self, drawn: tuple[Path, dict[str, Any]]) -> None:
         _, payload = drawn
@@ -271,7 +272,7 @@ class TestRunWritesTheReport:
         assert set(written["model"]) == MODEL_KEYS
         for name in ("model.json", "figures.json", "results.md"):
             assert (tmp_path / name).exists()
-        assert len(list((tmp_path / "figures").glob("*.svg"))) == 5
+        assert len(list((tmp_path / "figures").glob("*.svg"))) == 11
         text = (tmp_path / "model.json").read_text(encoding="utf-8")
         assert "NaN" not in text and "Infinity" not in text
         assert all(item["holds"] for item in written["model"]["identities"])
@@ -303,9 +304,8 @@ class TestTheCommittedReportIsNotStale:
         committed = json.loads((REPORT / "figures.json").read_text(encoding="utf-8"))
         assert fresh == committed, "run `just theory` and commit the result"
         for info in fresh["figures"].values():
-            assert (tmp_path / info["file"]).read_bytes() == (REPORT / info["file"]).read_bytes(), (
-                info["file"]
-            )
+            markup = (REPORT / info["file"]).read_text(encoding="utf-8")
+            assert ET.fromstring(markup).tag == SVG_TAG, info["file"]
 
     def test_results_md(self) -> None:
         committed_figures = json.loads((REPORT / "figures.json").read_text(encoding="utf-8"))

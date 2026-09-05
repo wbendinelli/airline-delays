@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="460.8pt" height="302.4pt" viewBox="0 0 460.8 302.4" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 302.4
+L 460.8 302.4
+L 460.8 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 50.688 238.896
+L 446.976 238.896
+L 446.976 66.528
+L 50.688 66.528
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 68.701091 238.896
+L 117.047915 238.896
+L 117.047915 238.896
+L 68.701091 238.896
+z
+" clip-path="url(#p008d7c57d6)" style="fill: #a9a498"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 146.679839 238.896
+L 195.026664 238.896
+L 195.026664 163.953391
+L 146.679839 163.953391
+z
+" clip-path="url(#p008d7c57d6)" style="fill: #315b86"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 224.658588 238.896
+L 273.005412 238.896
+L 273.005412 126.482087
+L 224.658588 126.482087
+z
+" clip-path="url(#p008d7c57d6)" style="fill: #c96f3f"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 302.637336 238.896
+L 350.984161 238.896
+L 350.984161 121.461783
+L 302.637336 121.461783
+z
+" clip-path="url(#p008d7c57d6)" style="fill: #c96f3f"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 380.616085 238.896
+L 428.962909 238.896
+L 428.962909 89.010783
+L 380.616085 89.010783
+z
+" clip-path="url(#p008d7c57d6)" style="fill: #161311"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <defs>
+       <path id="md8b430ad31" d="M 0 0
+L 0 3
+" style="stroke: #6d675f; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#md8b430ad31" x="92.874503" y="238.896" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6d675f" x="92.874503" y="252.661625" transform="rotate(-0 92.874503 252.661625)">monopólio</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <g>
+       <use xlink:href="#md8b430ad31" x="170.853251" y="238.896" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(156.48665 252.661625)">Cournot</text>
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(147.266337 261.736332)">(e seguidora)</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#md8b430ad31" x="248.832" y="238.896" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(213.430828 252.661625)">líder de Stackelberg</text>
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(228.226922 261.736332)">custo linear</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#md8b430ad31" x="326.810749" y="238.896" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(291.409577 252.661625)">líder de Stackelberg</text>
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(297.018756 261.736332)">custo quadrático</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5">
+      <g>
+       <use xlink:href="#md8b430ad31" x="404.789497" y="238.896" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6d675f" x="404.789497" y="252.661625" transform="rotate(-0 404.789497 252.661625)">atomística</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_6">
+      <path d="M 50.688 238.896
+L 446.976 238.896
+" clip-path="url(#p008d7c57d6)" style="fill: none; stroke-dasharray: 1.85,0.8; stroke-dashoffset: 0; stroke: #ebe7e1; stroke-opacity: 0.8; stroke-width: 0.5"/>
+     </g>
+     <g id="line2d_7">
+      <defs>
+       <path id="m053edb8091" d="M 0 0
+L -3 0
+" style="stroke: #6d675f; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="238.896" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="242.528813" transform="rotate(-0 44.188 242.528813)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_8">
+      <path d="M 50.688 201.424696
+L 446.976 201.424696
+" clip-path="url(#p008d7c57d6)" style="fill: none; stroke-dasharray: 1.85,0.8; stroke-dashoffset: 0; stroke: #ebe7e1; stroke-opacity: 0.8; stroke-width: 0.5"/>
+     </g>
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="201.424696" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="205.057508" transform="rotate(-0 44.188 205.057508)">0,25</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_10">
+      <path d="M 50.688 163.953391
+L 446.976 163.953391
+" clip-path="url(#p008d7c57d6)" style="fill: none; stroke-dasharray: 1.85,0.8; stroke-dashoffset: 0; stroke: #ebe7e1; stroke-opacity: 0.8; stroke-width: 0.5"/>
+     </g>
+     <g id="line2d_11">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="163.953391" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="167.586204" transform="rotate(-0 44.188 167.586204)">0,50</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_12">
+      <path d="M 50.688 126.482087
+L 446.976 126.482087
+" clip-path="url(#p008d7c57d6)" style="fill: none; stroke-dasharray: 1.85,0.8; stroke-dashoffset: 0; stroke: #ebe7e1; stroke-opacity: 0.8; stroke-width: 0.5"/>
+     </g>
+     <g id="line2d_13">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="126.482087" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="130.114899" transform="rotate(-0 44.188 130.114899)">0,75</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_14">
+      <path d="M 50.688 89.010783
+L 446.976 89.010783
+" clip-path="url(#p008d7c57d6)" style="fill: none; stroke-dasharray: 1.85,0.8; stroke-dashoffset: 0; stroke: #ebe7e1; stroke-opacity: 0.8; stroke-width: 0.5"/>
+     </g>
+     <g id="line2d_15">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="89.010783" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="92.643595" transform="rotate(-0 44.188 92.643595)">1,00</text>
+     </g>
+    </g>
+    <g id="text_11">
+     <text style="font-weight: 500; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6d675f" x="20.249426" y="152.712" transform="rotate(-90 20.249426 152.712)">Tarifa por voo ÷ dano marginal MCD*</text>
+    </g>
+   </g>
+   <g id="patch_8">
+    <path d="M 50.688 238.896
+L 50.688 66.528
+" style="fill: none; stroke: #e5e0d8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 50.688 238.896
+L 446.976 238.896
+" style="fill: none; stroke: #e5e0d8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #a9a498" x="92.874503" y="234.896" transform="rotate(-0 92.874503 234.896)">0,00</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #315b86" x="170.853251" y="159.953391" transform="rotate(-0 170.853251 159.953391)">0,50</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #c96f3f" x="248.832" y="122.482087" transform="rotate(-0 248.832 122.482087)">0,75</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #c96f3f" x="326.810749" y="117.461783" transform="rotate(-0 326.810749 117.461783)">0,78</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #161311" x="404.789497" y="85.010783" transform="rotate(-0 404.789497 85.010783)">1,00</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 42.262538)">Tarifa que restaura o ótimo, avaliada em f₁ = f₂ = f*, como fração de MCD* = F* c′. Quadrático: c =</text>
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 55.757616)">1000 + 50F + F² (λ* = 0,5670).</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #161311" transform="translate(50.688 17.21843)">A líder de Stackelberg paga três quartos do dano marginal sob custo</text>
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #161311" transform="translate(50.688 30.528)">linear</text>
+   </g>
+  </g>
+  <g id="text_19">
+   <text style="font-size: 7px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 282.82046)">Quem internaliza tudo (monopólio) não precisa de tarifa; quem internaliza só a própria parcela (Cournot) paga</text>
+   <text style="font-size: 7px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 294.09381)">metade; quem não internaliza nada (atomística) paga o dano inteiro.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p008d7c57d6">
+   <rect x="50.688" y="66.528" width="396.288" height="172.368"/>
+  </clipPath>
+ </defs>
+</svg>

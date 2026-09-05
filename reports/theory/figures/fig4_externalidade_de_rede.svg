@@ -1,1 +1,254 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350" width="500" height="350"><title>Figura 4 — Expansão do aeroporto levando em conta as externalidades de rede</title><rect x="0" y="0" width="500" height="350" fill="white"/><line x1="60.0" y1="320.0" x2="480.0" y2="320.0" stroke="#222222" stroke-width="1.2"/><line x1="60.0" y1="320.0" x2="60.0" y2="14.0" stroke="#222222" stroke-width="1.2"/><polygon points="480,316.0 490,320.0 480,324.0" fill="#222222"/><polygon points="56.0,14 60.0,4 64.0,14" fill="#222222"/><text x="488.0" y="346.0" font-family="serif" font-size="11" text-anchor="end" fill="#222222">Q (voos)</text><text x="68.0" y="12.0" font-family="serif" font-size="11" text-anchor="start" fill="#222222">P (preço)</text><polyline points="60.0,245.0 460.0,245.0" fill="none" stroke="#1f5fa8" stroke-width="1.6"/><text x="464.0" y="245.0" font-family="serif" font-size="11" text-anchor="start" fill="#1f5fa8">CMg</text><polyline points="60.0,70.0 460.0,320.0" fill="none" stroke="#2e7d4f" stroke-width="1.6"/><text x="458.0" y="334.0" font-family="serif" font-size="11" text-anchor="end" fill="#2e7d4f">BMg local</text><polyline points="60.0,32.5 460.0,282.5" fill="none" stroke="#2e7d4f" stroke-width="1.6" stroke-dasharray="5 3"/><text x="458.0" y="276.5" font-family="serif" font-size="11" text-anchor="end" fill="#2e7d4f">BMg social</text><line x1="400.0" y1="282.5" x2="400.0" y2="245.0" stroke="#b03a2e" stroke-width="2.2"/><text x="406.0" y="267.8" font-family="serif" font-size="10" text-anchor="start" fill="#b03a2e">subsídio</text><line x1="340.0" y1="245.0" x2="340.0" y2="320.0" stroke="#777777" stroke-width="0.8" stroke-dasharray="4 3"/><text x="340.0" y="334.0" font-family="serif" font-size="10" text-anchor="middle" fill="#222222">Q<tspan dy="3" font-size="9">0</tspan><tspan dy="-3"> </tspan></text><line x1="400.0" y1="245.0" x2="400.0" y2="320.0" stroke="#777777" stroke-width="0.8" stroke-dasharray="4 3"/><text x="400.0" y="334.0" font-family="serif" font-size="10" text-anchor="middle" fill="#222222">Q<tspan dy="3" font-size="9">1</tspan><tspan dy="-3"> </tspan></text><circle cx="340.0" cy="245.0" r="2.8" fill="#222222"/><text x="340.0" y="245.0" font-family="serif" font-size="11" text-anchor="start" fill="#222222"></text><circle cx="400.0" cy="245.0" r="2.8" fill="#222222"/><text x="400.0" y="245.0" font-family="serif" font-size="11" text-anchor="start" fill="#222222"></text></svg>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="460.8pt" height="288pt" viewBox="0 0 460.8 288" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 288
+L 460.8 288
+L 460.8 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 50.688 227.52
+L 446.976 227.52
+L 446.976 63.36
+L 50.688 63.36
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 294.022737 227.52
+L 294.022737 186.48
+" clip-path="url(#p0254e917c2)" style="fill: none; stroke-dasharray: 0.7,1.155; stroke-dashoffset: 0; stroke: #a9a498; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 346.165895 227.52
+L 346.165895 186.48
+" clip-path="url(#p0254e917c2)" style="fill: none; stroke-dasharray: 0.7,1.155; stroke-dashoffset: 0; stroke: #a9a498; stroke-width: 0.7"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_3">
+      <defs>
+       <path id="md8b430ad31" d="M 0 0
+L 0 3
+" style="stroke: #6d675f; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#md8b430ad31" x="294.022737" y="227.52" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <!-- $Q_0$ -->
+      <g style="fill: #6d675f" transform="translate(289.372737 241.285625)">
+       <text>
+        <tspan x="0" y="-0.46875" style="font-style: italic; font-size: 7.5px; font-family: 'Inter'; fill: #6d675f">Q</tspan>
+        <tspan x="5.734863" y="0.759375" style="font-size: 5.25px; font-family: 'Inter'; fill: #6d675f">0</tspan>
+       </text>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#md8b430ad31" x="346.165895" y="227.52" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <!-- $Q_1$ -->
+      <g style="fill: #6d675f" transform="translate(342.115895 241.285625)">
+       <text>
+        <tspan x="0" y="-0.46875" style="font-style: italic; font-size: 7.5px; font-family: 'Inter'; fill: #6d675f">Q</tspan>
+        <tspan x="5.734863" y="0.759375" style="font-size: 5.25px; font-family: 'Inter'; fill: #6d675f">1</tspan>
+       </text>
+      </g>
+     </g>
+    </g>
+    <g id="text_3">
+     <text style="font-weight: 500; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6d675f" x="248.832" y="257.329082" transform="rotate(-0 248.832 257.329082)">Voos no período de pico (Q)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_5">
+      <defs>
+       <path id="m053edb8091" d="M 0 0
+L -3 0
+" style="stroke: #6d675f; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="227.52" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="231.152813" transform="rotate(-0 44.188 231.152813)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="200.16" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="203.792813" transform="rotate(-0 44.188 203.792813)">20</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_7">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="172.8" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="176.432813" transform="rotate(-0 44.188 176.432813)">40</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="145.44" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="149.072812" transform="rotate(-0 44.188 149.072812)">60</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="118.08" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="121.712812" transform="rotate(-0 44.188 121.712812)">80</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="90.72" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="94.352812" transform="rotate(-0 44.188 94.352812)">100</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_11">
+      <g>
+       <use xlink:href="#m053edb8091" x="50.688" y="63.36" style="fill: #6d675f; stroke: #6d675f; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6d675f" x="44.188" y="66.992812" transform="rotate(-0 44.188 66.992812)">120</text>
+     </g>
+    </g>
+    <g id="text_11">
+     <text style="font-weight: 500; font-size: 8.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6d675f" x="23.623254" y="145.44" transform="rotate(-90 23.623254 145.44)">Preço de um voo (P)</text>
+    </g>
+   </g>
+   <g id="line2d_12">
+    <path d="M 50.688 186.48
+L 398.309053 186.48
+" clip-path="url(#p0254e917c2)" style="fill: none; stroke: #315b86; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_13">
+    <path d="M 50.688 90.72
+L 398.309053 227.52
+" clip-path="url(#p0254e917c2)" style="fill: none; stroke: #4e8752; stroke-width: 1.6; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_14">
+    <path d="M 50.688 70.2
+L 398.309053 207
+" clip-path="url(#p0254e917c2)" style="fill: none; stroke-dasharray: 4.81,2.08; stroke-dashoffset: 0; stroke: #4e8752; stroke-width: 1.3"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 50.688 227.52
+L 50.688 63.36
+" style="fill: none; stroke: #e5e0d8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 50.688 227.52
+L 446.976 227.52
+" style="fill: none; stroke: #e5e0d8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #315b86" x="402.309053" y="189.390156" transform="rotate(-0 402.309053 189.390156)">CMg</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #4e8752" x="402.309053" y="238.430156" transform="rotate(-0 402.309053 238.430156)">BMg local</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #4e8752" x="402.309053" y="203.910156" transform="rotate(-0 402.309053 203.910156)">BMg social</text>
+   </g>
+   <g id="patch_5">
+    <path d="M 319.815709 216.282936
+Q 332.188266 207.106678 344.560824 197.930421
+" style="fill: none; stroke: #a9a498; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 7.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #c96f3f" x="286.165895" y="226.74" transform="rotate(-0 286.165895 226.74)">subsídio = 15</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 39.417233)">CMg constante em 30; BMg local = 100 − Q; BMg social = 115 − Q (a rede acrescenta 15 por voo). Um</text>
+    <text style="font-size: 8px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 52.443561)">subsídio igual à diferença leva o aeroporto de Q₀ a Q₁.</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #161311" x="50.688" y="27.36" transform="rotate(-0 50.688 27.36)">O aeroporto-spoke para em 70 voos; a rede justifica 85</text>
+   </g>
+   <g id="line2d_15">
+    <path d="M 346.165895 207
+L 346.165895 186.48
+" clip-path="url(#p0254e917c2)" style="fill: none; stroke: #c96f3f; stroke-width: 2.4"/>
+   </g>
+   <g id="line2d_16">
+    <defs>
+     <path id="mb6120e436e" d="M 0 2.1
+C 0.556927 2.1 1.091118 1.878731 1.484924 1.484924
+C 1.878731 1.091118 2.1 0.556927 2.1 0
+C 2.1 -0.556927 1.878731 -1.091118 1.484924 -1.484924
+C 1.091118 -1.878731 0.556927 -2.1 0 -2.1
+C -0.556927 -2.1 -1.091118 -1.878731 -1.484924 -1.484924
+C -1.878731 -1.091118 -2.1 -0.556927 -2.1 0
+C -2.1 0.556927 -1.878731 1.091118 -1.484924 1.484924
+C -1.091118 1.878731 -0.556927 2.1 0 2.1
+z
+" style="stroke: #161311"/>
+    </defs>
+    <g clip-path="url(#p0254e917c2)">
+     <use xlink:href="#mb6120e436e" x="294.022737" y="186.48" style="fill: #161311; stroke: #161311"/>
+    </g>
+   </g>
+   <g id="line2d_17">
+    <g clip-path="url(#p0254e917c2)">
+     <use xlink:href="#mb6120e436e" x="346.165895" y="186.48" style="fill: #161311; stroke: #161311"/>
+    </g>
+   </g>
+  </g>
+  <g id="text_18">
+   <text style="font-size: 7px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 268.480601)">O benefício de um voo a mais no spoke inclui as conexões que ele alimenta no hub; o aeroporto que só vê o benefício</text>
+   <text style="font-size: 7px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #6d675f" transform="translate(50.688 280.54856)">local subinveste.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p0254e917c2">
+   <rect x="50.688" y="63.36" width="396.288" height="164.16"/>
+  </clipPath>
+ </defs>
+</svg>
