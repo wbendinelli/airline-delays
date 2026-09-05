@@ -2,7 +2,7 @@
 """Check that every path and command mentioned in the reader-facing docs is real.
 
 Scope is deliberately narrow: ``README.md``, ``docs/tutorial/*.md`` and
-``docs/theory/*.md`` are the three places a reader follows literally, step by
+``docs/theory/*.md`` and the other entry pages are what a reader follows literally, step by
 step, so a stale path or a renamed target there is the most expensive kind of
 error -- it strands someone mid-exercise. This script scans them for three
 things and fails on
@@ -43,9 +43,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 CHECKED_FILES = [
-    ROOT / "README.md",
-    *sorted((ROOT / "docs" / "tutorial").glob("*.md")),
-    *sorted((ROOT / "docs" / "theory").glob("*.md")),
+    path
+    for path in (
+        ROOT / "README.md",
+        ROOT / "README.pt-BR.md",
+        ROOT / "CONTRIBUTING.md",
+        ROOT / "CONTRIBUTING.pt-BR.md",
+        ROOT / "data" / "README.md",
+        ROOT / "data" / "README.pt-BR.md",
+        *sorted((ROOT / "data").glob("*/README.md")),
+        *sorted((ROOT / "docs").glob("*.md")),
+        *sorted((ROOT / "docs").glob("*/*.md")),
+        ROOT / "reports" / "README.md",
+        ROOT / "scripts" / "README.md",
+        ROOT / "sql" / "README.md",
+        ROOT / "tests" / "fixtures" / "README.md",
+    )
+    if path.exists() and path.name != "dictionary.md"
 ]
 
 # Top-level names that make a slash-containing backtick span worth treating as
@@ -104,7 +118,7 @@ CLI_RE = re.compile(r"\b(?:uv run )?airline-delays\s+([a-z][a-z0-9-]*)")
 MODULE_RE = re.compile(r"\buv run python -m\s+([a-zA-Z0-9_.]+)")
 SCRIPT_RE = re.compile(r"\buv run python\s+(scripts/[a-zA-Z0-9_./-]+\.py)")
 JUSTFILE_RECIPE_RE = re.compile(
-    r"^([a-zA-Z_][a-zA-Z0-9_-]*)(?:\s+[a-zA-Z_][\w]*(?:=\"[^\"]*\")?)*\s*:"
+    r"^([a-zA-Z_][a-zA-Z0-9_-]*)(?:\s+[+*]?[a-zA-Z_][\w]*(?:=\"[^\"]*\")?)*\s*:"
 )
 
 

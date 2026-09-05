@@ -15,7 +15,7 @@ only as long as someone needs that particular grain locally.
 The flight-level modelling table of the prediction phase:
 `data/derived/ml/year=YYYY/part-0.parquet`, one row per **scheduled** flight of
 the replication universe (ADR-0002), 10.2 million rows over 2000-2013, 313 MB,
-plus a `manifest.json` with the per-year accounting. Built by `just ml-dataset`
+plus a `manifest.json` with the per-year accounting. Built by `just predict-dataset`
 in about 33 seconds, one DuckDB scan per staged year. Its 64 columns are
 declared in `src/vra/registry.py` (layer `ml`), rendered in
 `docs/dictionary.md` and described as a resource in `datapackage.json` -- the
@@ -23,5 +23,5 @@ table itself is far above the size rule of ADR-0004 and stays out of git like
 every other flight-level table.
 
 `node_day_hour.parquet` and `route_month_context.parquet` are the two
-intermediates `just features` writes for `vra.panel`; they are not part of the
+intermediates `just fact` writes for `airline_delays.panel`; they are not part of the
 ml layer.

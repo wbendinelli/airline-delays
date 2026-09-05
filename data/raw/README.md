@@ -1,7 +1,7 @@
 # data/raw/
 
 Untouched ANAC monthly VRA CSVs, exactly as downloaded, one subdirectory per
-source (`vra/YYYY/VRA_*.csv`). Populated by `just fetch` (`scripts/fetch.py`),
+source (`vra/YYYY/VRA_*.csv`). Populated by `just fetch` (`airline-delays fetch`),
 which also writes `manifest.json` — the only other file this directory
 tracks in git — recording, per file, the source URL, the retrieval date, and
 a sha256.
