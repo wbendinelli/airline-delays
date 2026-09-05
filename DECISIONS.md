@@ -97,3 +97,13 @@ Evidence base: `docs/notes/` (Portuguese) and the reconstruction reports produce
 **Evidence.** The first public panel carried 866 duplicated route-month rows and the fact table 422 duplicated group-route-month keys, with off-universe counts differing between copies.
 
 **Decision.** `(group, route, ym)` in the fact table, `(route, ym)` in the panel and `(city, ym)` in the city tables are unique by construction and by test; the aggregation functions assert it and CI runs the check on the committed tables.
+
+## ADR-0017 — Empty actual times mean "no alteration reported" (2026-09-05, panel of three reviewers)
+
+**Divergence.** ADR-0012 applied "empty actual time = on time" to the replication panel only and "empty = unknown" to the prediction dataset. Under the second reading only 4,965,966 of 10,200,578 scheduled flights had an arrival target and the surviving pre-2010 flights were 75–94% late.
+
+**Panel (ADR-0010).** Three independent reviewers, one instructed to be sceptical, read IAC 1504, the reconciliation report, the prediction outputs and the benchmark hit rates. Verdicts recorded in `docs/notes/colegiado-adr0012.md`. Majority: reading B.
+
+**Evidence.** IAC 1504 defines an exception system: the "Boletim de Alteração de Vôo" is issued only "sempre que houver alguma alteração" (introduction, §3.1); actual times and the cause code are fields of the BAV (§4.2 n, o, p); the SITAR is filled "para todas as alterações verificadas" (§5.1); annex 2 has no code for "operated on schedule". In 72,375 of 72,381 sampled disagreements the 2019 vintage's actual time equals the scheduled time. Under reading B the delay rate is 20.3% in 2002–2005 and 26.8% in 2006–2010 against 21% and 30% in the published Table 1; under reading A, 75–94%.
+
+**Decision.** Supersedes the prediction half of ADR-0012. For files of the 2000–2009 layout, a realised flight with empty actual times operated with no reported alteration: delays are 0 and a boolean `on_time_no_bav` marks the row (scope: `is_realized` and layout year < 2010; the residual nulls of 2010+ stay null). The prediction dataset, its targets and its lagged aggregates are rebuilt under this reading; a sensitivity line reports the headline metrics under reading A. Declared in `docs/declared-differences.md`: reading B is a floor on punctuality (an unreported delay counts as on time), the cause code is empty for the same reason, and the 2010 layout change remains a comparability break. The replication panel is unchanged.
