@@ -9,6 +9,12 @@ from typing import Any
 from airline_delays.schema.columns import ML, STAGED, Column, describe_frame
 
 RESOURCE_NOTES: dict[str, str] = {
+    "article_panel": (
+        "The estimation panel of Bendinelli, Bettini & Oliveira (2016): one row per directional "
+        "city-pair route x month, 2002m1-2013m12, curated from the authors' final base "
+        "(December 2015) to the 52 columns the published Tables 2-7 use plus keys and context "
+        "(ADR-0020). Canonical file; the csv.gz carries the same values at 32-bit precision."
+    ),
     "ml": (
         "Flight-level modelling table for delay prediction: one row per scheduled "
         "flight of the replication universe (ADR-0002), pre-departure features only "
@@ -31,6 +37,11 @@ RESOURCES: dict[str, tuple[str, str, list[str]]] = {
         ["ym", "node", "group"],
     ),
     "panel": ("panel_route_month", "data/analysis/panel_route_month.parquet", ["route", "ym"]),
+    "article_panel": (
+        "article_panel_route_month",
+        "data/analysis/article_panel_route_month.parquet",
+        ["od", "ym"],
+    ),
     "ml": ("flights_features", "data/derived/ml/year=*/part-0.parquet", []),
 }
 
@@ -46,6 +57,7 @@ def built_layers(root: Path) -> dict[str, list[Column]]:
         ("city", "city_month.parquet"),
         ("airline_city", "airline_city_month.parquet"),
         ("panel", "panel_route_month.parquet"),
+        ("article_panel", "article_panel_route_month.parquet"),
     ):
         path = analysis / filename
         if path.exists():

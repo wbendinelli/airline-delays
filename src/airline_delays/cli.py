@@ -361,6 +361,28 @@ def _passthrough(module_main, ctx: typer.Context) -> None:
     raise typer.Exit(code=module_main(list(ctx.args)))
 
 
+@app.command(name="article-panel")
+def article_panel(
+    source: Annotated[
+        Path,
+        typer.Option(help="The authors' final estimation base (Stata). Read once; never recorded."),
+    ],
+    out_dir: Annotated[
+        Path | None, typer.Option(help="Destination; defaults to data/analysis.")
+    ] = None,
+) -> None:
+    """Curate the article's estimation panel into data/analysis/ (ADR-0020). Owner's machine only."""
+    from airline_delays.estimation import article_panel as article_panel_mod
+
+    result = article_panel_mod.build(source, out_dir)
+    typer.echo(
+        f"article panel: {result.rows:,d} route-months x {result.columns} columns, "
+        f"{result.routes} routes, {result.months} months -> {result.parquet.name} "
+        f"({result.parquet.stat().st_size / 1e6:.1f} MB), {result.csv.name} "
+        f"({result.csv.stat().st_size / 1e6:.1f} MB), {result.manifest.name} in {result.seconds:.1f}s"
+    )
+
+
 @app.command(
     name="estimate", context_settings={"allow_extra_args": True, "ignore_unknown_options": True}
 )

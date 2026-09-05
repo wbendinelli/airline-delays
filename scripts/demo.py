@@ -2,7 +2,7 @@
 """`just demo`: the smallest end-to-end reproduction, offline, in seconds.
 
 Runs the same code path as the full pipeline (`just stage`, `just fact`,
-`just panel`, `just replicate`) over the committed fixture
+`just panel`, `just estimate`) over the committed fixture
 ``tests/fixtures/vra_sample.parquet`` -- three routes (SBAR-SBBR, MRSP-MRRJ,
 SBCT-MRSP) cut from the 2004, 2009 and 2012 files, about 20,000 staged flight
 legs, a few of them dated in the following January because the raw file month
@@ -18,9 +18,10 @@ Steps (they mirror the ``staged_tree`` and ``built`` fixtures of
 2. ``build_fact`` -> ``<out>/analysis/fact_group_route_month.parquet`` and the
    two ``<out>/derived`` intermediates;
 3. ``build_panel`` -> ``<out>/analysis/panel_route_month.parquet`` (+ csv.gz);
-4. ``replication.run`` on that panel (public source, Table 2 only, no
+4. ``estimation.run`` on the committed article panel
+   (``data/analysis/article_panel_route_month.parquet``, Table 2 only, no
    sensitivity grid) -> ``<out>/replication/{results,summary}.json`` and
-   ``tables.md``.
+   ``tables.md`` -- the replication's own code path, in about a second.
 
 Everything lands under ``data/derived/demo/`` by default, a git-ignored
 directory (``.gitignore``), and a ``summary.json`` with the counts and the
@@ -35,7 +36,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 import time
 from pathlib import Path
@@ -111,24 +111,19 @@ def main(argv: list[str] | None = None) -> int:
         f"-> {panel_result.parquet.relative_to(out)} ({panel_result.seconds:.1f} s)"
     )
 
-    # The replication code reads the public panel from AIRLINE_DELAYS_PANEL when
-    # set; pointing it at the demo panel keeps data/analysis/ and reports/ untouched.
-    os.environ["AIRLINE_DELAYS_PANEL"] = str(panel_result.parquet)
-    from airline_delays.estimation import run as replication_run
+    from airline_delays.estimation import run as estimation_run
+    from airline_delays.estimation.loader import ARTICLE_PANEL_PATH
 
     replication_dir = out / "replication"
-    output = replication_run.run(
-        "public", tables=["table2"], outdir=replication_dir, with_sensitivity=False
+    output = estimation_run.run(
+        ARTICLE_PANEL_PATH, tables=["table2"], outdir=replication_dir, with_sensitivity=False
     )
     replicated = output["results"]["table2"]["replicated"]
     computed = list(replicated["variables"])
-    missing = list(replicated["missing_variables"])
-    empty = list(replicated["empty_variables"])
     n_obs = replicated["sample"].get("n_after_singleton_cut")
     say(
-        f"  4. Table 2 on the demo panel: {len(computed)} of 13 variables computed on "
-        f"{n_obs} route-months; {len(missing)} absent and {len(empty)} entirely null, "
-        f"declared rather than substituted -> {replication_dir.relative_to(out)}/tables.md"
+        f"  4. Table 2 on the article's estimation panel: {len(computed)} of 13 variables on "
+        f"{n_obs:,d} route-months -> {replication_dir.relative_to(out)}/tables.md"
     )
 
     summary = {
@@ -138,8 +133,6 @@ def main(argv: list[str] | None = None) -> int:
         "panel_rows": int(panel_result.rows),
         "panel_columns": int(panel_result.columns),
         "table2_variables_computed": computed,
-        "table2_variables_missing": missing,
-        "table2_variables_empty": empty,
         "table2_n_obs": n_obs,
         "seconds": round(time.time() - started, 2),
     }

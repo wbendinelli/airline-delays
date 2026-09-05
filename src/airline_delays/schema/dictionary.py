@@ -9,7 +9,8 @@ LAYER_TITLES: dict[str, str] = {
     "fact": "Fact table, group x route x month (`data/analysis/fact_group_route_month.parquet`)",
     "city": "City-month (`data/analysis/city_month.parquet`)",
     "airline_city": "Airline x city x month (`data/analysis/airline_city_month.parquet`)",
-    "panel": "Route-month panel (`data/analysis/panel_route_month.parquet`)",
+    "panel": "Reconstruction panel, route x month (`data/analysis/panel_route_month.parquet`)",
+    "article_panel": "The article's estimation panel, route x month (`data/analysis/article_panel_route_month.parquet`)",
     "ml": "Flight-level modelling table (`data/derived/ml/year=YYYY/part-0.parquet`)",
 }
 

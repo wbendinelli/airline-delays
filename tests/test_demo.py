@@ -47,14 +47,14 @@ class TestTheDemoRunsEndToEnd:
         assert summary["fact_rows"] > 0
         assert summary["seconds"] < 120
 
-    def test_table_2_is_partial_and_says_so(self, demo_out: Path) -> None:
+    def test_table_2_runs_on_the_article_panel(self, demo_out: Path) -> None:
         results = json.loads((demo_out / "replication" / "results.json").read_text("utf-8"))
         replicated = results["table2"]["replicated"]
-        assert 0 < len(replicated["variables"]) < 13
-        # The VRA-only panel cannot carry the passenger HHIs or the congestion
-        # split; the demo must declare them missing, never fill them in.
-        assert set(replicated["missing_variables"]) | set(replicated["empty_variables"])
-        assert results["meta"]["source"] == "public"
+        assert len(replicated["variables"]) == 13
+        assert replicated["sample"]["n_after_singleton_cut"] == 20_630
+        assert results["meta"]["panel"]["path"] == "data/analysis/article_panel_route_month.parquet"
+        summary = json.loads((demo_out / "summary.json").read_text(encoding="utf-8"))
+        assert summary["table2_n_obs"] == 20_630
 
     def test_the_committed_tables_are_untouched(self, demo_out: Path) -> None:
         # The demo writes only under its --out directory: data/analysis and

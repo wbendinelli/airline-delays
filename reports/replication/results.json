@@ -201,7 +201,7 @@
   },
   "replicated": {
    "sample": {
-    "source": "private",
+    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -210,7 +210,6 @@
      200201,
      201312
     ],
-    "missing_contract_columns": [],
     "n_after_missing_regressand": 20655,
     "n_after_singleton_cut": 20630,
     "routes": 190,
@@ -1007,7 +1006,7 @@
   },
   "replicated": {
    "sample": {
-    "source": "private",
+    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -1016,7 +1015,6 @@
      200201,
      201312
     ],
-    "missing_contract_columns": [],
     "n_after_missing_regressand": 20655,
     "n_after_singleton_cut": 20630,
     "routes": 190,
@@ -2763,7 +2761,7 @@
   },
   "replicated": {
    "sample": {
-    "source": "private",
+    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -2772,7 +2770,6 @@
      200201,
      201312
     ],
-    "missing_contract_columns": [],
     "n_after_missing_regressand": 20655,
     "n_after_singleton_cut": 20630,
     "routes": 190,
@@ -4634,7 +4631,7 @@
   },
   "replicated": {
    "sample": {
-    "source": "private",
+    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -4643,7 +4640,6 @@
      200201,
      201312
     ],
-    "missing_contract_columns": [],
     "n_after_missing_regressand": 20655,
     "n_after_singleton_cut": 20630,
     "routes": 190,
@@ -6321,7 +6317,7 @@
   },
   "replicated": {
    "sample": {
-    "source": "private",
+    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsarr",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -6330,7 +6326,6 @@
      200201,
      201312
     ],
-    "missing_contract_columns": [],
     "n_after_missing_regressand": 20655,
     "n_after_singleton_cut": 20630,
     "routes": 190,
@@ -7882,7 +7877,7 @@
   },
   "replicated": {
    "sample": {
-    "source": "private",
+    "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
     "filter_regressand": "fsc_oddsdep",
     "n_raw": 24589,
     "routes_raw": 209,
@@ -7891,7 +7886,6 @@
      200201,
      201312
     ],
-    "missing_contract_columns": [],
     "n_after_missing_regressand": 20652,
     "n_after_singleton_cut": 20627,
     "routes": 190,
@@ -9291,14 +9285,19 @@
   }
  },
  "meta": {
-  "source": "private",
-  "tables_not_estimated": {},
+  "panel": {
+   "path": "data/analysis/article_panel_route_month.parquet",
+   "rows": 24589,
+   "sha256": "3f37be3b66590af1e7dc09f063b5250c546461c551b9bdf788500426c520366a",
+   "source_header_timestamp": "2015-12-03T18:04:00",
+   "source_description": "the authors' final estimation base for Bendinelli, Bettini & Oliveira (2016): a Stata file of 24,589 route-months x 1,829 variables, header timestamp 3 Dec 2015"
+  },
   "bandwidth": 4,
   "debiased": true,
   "with_seasonality": true,
-  "published_json": "replication/published.json",
+  "published_json": "src/airline_delays/estimation/published.json",
   "sample": {
-   "source": "private",
+   "panel": "/Users/wbendinelli/Documents/airline-delays/.claude/worktrees/monografia-congestionamento-aereo-19da6d/data/analysis/article_panel_route_month.parquet",
    "filter_regressand": "fsc_oddsarr",
    "n_raw": 24589,
    "routes_raw": 209,
@@ -9307,13 +9306,12 @@
     200201,
     201312
    ],
-   "missing_contract_columns": [],
    "n_after_missing_regressand": 20655,
    "n_after_singleton_cut": 20630,
    "routes": 190,
    "months": 144,
    "singleton_cutoff": 5
   },
-  "seconds": 38.1
+  "seconds": 41.0
  }
 }
