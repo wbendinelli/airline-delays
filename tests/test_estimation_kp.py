@@ -189,12 +189,11 @@ PUBLISHED_TOLERANCE = {
 }
 
 
-@pytest.mark.skip(reason="re-enabled when the article panel is committed to data/analysis/")
 @pytest.mark.parametrize("column", [1, 3])
 def test_identification_statistics_against_the_published_table_3(column: int) -> None:
     from airline_delays.estimation import table3
 
-    result = table3.run("private", columns=[column])["columns"][str(column)]
+    result = table3.run(columns=[column])["columns"][str(column)]
     for key, (published, tolerance) in PUBLISHED_TOLERANCE[column].items():
         replicated = result["stats"][key]
         assert replicated == pytest.approx(published, rel=tolerance), (

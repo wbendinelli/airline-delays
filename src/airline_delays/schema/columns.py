@@ -29,7 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 
 Aggregation = Literal["sum", "mean", "recompute", "none"]
 
-Layer = Literal["staged", "fact", "city", "airline_city", "panel", "derived", "ml"]
+Layer = Literal["staged", "fact", "city", "airline_city", "panel", "article_panel", "derived", "ml"]
 
 
 @dataclass(frozen=True)
@@ -1703,6 +1703,8 @@ def _resolver(layer: Layer):
     """The definition resolver of one layer."""
     if layer == "ml":
         return _ml_doc
+    if layer == "article_panel":
+        return _article_panel_doc
     if layer in {"panel", "city", "airline_city"}:
         return _panel_doc
     return _measure_doc
@@ -2279,12 +2281,378 @@ def ml_columns() -> list[Column]:
 
 ML: list[Column] = ml_columns()
 
+
+# ==================================================================== article panel
+_ARTICLE_PANEL_SRC = (
+    "the article's estimation panel: curated from the authors' final base (Dec 2015) by "
+    "airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, "
+    "ANAC statistical data and the authors' construction (ADR-0020)"
+)
+
+_FSC_EN = "full-service carriers (TAM, the Varig group, Transbrasil, Vasp)"
+_FSC_PT = "companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp)"
+
+_ARTICLE_PANEL_DOCS: dict[str, _Doc] = {
+    # keys
+    "od": _Doc(
+        "string",
+        "node pair",
+        "Directional city-pair route `o-d` in the 27 node codes of ADR-0001 (MRSP, MRRJ, MRBH for the metropolitan areas, the ICAO code elsewhere); equals `route` in the reconstruction panel.",
+        "Rota direcional cidade-par `o-d` nos 27 códigos de nó da ADR-0001 (MRSP, MRRJ, MRBH para as áreas metropolitanas, código ICAO nos demais); igual a `route` no painel reconstruído.",
+        "none",
+    ),
+    "ym": _Doc(
+        "int32", "YYYYMM", "Year-month key, 200201-201312.", "Chave ano-mês, 200201-201312.", "none"
+    ),
+    "year": _Doc("int16", "year", "Calendar year.", "Ano civil.", "none"),
+    "month": _Doc("int8", "month", "Calendar month, 1-12.", "Mês civil, 1-12.", "none"),
+    # geography
+    "o": _Doc("string", "node", "Origin node (ADR-0001).", "Nó de origem (ADR-0001).", "none"),
+    "d": _Doc(
+        "string", "node", "Destination node (ADR-0001).", "Nó de destino (ADR-0001).", "none"
+    ),
+    "o_uf": _Doc(
+        "string", "state", "State (UF) of the origin node.", "Estado (UF) do nó de origem.", "none"
+    ),
+    "d_uf": _Doc(
+        "string",
+        "state",
+        "State (UF) of the destination node.",
+        "Estado (UF) do nó de destino.",
+        "none",
+    ),
+    "o_region": _Doc(
+        "string",
+        "region",
+        "IBGE macro-region of the origin node (Norte, Nordeste, Centro-Oeste, Sudeste, Sul); the 60 region x month seasonality dummies are rebuilt from `o_region` and `d_region`.",
+        "Macrorregião IBGE do nó de origem (Norte, Nordeste, Centro-Oeste, Sudeste, Sul); as 60 dummies sazonais região x mês são reconstruídas de `o_region` e `d_region`.",
+        "none",
+    ),
+    "d_region": _Doc(
+        "string",
+        "region",
+        "IBGE macro-region of the destination node.",
+        "Macrorregião IBGE do nó de destino.",
+        "none",
+    ),
+    "km": _Doc(
+        "int16",
+        "km",
+        "Distance between the two nodes, in kilometres.",
+        "Distância entre os dois nós, em quilômetros.",
+        "none",
+    ),
+    # calendar and volume
+    "ndays": _Doc("int8", "days", "Days in the month.", "Dias no mês.", "none"),
+    "f": _Doc(
+        "int32",
+        "flights",
+        "Flights scheduled on the route-month, realised plus cancelled -- the article's `f` (ADR-0002).",
+        "Voos programados na rota-mês, realizados mais cancelados -- o `f` do artigo (ADR-0002).",
+        "sum",
+    ),
+    "fl_can": _Doc("int32", "flights", "Cancelled flights.", "Voos cancelados.", "sum"),
+    "fl_odel": _Doc(
+        "int32",
+        "flights",
+        "Realised flights that departed more than 0 minutes late.",
+        "Voos realizados que partiram com mais de 0 minuto de atraso.",
+        "sum",
+    ),
+    "fl_ddel": _Doc(
+        "int32",
+        "flights",
+        "Realised flights that arrived more than 0 minutes late.",
+        "Voos realizados que chegaram com mais de 0 minuto de atraso.",
+        "sum",
+    ),
+    "prcanc": _Doc(
+        "float32",
+        "share",
+        "Share of scheduled flights cancelled, `fl_can / f`.",
+        "Proporção de voos programados cancelados, `fl_can / f`.",
+        "recompute",
+    ),
+    "dailyfl": _Doc(
+        "float32",
+        "flights/day",
+        "Scheduled flights per day, `f / ndays`.",
+        "Voos programados por dia, `f / ndays`.",
+        "recompute",
+    ),
+    # delay proportions behind the odds
+    "fsc_prdelarr": _Doc(
+        "float32",
+        "share",
+        f"Share of {_FSC_EN} arrivals more than 15 minutes late; the proportion behind `fsc_oddsarr`.",
+        f"Proporção de chegadas das {_FSC_PT} com mais de 15 minutos de atraso; a proporção por trás de `fsc_oddsarr`.",
+        "recompute",
+    ),
+    "fsc_prdeldep": _Doc(
+        "float32",
+        "share",
+        f"Share of {_FSC_EN} departures more than 15 minutes late; the proportion behind `fsc_oddsdep`.",
+        f"Proporção de partidas das {_FSC_PT} com mais de 15 minutos de atraso; a proporção por trás de `fsc_oddsdep`.",
+        "recompute",
+    ),
+    # regressands
+    "fsc_oddsarr": _Doc(
+        "float32",
+        "log-odds",
+        f"ODDS: log-odds ln(p/(1-p)) of the share p of {_FSC_EN} arrivals more than 15 minutes late; null where p is 0 or 1. Regressand of Tables 3-6 and the sample filter of every arrival table.",
+        f"ODDS: log-odds ln(p/(1-p)) da proporção p de chegadas das {_FSC_PT} com mais de 15 minutos de atraso; nulo quando p é 0 ou 1. Regressanda das Tabelas 3-6 e filtro amostral de toda tabela de chegadas.",
+        "recompute",
+    ),
+    "fsc_minsarr": _Doc(
+        "float32",
+        "minutes",
+        f"MINS: mean arrival delay in minutes of {_FSC_EN} flights over the realised flights of the route-month; early arrivals keep their sign, so it may be negative.",
+        f"MINS: atraso médio de chegada em minutos dos voos das {_FSC_PT} sobre os voos realizados da rota-mês; chegadas antecipadas mantêm o sinal, então pode ser negativo.",
+        "recompute",
+    ),
+    "fsc_minsp15arr": _Doc(
+        "float32",
+        "minutes",
+        "MINS > 15: as MINS, counting only the minutes beyond 15 of each flight.",
+        "MINS > 15: como MINS, contando só os minutos além de 15 de cada voo.",
+        "recompute",
+    ),
+    "fsc_oddsdep": _Doc(
+        "float32",
+        "log-odds",
+        "ODDSD: the departure counterpart of `fsc_oddsarr` (Table 7), and Table 7's sample filter.",
+        "ODDSD: a contraparte de partida de `fsc_oddsarr` (Tabela 7), e o filtro amostral da Tabela 7.",
+        "recompute",
+    ),
+    "fsc_minsdep": _Doc(
+        "float32",
+        "minutes",
+        "MINSD: the departure counterpart of `fsc_minsarr` (Table 7).",
+        "MINSD: a contraparte de partida de `fsc_minsarr` (Tabela 7).",
+        "recompute",
+    ),
+    "fsc_minsp15dep": _Doc(
+        "float32",
+        "minutes",
+        "MINSD > 15: the departure counterpart of `fsc_minsp15arr` (Table 7).",
+        "MINSD > 15: a contraparte de partida de `fsc_minsp15arr` (Tabela 7).",
+        "recompute",
+    ),
+    # exogenous regressors
+    "maxprdel": _Doc(
+        "float32",
+        "share",
+        "Max prop city delayed flights: the larger of the two endpoint cities' proportions of delayed flights in the month, all carriers.",
+        "Max prop city delayed flights: a maior entre as proporções de voos atrasados das duas cidades-extremo no mês, todas as companhias.",
+        "recompute",
+    ),
+    "prwheather": _Doc(
+        "float32",
+        "share",
+        "Prop flights with bad weather: share of the route-month's flights whose IAC 1504 justification code is in the article's weather-and-restricted-airport set (`cause_codes.ARTICLE_SETS`; the dominant code is AR, ADR-0005). The spelling is the article's.",
+        "Prop flights with bad weather: proporção de voos da rota-mês cujo código de justificativa IAC 1504 está no conjunto meteorologia-e-aeroporto-restrito do artigo (`cause_codes.ARTICLE_SETS`; o código dominante é AR, ADR-0005). A grafia é a do artigo.",
+        "recompute",
+    ),
+    "princident": _Doc(
+        "float32",
+        "share",
+        "Prop flights with incidents: share of flights coded DF, DG, HB, MA or TD (ADR-0005).",
+        "Prop flights with incidents: proporção de voos com código DF, DG, HB, MA ou TD (ADR-0005).",
+        "recompute",
+    ),
+    "pr_connc": _Doc(
+        "float32",
+        "share",
+        "Prop flights held for late connections: share of flights coded RA -- aircraft rotation in IAC 1504, which the article reads as waiting for connecting passengers (ADR-0005).",
+        "Prop flights held for late connections: proporção de voos com código RA -- rotação de aeronave na IAC 1504, que o artigo lê como espera por passageiros em conexão (ADR-0005).",
+        "recompute",
+    ),
+    "dailyflcong": _Doc(
+        "float32",
+        "flights/day",
+        "Nr flights in congested hours: scheduled flights per day of the route in the hours the article classifies as congested at the endpoint airports (a declared-capacity rule, ADR-0007); the classification is the authors'.",
+        "Nr flights in congested hours: voos programados por dia da rota nas horas que o artigo classifica como congestionadas nos aeroportos-extremo (regra de capacidade declarada, ADR-0007); a classificação é dos autores.",
+        "recompute",
+    ),
+    "dailyflncong": _Doc(
+        "float32",
+        "flights/day",
+        "Nr flights in uncongested hours: the complement of `dailyflcong`.",
+        "Nr flights in uncongested hours: o complemento de `dailyflcong`.",
+        "recompute",
+    ),
+    "cshare": _Doc(
+        "int8",
+        "flag",
+        "Codeshare agreement: 1 while a codeshare agreement covered the route (TAM-Varig, 2003-2005), else 0.",
+        "Codeshare agreement: 1 enquanto um acordo de codeshare cobria a rota (TAM-Varig, 2003-2005), senão 0.",
+        "recompute",
+    ),
+    "lcc": _Doc(
+        "int8",
+        "flag",
+        "LCC presence city-pair: 1 when Gol or Azul sold tickets on the route in the month (ANAC tariff microdata); equals max(`pres_glo`, `pres_azu`) on every row.",
+        "LCC presence city-pair: 1 quando Gol ou Azul vendeu bilhetes na rota no mês (microdados tarifários da ANAC); igual a max(`pres_glo`, `pres_azu`) em todas as linhas.",
+        "recompute",
+    ),
+    "maxalccfu": _Doc(
+        "int8",
+        "flag",
+        "LCC presence max endpoint cities: 1 when Gol or Azul was present at either endpoint city; equals max(`olccfu`, `dlccfu`).",
+        "LCC presence max endpoint cities: 1 quando Gol ou Azul estava presente em uma das cidades-extremo; igual a max(`olccfu`, `dlccfu`).",
+        "recompute",
+    ),
+    # concentration
+    "rthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "HHI city-pair: Herfindahl index of the route over paid passengers by airline (ANAC statistical data). The reconstruction panel carries it as null (ADR-0007).",
+        "HHI city-pair: índice de Herfindahl da rota sobre passageiros pagos por companhia (dados estatísticos da ANAC). O painel reconstruído o traz como nulo (ADR-0007).",
+        "recompute",
+    ),
+    "maxcthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "HHI max endpoint cities: the larger of the two endpoint cities' passenger HHIs.",
+        "HHI max endpoint cities: o maior HHI de passageiros entre as duas cidades-extremo.",
+        "recompute",
+    ),
+    "gmchhi": _Doc(
+        "float32",
+        "index 0-1",
+        "Geometric mean of the two endpoint cities' passenger HHIs, the article's alternative city concentration term.",
+        "Média geométrica dos HHI de passageiros das duas cidades-extremo, o termo alternativo de concentração de cidade do artigo.",
+        "recompute",
+    ),
+    "prcongested": _Doc(
+        "float32",
+        "share",
+        "Share of the route-month's flights scheduled in congested hours under the authors' declared-capacity classification (ADR-0007).",
+        "Proporção de voos da rota-mês programados em horas congestionadas segundo a classificação de capacidade declarada dos autores (ADR-0007).",
+        "recompute",
+    ),
+    # instruments
+    "h1_maxcthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "Hausman-type instrument for `maxcthhi`: the city concentration of other city-pairs in neighbourhood band 1, the authors' spatial construction (article, identification section).",
+        "Instrumento tipo Hausman para `maxcthhi`: a concentração de cidade de outros pares na faixa de vizinhança 1, construção espacial dos autores (artigo, seção de identificação).",
+        "recompute",
+    ),
+    "h2_maxcthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "Hausman-type instrument for `maxcthhi`, neighbourhood band 2.",
+        "Instrumento tipo Hausman para `maxcthhi`, faixa de vizinhança 2.",
+        "recompute",
+    ),
+    "h3_maxcthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "Hausman-type instrument for `maxcthhi`, neighbourhood band 3.",
+        "Instrumento tipo Hausman para `maxcthhi`, faixa de vizinhança 3.",
+        "recompute",
+    ),
+    "lnh1_maxcthhi": _Doc(
+        "float32",
+        "log index",
+        "Natural log of `h1_maxcthhi`.",
+        "Logaritmo natural de `h1_maxcthhi`.",
+        "recompute",
+    ),
+    "l1h1_maxcthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "First lag (previous month) of `h1_maxcthhi`; null where the route has no previous month in the panel.",
+        "Primeira defasagem (mês anterior) de `h1_maxcthhi`; nulo onde a rota não tem mês anterior no painel.",
+        "recompute",
+    ),
+    "l1h2_maxcthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "First lag (previous month) of `h2_maxcthhi`; null where the route has no previous month in the panel.",
+        "Primeira defasagem (mês anterior) de `h2_maxcthhi`; nulo onde a rota não tem mês anterior no painel.",
+        "recompute",
+    ),
+    "h2_rthhi": _Doc(
+        "float32",
+        "index 0-1",
+        "Hausman-type instrument for `rthhi`: the route concentration of neighbouring city-pairs, band 2.",
+        "Instrumento tipo Hausman para `rthhi`: a concentração de rota dos pares vizinhos, faixa 2.",
+        "recompute",
+    ),
+    # components of the two low-cost dummies
+    "pres_glo": _Doc(
+        "int8",
+        "flag",
+        "Gol sold tickets on the route in the month (ANAC tariff microdata).",
+        "A Gol vendeu bilhetes na rota no mês (microdados tarifários da ANAC).",
+        "recompute",
+    ),
+    "pres_azu": _Doc(
+        "int8",
+        "flag",
+        "Azul sold tickets on the route in the month.",
+        "A Azul vendeu bilhetes na rota no mês.",
+        "recompute",
+    ),
+    "pres_tam": _Doc(
+        "int8",
+        "flag",
+        "TAM sold tickets on the route in the month.",
+        "A TAM vendeu bilhetes na rota no mês.",
+        "recompute",
+    ),
+    "pres_web": _Doc(
+        "int8",
+        "flag",
+        "Webjet sold tickets on the route in the month; Webjet is not part of the article's `lcc`.",
+        "A Webjet vendeu bilhetes na rota no mês; a Webjet não entra no `lcc` do artigo.",
+        "recompute",
+    ),
+    "olccfu": _Doc(
+        "int8",
+        "flag",
+        "A low-cost carrier (Gol or Azul) was present at the origin city in the month.",
+        "Uma companhia de baixo custo (Gol ou Azul) estava presente na cidade de origem no mês.",
+        "recompute",
+    ),
+    "dlccfu": _Doc(
+        "int8",
+        "flag",
+        "A low-cost carrier (Gol or Azul) was present at the destination city in the month.",
+        "Uma companhia de baixo custo (Gol ou Azul) estava presente na cidade de destino no mês.",
+        "recompute",
+    ),
+}
+
+
+def _article_panel_doc(name: str) -> _Doc:
+    try:
+        return _ARTICLE_PANEL_DOCS[name]
+    except KeyError:
+        raise KeyError(
+            f"{name!r} is not a column of the article panel; the layer is an explicit list of "
+            f"{len(_ARTICLE_PANEL_DOCS)} columns in schema/columns.py"
+        ) from None
+
+
+ARTICLE_PANEL: list[Column] = [
+    _column(name, doc, "article_panel", _ARTICLE_PANEL_SRC)
+    for name, doc in _ARTICLE_PANEL_DOCS.items()
+]
+
 _BY_NAME_ALL: dict[str, Column] = {column.name: column for column in (*STAGED, *FACT, *ML)}
 
 
 def describe(name: str, layer: Layer = "panel") -> Column:
     """The registry entry a table column would get, resolved by name and layer."""
-    source = {"staged": _DERIVED, "fact": _ANALYSIS, "ml": _ML_SRC}.get(layer, _PANEL_SRC)
+    source = {
+        "staged": _DERIVED,
+        "fact": _ANALYSIS,
+        "ml": _ML_SRC,
+        "article_panel": _ARTICLE_PANEL_SRC,
+    }.get(layer, _PANEL_SRC)
     if layer == "staged":
         return get(name)
     return _column(name, _resolver(layer)(name), layer, source)
@@ -2298,5 +2666,10 @@ def describe_frame(frame: Any, layer: Layer, source: str | None = None) -> list[
     from this module, and `tests/test_registry.py` fails if any name has none.
     """
     names, _ = _schema_of(frame)
-    chosen = source or {"fact": _ANALYSIS, "staged": _DERIVED, "ml": _ML_SRC}.get(layer, _PANEL_SRC)
+    chosen = source or {
+        "fact": _ANALYSIS,
+        "staged": _DERIVED,
+        "ml": _ML_SRC,
+        "article_panel": _ARTICLE_PANEL_SRC,
+    }.get(layer, _PANEL_SRC)
     return [_column(name, _resolver(layer)(name), layer, chosen) for name in names]

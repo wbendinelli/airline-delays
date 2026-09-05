@@ -10,6 +10,14 @@ version numbers, mark progress.
 
 ### Added
 
+- **The article's estimation panel is published** (ADR-0020):
+  `data/analysis/article_panel_route_month.parquet` (canonical, zstd) and `.csv.gz`, 24,589
+  route-months x 52 columns curated once from the authors' final base (December 2015) by
+  `airline-delays article-panel`, with `article_panel_manifest.json` (sha256 of the source and
+  of both files, Stata header timestamp, per-column null counts; no path). Registry layer
+  `article_panel` with bilingual definitions; a sixth `datapackage.json` resource;
+  `tests/test_article_panel.py`.
+
 - The theory layer in the SAPIANS standard: the eleven figures of `reports/theory/figures/`
   are now drawn with matplotlib in the SAPIANS scientific style vendored with attribution
   in `theory/sapians_style.py` (an active insight title, a subtitle with the parameters,
@@ -225,6 +233,14 @@ version numbers, mark progress.
 
 ### Changed
 
+- **Single-source estimation.** `airline-delays estimate` runs Tables 2-7 on the article's
+  panel (or any panel carrying the contract, `--panel`), writes `reports/replication/` flat --
+  no `public/`/`private/` split -- and records the panel's repository path, row count and
+  sha256 in `results.json`. `estimation/common.py` becomes `specification`, `loader`,
+  `sample` and `estimators`; `run.py` splits into `compare`, `report` and `run`; the
+  sensitivity grid keeps its seasonality axis only. Every re-estimated value equals the
+  previous run to the last digit (1,097 values compared). The demo's step 4 runs Table 2 on
+  the article panel; the Kleibergen-Paap test against the published Table 3 now runs in CI.
 - One stage-ordered package. `src/vra/`, `replication/`, `ml/` and `theory/` become
   `src/airline_delays/` with subpackages `ingest/` (layouts, manifest, download), `staging/`
   (clean, select, build), `fact/` (measures, build, projections -- `city_month` now lives here),

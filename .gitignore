@@ -22,6 +22,7 @@
 !/data/analysis/README.md
 !/data/analysis/manifest.json
 !/data/analysis/panel_manifest.json
+!/data/analysis/article_panel_manifest.json
 !/data/analysis/*.parquet
 !/data/analysis/*.csv.gz
 

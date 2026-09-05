@@ -3,15 +3,15 @@
 // Português (exceção deliberada ao inglês do repositório: CLAUDE.md, ADR-0006).
 // NENHUM número deste relatório é digitado à mão: tudo vem de
 // `reports/replication/{results,summary,sensitivity}.json`, escritos por
-// `uv run python -m replication.run`. Os valores publicados vêm de
-// `replication/published.json`, extraídos do texto do artigo por
-// `replication/published.py`.
+// `airline-delays estimate`. Os valores publicados vêm de
+// `src/airline_delays/estimation/published.json`, extraídos do texto do artigo por
+// `src/airline_delays/estimation/published.py`.
 //
-// Compilar:  typst compile reports/replication.typ reports/build/replication.pdf
+// Compilar:  typst compile --root . reports/replication.typ reports/build/replication.pdf
 
-#let results = json("replication/private/results.json")
-#let summary = json("replication/private/summary.json")
-#let grid_ = json("replication/private/sensitivity.json")
+#let results = json("replication/results.json")
+#let summary = json("replication/summary.json")
+#let grid_ = json("replication/sensitivity.json")
 #let meta = results.at("meta")
 
 #set document(
@@ -91,7 +91,7 @@
   ]
   #v(0.4em)
   #text(size: 9pt, fill: luma(35%))[
-    fonte do painel: *#meta.source* · #miles(meta.sample.n_after_singleton_cut)
+    painel de estimação do artigo: *#meta.panel.path* · #miles(meta.sample.n_after_singleton_cut)
     observações · #meta.sample.routes rotas · #meta.sample.months meses ·
     execução em #nf(meta.seconds, d: 1) s
   ]
@@ -145,7 +145,7 @@ maior (ver §5).
   columns: (auto, 1fr),
   align: (left, left),
   [Etapa], [Efeito],
-  [painel bruto da fonte #raw(meta.source)], [#miles(meta.sample.n_raw) obs., #meta.sample.routes_raw rotas],
+  [painel de estimação do artigo, #raw(meta.panel.path)], [#miles(meta.sample.n_raw) obs., #meta.sample.routes_raw rotas],
   [#raw("drop if " + meta.sample.filter_regressand + " == .")], [#miles(meta.sample.n_after_missing_regressand) obs.],
   [#raw("drop if _count_k <= " + str(meta.sample.singleton_cutoff))], [#miles(meta.sample.n_after_singleton_cut) obs., #meta.sample.routes rotas],
 )
@@ -262,44 +262,26 @@ retrato as tornaria ilegíveis.
   page(flipped: true, margin: (x: 1.4cm, y: 1.6cm), bloco(nome))
 }
 
-= 5. Sensibilidade (ADR-0008)
+= 5. Sensibilidade: dummies sazonais
 
-Coeficientes principais das colunas (1) e (2) da Tabela 3 ao longo do limiar de
-_outlier_ do atraso no nível do voo e das dummies sazonais. Uma linha de limiar
-aparece como *indisponível* quando o painel não traz o regressando reconstruído
-naquele limiar — é declarada como ausente, nunca aproximada.
+Coeficientes principais das colunas (1) e (2) da Tabela 3 com e sem as 60
+dummies sazonais região × mês. O limiar de _outlier_ do atraso no nível do voo
+(ADR-0008) é fixo num painel que chega agregado e por isso não varia aqui; esse
+parâmetro vive no pipeline de reconstrução.
 
 #table(
-  columns: (auto, auto, auto, auto, auto, auto, auto, auto),
-  align: (right, left, center, right, right, right, right, right),
-  [Col.], [limiar], [sazonais], [N], [HHI da rota], [HHI máx. cidades], [R² aj.], [J],
-  ..grid_.cells.map(c => {
-    if c.available {
-      (
-        "(" + str(c.column) + ")", c.outlier_threshold,
-        if c.with_seasonality { "sim" } else { "não" },
-        miles(c.stats.n_obs),
-        sgn(c.b.at("rthhi", default: none)) + " [" + nf(c.se.at("rthhi", default: none)) + "]",
-        sgn(c.b.at("maxcthhi", default: none)) + " [" + nf(c.se.at("maxcthhi", default: none)) + "]",
-        nf(c.stats.adj_r2), nf(c.stats.j_stat),
-      )
-    } else {
-      (
-        "(" + str(c.column) + ")", c.outlier_threshold,
-        if c.with_seasonality { "sim" } else { "não" },
-        "indisp.", "indisp.", "indisp.", "indisp.", "indisp.",
-      )
-    }
-  }).flatten(),
+  columns: (auto, auto, auto, auto, auto, auto, auto),
+  align: (right, center, right, right, right, right, right),
+  [Col.], [sazonais], [N], [HHI da rota], [HHI máx. cidades], [R² aj.], [J],
+  ..grid_.cells.map(c => (
+    "(" + str(c.column) + ")",
+    if c.with_seasonality { "sim" } else { "não" },
+    miles(c.stats.n_obs),
+    sgn(c.b.at("rthhi", default: none)) + " [" + nf(c.se.at("rthhi", default: none)) + "]",
+    sgn(c.b.at("maxcthhi", default: none)) + " [" + nf(c.se.at("maxcthhi", default: none)) + "]",
+    nf(c.stats.adj_r2), nf(c.stats.j_stat),
+  )).flatten(),
 )
-
-#if grid_.unavailable_thresholds.len() > 0 [
-  #v(0.3em)
-  #text(size: 9pt)[
-    Limiares indisponíveis nesta fonte: #grid_.unavailable_thresholds.join(", ").
-    #grid_.cells.filter(c => not c.available).first().reason.
-  ]
-]
 
 = 6. Kleibergen–Paap
 

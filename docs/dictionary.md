@@ -325,7 +325,7 @@ must be rebuilt from the flights, `none` is a key or label).
 | `hub_score` | float32 | ratio | recompute | The group's city share divided by its share of all movements in the same month. | Participação do grupo na cidade dividida por sua participação em todos os movimentos do mesmo mês. |
 | `is_hub` | int8 | flag | recompute | The node is a hub for this group: share at least 0.20, ratio at least 2, above both volume floors. | O nó é hub deste grupo: participação de ao menos 0,20, razão de ao menos 2, acima dos dois pisos de volume. |
 
-## Route-month panel (`data/analysis/panel_route_month.parquet`)
+## Reconstruction panel, route x month (`data/analysis/panel_route_month.parquet`)
 
 228 columns.
 
@@ -559,6 +559,65 @@ must be rebuilt from the flights, `none` is a key or label).
 | `gmchhi` | float32 | index 0-1 | recompute | Article `gmchhi`: geometric mean of the two endpoint-city passenger HHIs. Null for the same reason. | `gmchhi` do artigo: média geométrica dos dois HHIs de passageiros das cidades-extremo. Nulo pelo mesmo motivo. |
 | `prcongested` | float32 | share | recompute | Article `prcongested`: share of flights in a clock hour above the airport's declared capacity. Null: capacity.csv holds one airport, and one row is not a panel (ADR-0007). The p90 proxy is o_/d_sh_movements_congested. | `prcongested` do artigo: participação dos voos em hora cheia acima da capacidade declarada do aeroporto. Nulo: capacity.csv tem um aeroporto, e uma linha não é um painel (ADR-0007). O proxy p90 é o_/d_sh_movements_congested. |
 | `legacy_missing_actual_as_zero` | int8 | flag | none | The ADR-0012 convention this table was built under: 1 means a realised flight with no actual time counted as on schedule, the article's own convention. | A convenção do ADR-0012 sob a qual esta tabela foi construída: 1 significa que um voo realizado sem horário real contou como pontual, a convenção do próprio artigo. |
+
+## The article's estimation panel, route x month (`data/analysis/article_panel_route_month.parquet`)
+
+52 columns.
+
+| column | type | unit | aggregation | definition (en) | definição (pt) |
+|---|---|---|---|---|---|
+| `od` | string | node pair | none | Directional city-pair route `o-d` in the 27 node codes of ADR-0001 (MRSP, MRRJ, MRBH for the metropolitan areas, the ICAO code elsewhere); equals `route` in the reconstruction panel. | Rota direcional cidade-par `o-d` nos 27 códigos de nó da ADR-0001 (MRSP, MRRJ, MRBH para as áreas metropolitanas, código ICAO nos demais); igual a `route` no painel reconstruído. |
+| `ym` | int32 | YYYYMM | none | Year-month key, 200201-201312. | Chave ano-mês, 200201-201312. |
+| `year` | int16 | year | none | Calendar year. | Ano civil. |
+| `month` | int8 | month | none | Calendar month, 1-12. | Mês civil, 1-12. |
+| `o` | string | node | none | Origin node (ADR-0001). | Nó de origem (ADR-0001). |
+| `d` | string | node | none | Destination node (ADR-0001). | Nó de destino (ADR-0001). |
+| `o_uf` | string | state | none | State (UF) of the origin node. | Estado (UF) do nó de origem. |
+| `d_uf` | string | state | none | State (UF) of the destination node. | Estado (UF) do nó de destino. |
+| `o_region` | string | region | none | IBGE macro-region of the origin node (Norte, Nordeste, Centro-Oeste, Sudeste, Sul); the 60 region x month seasonality dummies are rebuilt from `o_region` and `d_region`. | Macrorregião IBGE do nó de origem (Norte, Nordeste, Centro-Oeste, Sudeste, Sul); as 60 dummies sazonais região x mês são reconstruídas de `o_region` e `d_region`. |
+| `d_region` | string | region | none | IBGE macro-region of the destination node. | Macrorregião IBGE do nó de destino. |
+| `km` | int16 | km | none | Distance between the two nodes, in kilometres. | Distância entre os dois nós, em quilômetros. |
+| `ndays` | int8 | days | none | Days in the month. | Dias no mês. |
+| `f` | int32 | flights | sum | Flights scheduled on the route-month, realised plus cancelled -- the article's `f` (ADR-0002). | Voos programados na rota-mês, realizados mais cancelados -- o `f` do artigo (ADR-0002). |
+| `fl_can` | int32 | flights | sum | Cancelled flights. | Voos cancelados. |
+| `fl_odel` | int32 | flights | sum | Realised flights that departed more than 0 minutes late. | Voos realizados que partiram com mais de 0 minuto de atraso. |
+| `fl_ddel` | int32 | flights | sum | Realised flights that arrived more than 0 minutes late. | Voos realizados que chegaram com mais de 0 minuto de atraso. |
+| `prcanc` | float32 | share | recompute | Share of scheduled flights cancelled, `fl_can / f`. | Proporção de voos programados cancelados, `fl_can / f`. |
+| `dailyfl` | float32 | flights/day | recompute | Scheduled flights per day, `f / ndays`. | Voos programados por dia, `f / ndays`. |
+| `fsc_prdelarr` | float32 | share | recompute | Share of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) arrivals more than 15 minutes late; the proportion behind `fsc_oddsarr`. | Proporção de chegadas das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) com mais de 15 minutos de atraso; a proporção por trás de `fsc_oddsarr`. |
+| `fsc_prdeldep` | float32 | share | recompute | Share of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) departures more than 15 minutes late; the proportion behind `fsc_oddsdep`. | Proporção de partidas das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) com mais de 15 minutos de atraso; a proporção por trás de `fsc_oddsdep`. |
+| `fsc_oddsarr` | float32 | log-odds | recompute | ODDS: log-odds ln(p/(1-p)) of the share p of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) arrivals more than 15 minutes late; null where p is 0 or 1. Regressand of Tables 3-6 and the sample filter of every arrival table. | ODDS: log-odds ln(p/(1-p)) da proporção p de chegadas das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) com mais de 15 minutos de atraso; nulo quando p é 0 ou 1. Regressanda das Tabelas 3-6 e filtro amostral de toda tabela de chegadas. |
+| `fsc_minsarr` | float32 | minutes | recompute | MINS: mean arrival delay in minutes of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) flights over the realised flights of the route-month; early arrivals keep their sign, so it may be negative. | MINS: atraso médio de chegada em minutos dos voos das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) sobre os voos realizados da rota-mês; chegadas antecipadas mantêm o sinal, então pode ser negativo. |
+| `fsc_minsp15arr` | float32 | minutes | recompute | MINS > 15: as MINS, counting only the minutes beyond 15 of each flight. | MINS > 15: como MINS, contando só os minutos além de 15 de cada voo. |
+| `fsc_oddsdep` | float32 | log-odds | recompute | ODDSD: the departure counterpart of `fsc_oddsarr` (Table 7), and Table 7's sample filter. | ODDSD: a contraparte de partida de `fsc_oddsarr` (Tabela 7), e o filtro amostral da Tabela 7. |
+| `fsc_minsdep` | float32 | minutes | recompute | MINSD: the departure counterpart of `fsc_minsarr` (Table 7). | MINSD: a contraparte de partida de `fsc_minsarr` (Tabela 7). |
+| `fsc_minsp15dep` | float32 | minutes | recompute | MINSD > 15: the departure counterpart of `fsc_minsp15arr` (Table 7). | MINSD > 15: a contraparte de partida de `fsc_minsp15arr` (Tabela 7). |
+| `maxprdel` | float32 | share | recompute | Max prop city delayed flights: the larger of the two endpoint cities' proportions of delayed flights in the month, all carriers. | Max prop city delayed flights: a maior entre as proporções de voos atrasados das duas cidades-extremo no mês, todas as companhias. |
+| `prwheather` | float32 | share | recompute | Prop flights with bad weather: share of the route-month's flights whose IAC 1504 justification code is in the article's weather-and-restricted-airport set (`cause_codes.ARTICLE_SETS`; the dominant code is AR, ADR-0005). The spelling is the article's. | Prop flights with bad weather: proporção de voos da rota-mês cujo código de justificativa IAC 1504 está no conjunto meteorologia-e-aeroporto-restrito do artigo (`cause_codes.ARTICLE_SETS`; o código dominante é AR, ADR-0005). A grafia é a do artigo. |
+| `princident` | float32 | share | recompute | Prop flights with incidents: share of flights coded DF, DG, HB, MA or TD (ADR-0005). | Prop flights with incidents: proporção de voos com código DF, DG, HB, MA ou TD (ADR-0005). |
+| `pr_connc` | float32 | share | recompute | Prop flights held for late connections: share of flights coded RA -- aircraft rotation in IAC 1504, which the article reads as waiting for connecting passengers (ADR-0005). | Prop flights held for late connections: proporção de voos com código RA -- rotação de aeronave na IAC 1504, que o artigo lê como espera por passageiros em conexão (ADR-0005). |
+| `dailyflcong` | float32 | flights/day | recompute | Nr flights in congested hours: scheduled flights per day of the route in the hours the article classifies as congested at the endpoint airports (a declared-capacity rule, ADR-0007); the classification is the authors'. | Nr flights in congested hours: voos programados por dia da rota nas horas que o artigo classifica como congestionadas nos aeroportos-extremo (regra de capacidade declarada, ADR-0007); a classificação é dos autores. |
+| `dailyflncong` | float32 | flights/day | recompute | Nr flights in uncongested hours: the complement of `dailyflcong`. | Nr flights in uncongested hours: o complemento de `dailyflcong`. |
+| `cshare` | int8 | flag | recompute | Codeshare agreement: 1 while a codeshare agreement covered the route (TAM-Varig, 2003-2005), else 0. | Codeshare agreement: 1 enquanto um acordo de codeshare cobria a rota (TAM-Varig, 2003-2005), senão 0. |
+| `lcc` | int8 | flag | recompute | LCC presence city-pair: 1 when Gol or Azul sold tickets on the route in the month (ANAC tariff microdata); equals max(`pres_glo`, `pres_azu`) on every row. | LCC presence city-pair: 1 quando Gol ou Azul vendeu bilhetes na rota no mês (microdados tarifários da ANAC); igual a max(`pres_glo`, `pres_azu`) em todas as linhas. |
+| `maxalccfu` | int8 | flag | recompute | LCC presence max endpoint cities: 1 when Gol or Azul was present at either endpoint city; equals max(`olccfu`, `dlccfu`). | LCC presence max endpoint cities: 1 quando Gol ou Azul estava presente em uma das cidades-extremo; igual a max(`olccfu`, `dlccfu`). |
+| `rthhi` | float32 | index 0-1 | recompute | HHI city-pair: Herfindahl index of the route over paid passengers by airline (ANAC statistical data). The reconstruction panel carries it as null (ADR-0007). | HHI city-pair: índice de Herfindahl da rota sobre passageiros pagos por companhia (dados estatísticos da ANAC). O painel reconstruído o traz como nulo (ADR-0007). |
+| `maxcthhi` | float32 | index 0-1 | recompute | HHI max endpoint cities: the larger of the two endpoint cities' passenger HHIs. | HHI max endpoint cities: o maior HHI de passageiros entre as duas cidades-extremo. |
+| `gmchhi` | float32 | index 0-1 | recompute | Geometric mean of the two endpoint cities' passenger HHIs, the article's alternative city concentration term. | Média geométrica dos HHI de passageiros das duas cidades-extremo, o termo alternativo de concentração de cidade do artigo. |
+| `prcongested` | float32 | share | recompute | Share of the route-month's flights scheduled in congested hours under the authors' declared-capacity classification (ADR-0007). | Proporção de voos da rota-mês programados em horas congestionadas segundo a classificação de capacidade declarada dos autores (ADR-0007). |
+| `h1_maxcthhi` | float32 | index 0-1 | recompute | Hausman-type instrument for `maxcthhi`: the city concentration of other city-pairs in neighbourhood band 1, the authors' spatial construction (article, identification section). | Instrumento tipo Hausman para `maxcthhi`: a concentração de cidade de outros pares na faixa de vizinhança 1, construção espacial dos autores (artigo, seção de identificação). |
+| `h2_maxcthhi` | float32 | index 0-1 | recompute | Hausman-type instrument for `maxcthhi`, neighbourhood band 2. | Instrumento tipo Hausman para `maxcthhi`, faixa de vizinhança 2. |
+| `h3_maxcthhi` | float32 | index 0-1 | recompute | Hausman-type instrument for `maxcthhi`, neighbourhood band 3. | Instrumento tipo Hausman para `maxcthhi`, faixa de vizinhança 3. |
+| `lnh1_maxcthhi` | float32 | log index | recompute | Natural log of `h1_maxcthhi`. | Logaritmo natural de `h1_maxcthhi`. |
+| `l1h1_maxcthhi` | float32 | index 0-1 | recompute | First lag (previous month) of `h1_maxcthhi`; null where the route has no previous month in the panel. | Primeira defasagem (mês anterior) de `h1_maxcthhi`; nulo onde a rota não tem mês anterior no painel. |
+| `l1h2_maxcthhi` | float32 | index 0-1 | recompute | First lag (previous month) of `h2_maxcthhi`; null where the route has no previous month in the panel. | Primeira defasagem (mês anterior) de `h2_maxcthhi`; nulo onde a rota não tem mês anterior no painel. |
+| `h2_rthhi` | float32 | index 0-1 | recompute | Hausman-type instrument for `rthhi`: the route concentration of neighbouring city-pairs, band 2. | Instrumento tipo Hausman para `rthhi`: a concentração de rota dos pares vizinhos, faixa 2. |
+| `pres_glo` | int8 | flag | recompute | Gol sold tickets on the route in the month (ANAC tariff microdata). | A Gol vendeu bilhetes na rota no mês (microdados tarifários da ANAC). |
+| `pres_azu` | int8 | flag | recompute | Azul sold tickets on the route in the month. | A Azul vendeu bilhetes na rota no mês. |
+| `pres_tam` | int8 | flag | recompute | TAM sold tickets on the route in the month. | A TAM vendeu bilhetes na rota no mês. |
+| `pres_web` | int8 | flag | recompute | Webjet sold tickets on the route in the month; Webjet is not part of the article's `lcc`. | A Webjet vendeu bilhetes na rota no mês; a Webjet não entra no `lcc` do artigo. |
+| `olccfu` | int8 | flag | recompute | A low-cost carrier (Gol or Azul) was present at the origin city in the month. | Uma companhia de baixo custo (Gol ou Azul) estava presente na cidade de origem no mês. |
+| `dlccfu` | int8 | flag | recompute | A low-cost carrier (Gol or Azul) was present at the destination city in the month. | Uma companhia de baixo custo (Gol ou Azul) estava presente na cidade de destino no mês. |
 
 ## Flight-level modelling table (`data/derived/ml/year=YYYY/part-0.parquet`)
 

@@ -18,7 +18,7 @@ from airline_delays import fact as fact_mod
 from airline_delays import schema
 
 ROOT = Path(__file__).resolve().parents[1]
-LAYERS = ("fact", "city", "airline_city", "panel")
+LAYERS = ("fact", "city", "airline_city", "panel", "article_panel")
 
 
 @pytest.fixture(scope="module")
@@ -29,15 +29,26 @@ def described(built) -> dict[str, list[schema.Column]]:
         "city": schema.describe_frame(fact_mod.slim(built["city"]), "city"),
         "airline_city": schema.describe_frame(fact_mod.slim(built["airline_city"]), "airline_city"),
         "panel": schema.describe_frame(built["panel"], "panel"),
+        "article_panel": schema.describe_frame(_article_panel(), "article_panel"),
     }
+
+
+def _article_panel():
+    """The committed article panel (ADR-0020); the fixture pipeline does not produce it."""
+    import pandas as pd
+
+    return pd.read_parquet(ROOT / "data" / "analysis" / "article_panel_route_month.parquet")
 
 
 class TestEveryColumnHasAnEntry:
     @pytest.mark.parametrize("layer", LAYERS)
     def test_the_resolver_answers_for_every_built_column(self, built, layer: str) -> None:
-        frame = built[
-            {"fact": "fact", "city": "city", "airline_city": "airline_city"}.get(layer, "panel")
-        ]
+        if layer == "article_panel":
+            frame = _article_panel()
+        else:
+            frame = built[
+                {"fact": "fact", "city": "city", "airline_city": "airline_city"}.get(layer, "panel")
+            ]
         if layer in {"city", "airline_city"}:
             frame = fact_mod.slim(frame)
         unknown = []

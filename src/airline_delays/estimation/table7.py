@@ -9,19 +9,19 @@ The sample filter moves with them: the do-file drops on `fsc_oddsdep`, not on
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
-from airline_delays.estimation.common import (
+from airline_delays.estimation.estimators import run_table
+from airline_delays.estimation.specification import (
     ENDOG,
     EXOG_FULL,
     EXOG_PARTIAL,
     INSTRUMENTS_MINS,
     INSTRUMENTS_ODDS,
     ColumnSpec,
-    Source,
-    run_table,
 )
 
 FILTER_REGRESSAND = "fsc_oddsdep"
@@ -37,7 +37,7 @@ SPECS: list[ColumnSpec] = [
 
 
 def run(
-    source: Source | str = Source.PRIVATE,
+    panel: Path | str | None = None,
     *,
     sample: pd.DataFrame | None = None,
     columns: list[int] | None = None,
@@ -45,5 +45,5 @@ def run(
 ) -> dict[str, Any]:
     specs = SPECS if columns is None else [s for s in SPECS if s.column in columns]
     return run_table(
-        specs, source=source, filter_regressand=FILTER_REGRESSAND, sample=sample, **fit_kwargs
+        specs, panel=panel, filter_regressand=FILTER_REGRESSAND, sample=sample, **fit_kwargs
     )

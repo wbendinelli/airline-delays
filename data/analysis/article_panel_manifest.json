@@ -1,0 +1,54 @@
+{
+  "layer": "article_panel",
+  "grain": "one row per directional city-pair route x month, 2002m1-2013m12: the estimation panel of Bendinelli, Bettini & Oliveira (2016)",
+  "source": {
+    "description": "the authors' final estimation base for Bendinelli, Bettini & Oliveira (2016): a Stata file of 24,589 route-months x 1,829 variables, header timestamp 3 Dec 2015",
+    "sha256": "19122e66206317d12c48738dab7769671c1d9b82e1c1981200bbb7f65173978a",
+    "stata_header_timestamp": "2015-12-03T18:04:00",
+    "rows_in_source": 24589,
+    "variables_in_source": 1829,
+    "columns_kept": 52,
+    "columns_excluded": {
+      "generated_dummies": "route and time fixed effects and the 60 region x month seasonality dummies, rebuilt by airline_delays.estimation.loader",
+      "outside_the_contract": "every other variable of the source, among them all columns from non-open sources"
+    }
+  },
+  "curation": {
+    "module": "airline_delays.estimation.article_panel",
+    "command": "airline-delays article-panel --source <the authors' base>",
+    "git_commit": "d82d723",
+    "tool_versions": {
+      "python": "3.12.13",
+      "duckdb": "1.5.5",
+      "pyarrow": "25.0.1",
+      "platform": "Darwin arm64"
+    }
+  },
+  "rows": 24589,
+  "columns": 52,
+  "routes": 209,
+  "months": 144,
+  "ym_range": [
+    200201,
+    201312
+  ],
+  "nulls": {
+    "fsc_prdelarr": 3043,
+    "fsc_prdeldep": 3043,
+    "fsc_oddsarr": 3934,
+    "fsc_oddsdep": 3937,
+    "l1h1_maxcthhi": 308,
+    "l1h2_maxcthhi": 308
+  },
+  "files": {
+    "article_panel_route_month.parquet": {
+      "bytes": 2202177,
+      "sha256": "3f37be3b66590af1e7dc09f063b5250c546461c551b9bdf788500426c520366a"
+    },
+    "article_panel_route_month.csv.gz": {
+      "bytes": 2916686,
+      "sha256": "2f1df4f7fe31e496e793f1ac37e7a90a6a3efa9f7fa843f56837e00d620fe1f5"
+    }
+  },
+  "generated_at": "2026-09-05T18:56:19+00:00"
+}

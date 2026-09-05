@@ -4477,6 +4477,489 @@
       }
     },
     {
+      "name": "article_panel_route_month",
+      "path": "data/analysis/article_panel_route_month.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "schema": {
+        "fields": [
+          {
+            "name": "od",
+            "type": "string",
+            "title": "node pair",
+            "description": "Directional city-pair route `o-d` in the 27 node codes of ADR-0001 (MRSP, MRRJ, MRBH for the metropolitan areas, the ICAO code elsewhere); equals `route` in the reconstruction panel.",
+            "x-definition-pt": "Rota direcional cidade-par `o-d` nos 27 códigos de nó da ADR-0001 (MRSP, MRRJ, MRBH para as áreas metropolitanas, código ICAO nos demais); igual a `route` no painel reconstruído.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "ym",
+            "type": "integer",
+            "title": "YYYYMM",
+            "description": "Year-month key, 200201-201312.",
+            "x-definition-pt": "Chave ano-mês, 200201-201312.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "year",
+            "type": "integer",
+            "title": "year",
+            "description": "Calendar year.",
+            "x-definition-pt": "Ano civil.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "month",
+            "type": "integer",
+            "title": "month",
+            "description": "Calendar month, 1-12.",
+            "x-definition-pt": "Mês civil, 1-12.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "o",
+            "type": "string",
+            "title": "node",
+            "description": "Origin node (ADR-0001).",
+            "x-definition-pt": "Nó de origem (ADR-0001).",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "d",
+            "type": "string",
+            "title": "node",
+            "description": "Destination node (ADR-0001).",
+            "x-definition-pt": "Nó de destino (ADR-0001).",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "o_uf",
+            "type": "string",
+            "title": "state",
+            "description": "State (UF) of the origin node.",
+            "x-definition-pt": "Estado (UF) do nó de origem.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "d_uf",
+            "type": "string",
+            "title": "state",
+            "description": "State (UF) of the destination node.",
+            "x-definition-pt": "Estado (UF) do nó de destino.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "o_region",
+            "type": "string",
+            "title": "region",
+            "description": "IBGE macro-region of the origin node (Norte, Nordeste, Centro-Oeste, Sudeste, Sul); the 60 region x month seasonality dummies are rebuilt from `o_region` and `d_region`.",
+            "x-definition-pt": "Macrorregião IBGE do nó de origem (Norte, Nordeste, Centro-Oeste, Sudeste, Sul); as 60 dummies sazonais região x mês são reconstruídas de `o_region` e `d_region`.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "d_region",
+            "type": "string",
+            "title": "region",
+            "description": "IBGE macro-region of the destination node.",
+            "x-definition-pt": "Macrorregião IBGE do nó de destino.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "km",
+            "type": "integer",
+            "title": "km",
+            "description": "Distance between the two nodes, in kilometres.",
+            "x-definition-pt": "Distância entre os dois nós, em quilômetros.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "ndays",
+            "type": "integer",
+            "title": "days",
+            "description": "Days in the month.",
+            "x-definition-pt": "Dias no mês.",
+            "x-aggregation": "none",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "f",
+            "type": "integer",
+            "title": "flights",
+            "description": "Flights scheduled on the route-month, realised plus cancelled -- the article's `f` (ADR-0002).",
+            "x-definition-pt": "Voos programados na rota-mês, realizados mais cancelados -- o `f` do artigo (ADR-0002).",
+            "x-aggregation": "sum",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fl_can",
+            "type": "integer",
+            "title": "flights",
+            "description": "Cancelled flights.",
+            "x-definition-pt": "Voos cancelados.",
+            "x-aggregation": "sum",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fl_odel",
+            "type": "integer",
+            "title": "flights",
+            "description": "Realised flights that departed more than 0 minutes late.",
+            "x-definition-pt": "Voos realizados que partiram com mais de 0 minuto de atraso.",
+            "x-aggregation": "sum",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fl_ddel",
+            "type": "integer",
+            "title": "flights",
+            "description": "Realised flights that arrived more than 0 minutes late.",
+            "x-definition-pt": "Voos realizados que chegaram com mais de 0 minuto de atraso.",
+            "x-aggregation": "sum",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "prcanc",
+            "type": "number",
+            "title": "share",
+            "description": "Share of scheduled flights cancelled, `fl_can / f`.",
+            "x-definition-pt": "Proporção de voos programados cancelados, `fl_can / f`.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "dailyfl",
+            "type": "number",
+            "title": "flights/day",
+            "description": "Scheduled flights per day, `f / ndays`.",
+            "x-definition-pt": "Voos programados por dia, `f / ndays`.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_prdelarr",
+            "type": "number",
+            "title": "share",
+            "description": "Share of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) arrivals more than 15 minutes late; the proportion behind `fsc_oddsarr`.",
+            "x-definition-pt": "Proporção de chegadas das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) com mais de 15 minutos de atraso; a proporção por trás de `fsc_oddsarr`.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_prdeldep",
+            "type": "number",
+            "title": "share",
+            "description": "Share of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) departures more than 15 minutes late; the proportion behind `fsc_oddsdep`.",
+            "x-definition-pt": "Proporção de partidas das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) com mais de 15 minutos de atraso; a proporção por trás de `fsc_oddsdep`.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_oddsarr",
+            "type": "number",
+            "title": "log-odds",
+            "description": "ODDS: log-odds ln(p/(1-p)) of the share p of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) arrivals more than 15 minutes late; null where p is 0 or 1. Regressand of Tables 3-6 and the sample filter of every arrival table.",
+            "x-definition-pt": "ODDS: log-odds ln(p/(1-p)) da proporção p de chegadas das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) com mais de 15 minutos de atraso; nulo quando p é 0 ou 1. Regressanda das Tabelas 3-6 e filtro amostral de toda tabela de chegadas.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_minsarr",
+            "type": "number",
+            "title": "minutes",
+            "description": "MINS: mean arrival delay in minutes of full-service carriers (TAM, the Varig group, Transbrasil, Vasp) flights over the realised flights of the route-month; early arrivals keep their sign, so it may be negative.",
+            "x-definition-pt": "MINS: atraso médio de chegada em minutos dos voos das companhias de serviço completo (TAM, grupo Varig, Transbrasil, Vasp) sobre os voos realizados da rota-mês; chegadas antecipadas mantêm o sinal, então pode ser negativo.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_minsp15arr",
+            "type": "number",
+            "title": "minutes",
+            "description": "MINS > 15: as MINS, counting only the minutes beyond 15 of each flight.",
+            "x-definition-pt": "MINS > 15: como MINS, contando só os minutos além de 15 de cada voo.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_oddsdep",
+            "type": "number",
+            "title": "log-odds",
+            "description": "ODDSD: the departure counterpart of `fsc_oddsarr` (Table 7), and Table 7's sample filter.",
+            "x-definition-pt": "ODDSD: a contraparte de partida de `fsc_oddsarr` (Tabela 7), e o filtro amostral da Tabela 7.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_minsdep",
+            "type": "number",
+            "title": "minutes",
+            "description": "MINSD: the departure counterpart of `fsc_minsarr` (Table 7).",
+            "x-definition-pt": "MINSD: a contraparte de partida de `fsc_minsarr` (Tabela 7).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "fsc_minsp15dep",
+            "type": "number",
+            "title": "minutes",
+            "description": "MINSD > 15: the departure counterpart of `fsc_minsp15arr` (Table 7).",
+            "x-definition-pt": "MINSD > 15: a contraparte de partida de `fsc_minsp15arr` (Tabela 7).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "maxprdel",
+            "type": "number",
+            "title": "share",
+            "description": "Max prop city delayed flights: the larger of the two endpoint cities' proportions of delayed flights in the month, all carriers.",
+            "x-definition-pt": "Max prop city delayed flights: a maior entre as proporções de voos atrasados das duas cidades-extremo no mês, todas as companhias.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "prwheather",
+            "type": "number",
+            "title": "share",
+            "description": "Prop flights with bad weather: share of the route-month's flights whose IAC 1504 justification code is in the article's weather-and-restricted-airport set (`cause_codes.ARTICLE_SETS`; the dominant code is AR, ADR-0005). The spelling is the article's.",
+            "x-definition-pt": "Prop flights with bad weather: proporção de voos da rota-mês cujo código de justificativa IAC 1504 está no conjunto meteorologia-e-aeroporto-restrito do artigo (`cause_codes.ARTICLE_SETS`; o código dominante é AR, ADR-0005). A grafia é a do artigo.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "princident",
+            "type": "number",
+            "title": "share",
+            "description": "Prop flights with incidents: share of flights coded DF, DG, HB, MA or TD (ADR-0005).",
+            "x-definition-pt": "Prop flights with incidents: proporção de voos com código DF, DG, HB, MA ou TD (ADR-0005).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "pr_connc",
+            "type": "number",
+            "title": "share",
+            "description": "Prop flights held for late connections: share of flights coded RA -- aircraft rotation in IAC 1504, which the article reads as waiting for connecting passengers (ADR-0005).",
+            "x-definition-pt": "Prop flights held for late connections: proporção de voos com código RA -- rotação de aeronave na IAC 1504, que o artigo lê como espera por passageiros em conexão (ADR-0005).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "dailyflcong",
+            "type": "number",
+            "title": "flights/day",
+            "description": "Nr flights in congested hours: scheduled flights per day of the route in the hours the article classifies as congested at the endpoint airports (a declared-capacity rule, ADR-0007); the classification is the authors'.",
+            "x-definition-pt": "Nr flights in congested hours: voos programados por dia da rota nas horas que o artigo classifica como congestionadas nos aeroportos-extremo (regra de capacidade declarada, ADR-0007); a classificação é dos autores.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "dailyflncong",
+            "type": "number",
+            "title": "flights/day",
+            "description": "Nr flights in uncongested hours: the complement of `dailyflcong`.",
+            "x-definition-pt": "Nr flights in uncongested hours: o complemento de `dailyflcong`.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "cshare",
+            "type": "integer",
+            "title": "flag",
+            "description": "Codeshare agreement: 1 while a codeshare agreement covered the route (TAM-Varig, 2003-2005), else 0.",
+            "x-definition-pt": "Codeshare agreement: 1 enquanto um acordo de codeshare cobria a rota (TAM-Varig, 2003-2005), senão 0.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "lcc",
+            "type": "integer",
+            "title": "flag",
+            "description": "LCC presence city-pair: 1 when Gol or Azul sold tickets on the route in the month (ANAC tariff microdata); equals max(`pres_glo`, `pres_azu`) on every row.",
+            "x-definition-pt": "LCC presence city-pair: 1 quando Gol ou Azul vendeu bilhetes na rota no mês (microdados tarifários da ANAC); igual a max(`pres_glo`, `pres_azu`) em todas as linhas.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "maxalccfu",
+            "type": "integer",
+            "title": "flag",
+            "description": "LCC presence max endpoint cities: 1 when Gol or Azul was present at either endpoint city; equals max(`olccfu`, `dlccfu`).",
+            "x-definition-pt": "LCC presence max endpoint cities: 1 quando Gol ou Azul estava presente em uma das cidades-extremo; igual a max(`olccfu`, `dlccfu`).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "rthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "HHI city-pair: Herfindahl index of the route over paid passengers by airline (ANAC statistical data). The reconstruction panel carries it as null (ADR-0007).",
+            "x-definition-pt": "HHI city-pair: índice de Herfindahl da rota sobre passageiros pagos por companhia (dados estatísticos da ANAC). O painel reconstruído o traz como nulo (ADR-0007).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "maxcthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "HHI max endpoint cities: the larger of the two endpoint cities' passenger HHIs.",
+            "x-definition-pt": "HHI max endpoint cities: o maior HHI de passageiros entre as duas cidades-extremo.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "gmchhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "Geometric mean of the two endpoint cities' passenger HHIs, the article's alternative city concentration term.",
+            "x-definition-pt": "Média geométrica dos HHI de passageiros das duas cidades-extremo, o termo alternativo de concentração de cidade do artigo.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "prcongested",
+            "type": "number",
+            "title": "share",
+            "description": "Share of the route-month's flights scheduled in congested hours under the authors' declared-capacity classification (ADR-0007).",
+            "x-definition-pt": "Proporção de voos da rota-mês programados em horas congestionadas segundo a classificação de capacidade declarada dos autores (ADR-0007).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "h1_maxcthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "Hausman-type instrument for `maxcthhi`: the city concentration of other city-pairs in neighbourhood band 1, the authors' spatial construction (article, identification section).",
+            "x-definition-pt": "Instrumento tipo Hausman para `maxcthhi`: a concentração de cidade de outros pares na faixa de vizinhança 1, construção espacial dos autores (artigo, seção de identificação).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "h2_maxcthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "Hausman-type instrument for `maxcthhi`, neighbourhood band 2.",
+            "x-definition-pt": "Instrumento tipo Hausman para `maxcthhi`, faixa de vizinhança 2.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "h3_maxcthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "Hausman-type instrument for `maxcthhi`, neighbourhood band 3.",
+            "x-definition-pt": "Instrumento tipo Hausman para `maxcthhi`, faixa de vizinhança 3.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "lnh1_maxcthhi",
+            "type": "number",
+            "title": "log index",
+            "description": "Natural log of `h1_maxcthhi`.",
+            "x-definition-pt": "Logaritmo natural de `h1_maxcthhi`.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "l1h1_maxcthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "First lag (previous month) of `h1_maxcthhi`; null where the route has no previous month in the panel.",
+            "x-definition-pt": "Primeira defasagem (mês anterior) de `h1_maxcthhi`; nulo onde a rota não tem mês anterior no painel.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "l1h2_maxcthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "First lag (previous month) of `h2_maxcthhi`; null where the route has no previous month in the panel.",
+            "x-definition-pt": "Primeira defasagem (mês anterior) de `h2_maxcthhi`; nulo onde a rota não tem mês anterior no painel.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "h2_rthhi",
+            "type": "number",
+            "title": "index 0-1",
+            "description": "Hausman-type instrument for `rthhi`: the route concentration of neighbouring city-pairs, band 2.",
+            "x-definition-pt": "Instrumento tipo Hausman para `rthhi`: a concentração de rota dos pares vizinhos, faixa 2.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "pres_glo",
+            "type": "integer",
+            "title": "flag",
+            "description": "Gol sold tickets on the route in the month (ANAC tariff microdata).",
+            "x-definition-pt": "A Gol vendeu bilhetes na rota no mês (microdados tarifários da ANAC).",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "pres_azu",
+            "type": "integer",
+            "title": "flag",
+            "description": "Azul sold tickets on the route in the month.",
+            "x-definition-pt": "A Azul vendeu bilhetes na rota no mês.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "pres_tam",
+            "type": "integer",
+            "title": "flag",
+            "description": "TAM sold tickets on the route in the month.",
+            "x-definition-pt": "A TAM vendeu bilhetes na rota no mês.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "pres_web",
+            "type": "integer",
+            "title": "flag",
+            "description": "Webjet sold tickets on the route in the month; Webjet is not part of the article's `lcc`.",
+            "x-definition-pt": "A Webjet vendeu bilhetes na rota no mês; a Webjet não entra no `lcc` do artigo.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "olccfu",
+            "type": "integer",
+            "title": "flag",
+            "description": "A low-cost carrier (Gol or Azul) was present at the origin city in the month.",
+            "x-definition-pt": "Uma companhia de baixo custo (Gol ou Azul) estava presente na cidade de origem no mês.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          },
+          {
+            "name": "dlccfu",
+            "type": "integer",
+            "title": "flag",
+            "description": "A low-cost carrier (Gol or Azul) was present at the destination city in the month.",
+            "x-definition-pt": "Uma companhia de baixo custo (Gol ou Azul) estava presente na cidade de destino no mês.",
+            "x-aggregation": "recompute",
+            "x-source": "the article's estimation panel: curated from the authors' final base (Dec 2015) by airline_delays.estimation.article_panel; upstream ANAC VRA, ANAC tariff microdata, ANAC statistical data and the authors' construction (ADR-0020)"
+          }
+        ],
+        "primaryKey": [
+          "od",
+          "ym"
+        ]
+      },
+      "description": "The estimation panel of Bendinelli, Bettini & Oliveira (2016): one row per directional city-pair route x month, 2002m1-2013m12, curated from the authors' final base (December 2015) to the 52 columns the published Tables 2-7 use plus keys and context (ADR-0020). Canonical file; the csv.gz carries the same values at 32-bit precision."
+    },
+    {
       "name": "flights_features",
       "path": "data/derived/ml/year=*/part-0.parquet",
       "format": "parquet",

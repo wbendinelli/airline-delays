@@ -1,33 +1,27 @@
-"""Replication of Tables 2-7 of Bendinelli, Bettini and Oliveira (2016).
+"""Stage 6 -- estimation: Tables 2-7 of Bendinelli, Bettini & Oliveira (2016), re-estimated on
+the article's own panel and compared with the published values (`airline-delays estimate`).
 
-The article -- *Airline delays, congestion internalization and non-price
-spillover effects of low cost carrier entry*, Transportation Research Part A 85,
-39-52, `doi:10.1016/j.tra.2016.01.001` -- is reproduced here column by column
-from a route-month panel, against the numbers parsed out of the published text
-into :mod:`replication.published`.
-
-Layout
-------
-``common``
-    The :class:`~replication.common.Source` switch (private benchmark vs the
-    public panel this repository rebuilds), the sample filters, the regressor
-    and instrument lists, the dummies, the HAC settings and :func:`fit`.
-``kp``
-    Kleibergen-Paap rk LM and rk Wald F, plus Cragg-Donald. Written from the
-    paper because no Python package implements them.
+``article_panel``
+    Curates the authors' final base into ``data/analysis/article_panel_route_month.parquet``
+    (ADR-0020). Run once, on the author's machine; the output is committed.
+``specification``
+    Regressors, instruments, regressands, the column contract, the HAC settings.
+``loader`` / ``sample``
+    Reads the panel, rebuilds the route, time and seasonality dummies, applies the
+    do-files' sample filters, builds the design matrix.
+``estimators``
+    2SGMM, LIML and OLS with the Bartlett HAC kernel; Hansen J; the Kleibergen-Paap
+    statistics of ``kp``.
+``table2`` ... ``table7``
+    One module per published table, one ``ColumnSpec`` per column.
 ``published``
-    The published numbers, parsed once out of the article text.
-``table2`` .. ``table7``
-    One module per published table.
-``sensitivity``
-    ADR-0008: the main coefficients across outlier thresholds and with or
-    without the seasonality dummies.
-``run``
-    Runs everything and writes ``reports/replication/``.
+    The published tables parsed from the article's text into ``published.json``.
+``compare`` / ``report`` / ``sensitivity`` / ``run``
+    The comparison with the published values, the Markdown report, the seasonality grid and
+    the orchestrator that writes ``reports/replication/``.
 
-Every re-estimated coefficient is compared with the published one and the
-comparison is written down in ``reports/replication/`` and
-``docs/notes/replication.md``.
+Every re-estimated coefficient is compared with the published one and the comparison is
+written down in ``reports/replication/`` and ``docs/notes/replication.md``.
 """
 
 from __future__ import annotations

@@ -9,22 +9,21 @@ the minima and maxima are distinctive enough to identify each column.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
-from airline_delays.estimation.common import Source, build_sample
 from airline_delays.estimation.published import TABLE2_VARIABLES
+from airline_delays.estimation.sample import build_sample
 
 STATISTICS: tuple[str, ...] = ("mean", "sd", "min", "max")
 
 
-def run(
-    source: Source | str = Source.PRIVATE, *, sample: pd.DataFrame | None = None
-) -> dict[str, Any]:
+def run(panel: Path | str | None = None, *, sample: pd.DataFrame | None = None) -> dict[str, Any]:
     """Correlation triangle and univariate statistics of the 13 published variables."""
     if sample is None:
-        sample = build_sample(source, filter_regressand="fsc_oddsarr")
+        sample = build_sample(panel, filter_regressand="fsc_oddsarr")
     absent = [name for name in TABLE2_VARIABLES if name not in sample.columns]
     # A column that is present but entirely null is not a variable this panel has:
     # reporting a NaN mean would look like a computed number. Say it is empty.

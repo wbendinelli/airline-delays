@@ -103,3 +103,56 @@ class TestTheCommittedPanelIsNotStale:
             "panel_route_month.parquet's values have drifted from what the current code "
             "builds from the committed fact table -- run `just panel` and commit the result."
         )
+
+
+@pytest.mark.analysis
+class TestTheCommittedReplicationIsFresh:
+    """`reports/replication/results.json` is what `airline-delays estimate` produces today.
+
+    The article panel is in git, so this needs no local data layer: it re-estimates
+    every table into a temporary directory (about 40 s) and compares every
+    coefficient, standard error and statistic with the committed file.
+    """
+
+    def test_every_estimate_matches_the_committed_results(self, tmp_path: Path) -> None:
+        import json
+        import math
+
+        from airline_delays.estimation import run as estimation_run
+
+        committed = json.loads(
+            (ROOT / "reports" / "replication" / "results.json").read_text(encoding="utf-8")
+        )
+        fresh = estimation_run.run(outdir=tmp_path, with_sensitivity=False)["results"]
+        compared = 0
+        for table in ("table2", "table3", "table4", "table5", "table6", "table7"):
+            old, new = committed[table]["replicated"], fresh[table]["replicated"]
+            if table == "table2":
+                for statistic, values in old["univariate"].items():
+                    for name, value in values.items():
+                        assert new["univariate"][statistic][name] == pytest.approx(value, rel=1e-9)
+                        compared += 1
+                continue
+            for column, old_column in old["columns"].items():
+                new_column = new["columns"][column]
+                for kind in ("b", "se"):
+                    for name, value in old_column[kind].items():
+                        assert new_column[kind][name] == pytest.approx(value, rel=1e-9), (
+                            table,
+                            column,
+                            kind,
+                            name,
+                        )
+                        compared += 1
+                for name, value in old_column["stats"].items():
+                    if isinstance(value, int | float) and not (
+                        isinstance(value, float) and math.isnan(value)
+                    ):
+                        assert new_column["stats"][name] == pytest.approx(value, rel=1e-9), (
+                            table,
+                            column,
+                            name,
+                        )
+                        compared += 1
+        assert compared > 1000
+        assert fresh["meta"]["sample"]["n_after_singleton_cut"] == 20_630

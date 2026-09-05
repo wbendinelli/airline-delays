@@ -6,6 +6,7 @@ No column reaches a public table without a `Column` here; `docs/dictionary.md` a
 from __future__ import annotations
 
 from .columns import (
+    ARTICLE_PANEL,
     DTYPE_ALIASES,
     FACT,
     ML,
@@ -41,6 +42,7 @@ from .dictionary import (
 )
 
 __all__ = [
+    "ARTICLE_PANEL",
     "DTYPE_ALIASES",
     "FACT",
     "LAYER_TITLES",
