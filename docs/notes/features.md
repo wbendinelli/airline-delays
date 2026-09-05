@@ -20,17 +20,27 @@ depois, dentro de uma regressão.
 data/staged/year=AAAA/part-0.parquet          13.652.322 etapas de voo
         │  uma varredura por ano (vra.features.build_fact)
         ▼
-data/analysis/fact_group_route_month.parquet  166.203 células × 87 colunas
+data/analysis/fact_group_route_month.parquet  165.763 células × 87 colunas
         │  vra.features.aggregate(fact, grão)
-        ├─► route_month  ──► vra.panel  ──► panel_route_month  31.760 × 228
-        ├─► city_month                                          21.250 linhas
-        └─► airline_city_month                                  49.828 linhas
+        ├─► route_month  ──► vra.panel  ──► panel_route_month  31.313 × 228
+        ├─► city_month                                          21.231 linhas
+        └─► airline_city_month                                  49.801 linhas
 ```
 
-Custo medido: **12 s** para a tabela-fato e as duas projeções de cidade, **9 s**
+Custo medido: **11 s** para a tabela-fato e as duas projeções de cidade, **7 s**
 para o painel, numa máquina de 16 GB. A varredura é ano a ano por regra do
 brief, não por lentidão — uma única varredura das catorze partições com um
 `GROUP BY` largo é a forma que faz a máquina usar swap.
+
+A unidade da varredura é o **ano civil do voo**, não o diretório
+`year=AAAA` (ADR-0016). O diretório é o ano do arquivo de origem e a coluna
+`year` vem de `flight_date`: as duas divergem em 3.723 linhas, e agrupar dentro
+do diretório e concatenar emitia a mesma célula duas vezes — 844 linhas sobre
+422 chaves na tabela-fato e 866 linhas sobre 433 chaves no painel, com contagens
+iguais e medianas diferentes, porque cada cópia calculava a sua sobre parte dos
+voos. `vra.features.year_source_sql` seleciona `WHERE year = <alvo>` sobre a
+árvore inteira (as estatísticas de row-group do parquet podam o resto, e o custo
+não muda), `build_fact` afirma a unicidade na saída e `vra.panel` na entrada.
 
 O teste de aditividade (`tests/test_features.py::TestAdditivity`) e a view
 `v_check_additivity` em `sql/views.sql` fecham o ciclo pelos dois lados: a soma
@@ -194,15 +204,18 @@ no bloco gerado de `docs/declared-differences.md`.
 
 | coluna | taxa | taxa, safra estável | reconstrução (2019) |
 |---|---|---|---|
-| `f` | 0,901 | 0,953 | 0,975 |
-| `fl_can` | 0,937 | 0,948 | 0,978 |
-| `fl_odel` | 0,854 | 0,877 | 0,924 |
-| `fscc_prdelarr` (classe FSC) | 0,527 | 0,534 | 0,651 |
-| **`fsc_prdelarr` (conjunto do artigo)** | 0,610 | **0,649** | 0,651 |
-| `prwheather` | 0,882 | 0,919 | 0,985 |
-| `princident` | 0,923 | 0,955 | 0,991 |
-| `pr_connc` | 0,913 | 0,945 | 0,992 |
+| `f` | 0,902 | 0,953 | 0,975 |
+| `fl_can` | 0,938 | 0,949 | 0,978 |
+| `fl_odel` | 0,857 | 0,879 | 0,924 |
+| `fscc_prdelarr` (classe FSC) | 0,530 | 0,535 | 0,651 |
+| **`fsc_prdelarr` (conjunto do artigo)** | 0,612 | **0,651** | 0,651 |
+| `prwheather` | 0,884 | 0,920 | 0,985 |
+| `princident` | 0,925 | 0,957 | 0,991 |
+| `pr_connc` | 0,915 | 0,947 | 0,992 |
 | `maxalccfu` | 1,000 | 1,000 | 1,000 |
+
+Medido em 2026-09-05 sobre 24.551 rota-mês comparáveis (eram 24.929 antes do
+ADR-0016 remover as 433 chaves duplicadas e o mês 2014m1).
 
 Duas leituras, ambas medidas e nenhuma ajustada.
 
@@ -218,10 +231,11 @@ divergências são pequenas: em `f` e `fl_can` a mediana **e** o p90 da diferen�
 absoluta são **zero voo**; em `fl_odel` o p90 é um voo.
 
 **Segunda: o conjunto FSC.** `fsc_prdelarr` — o conjunto de grupos do artigo,
-sem a Avianca — chega a **0,649** na metade estável, contra os 0,651 da
+sem a Avianca — chega a **0,651** na metade estável, exatamente os 0,651 da
 reconstrução. Nos minutos, `fsc_minsarr` difere do gabarito por uma mediana de
-0,060 min e p90 de 2,11, contra os 0,07 e 2,2 que a reconstrução reportou para a
-mesma aproximação. Ou seja: **com o conjunto de empresas do artigo, este
+0,058 min e p90 de 1,68, contra os 0,07 e 2,2 que a reconstrução reportou para a
+mesma aproximação; o p90 era 2,11 antes do corte simétrico do ADR-0015, que
+tirou dos somatórios os erros de digitação de mês da cauda negativa. Ou seja: **com o conjunto de empresas do artigo, este
 pipeline reproduz as colunas de atraso FSC com a mesma precisão de quem tinha o
 bruto privado.** A diferença em `fscc_*` é escolha de conjunto de empresas, não
 defeito de definição de atraso — e é o que valida, de lado, a flag do ADR-0012

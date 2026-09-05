@@ -8,7 +8,7 @@ must be rebuilt from the flights, `none` is a key or label).
 
 ## Staged flights (`data/staged/year=YYYY/part-0.parquet`)
 
-31 columns.
+32 columns.
 
 | column | type | unit | aggregation | definition (en) | definição (pt) |
 |---|---|---|---|---|---|
@@ -43,6 +43,7 @@ must be rebuilt from the flights, `none` is a key or label).
 | `universe_repl` | bool | flag | sum | Replication universe (ADR-0002): line_type in N, R, E and di equal to 0; realised and cancelled flights both included. | Universo de replicação (ADR-0002): line_type em N, R, E e di igual a 0; realizados e cancelados incluídos. |
 | `universe_ml` | bool | flag | sum | Prediction universe (ADR-0002): universe_repl restricted to realised flights. | Universo de previsão (ADR-0002): universe_repl restrito aos voos realizados. |
 | `is_realized` | bool | flag | sum | True when the published status is REALIZADO. | Verdadeiro quando a situação publicada é REALIZADO. |
+| `actual_time_suspect` | bool | flag | sum | ADR-0015: the departure or arrival delay is a whole calendar day or more in absolute value (\|delay\| >= 1440 minutes), which in the raw files is a month typo rather than an operation. False when no actual time exists, because an absence is not a suspect timestamp. | ADR-0015: o atraso de partida ou de chegada é de um dia civil ou mais em valor absoluto (\|atraso\| >= 1440 minutos), que nos arquivos brutos é erro de digitação de mês e não operação. Falso quando não há horário real, porque ausência não é horário suspeito. |
 
 ## Fact table, group x route x month (`data/analysis/fact_group_route_month.parquet`)
 
@@ -561,7 +562,7 @@ must be rebuilt from the flights, `none` is a key or label).
 
 ## Flight-level modelling table (`data/derived/ml/year=YYYY/part-0.parquet`)
 
-64 columns.
+65 columns.
 
 | column | type | unit | aggregation | definition (en) | definição (pt) |
 |---|---|---|---|---|---|
@@ -623,6 +624,7 @@ must be rebuilt from the flights, `none` is a key or label).
 | `has_arr_actual` | bool | flag | sum | Whether an actual arrival timestamp exists. Diagnostic: it is what decides whether the arrival targets exist (ADR-0012). | Se existe horário real de chegada. Diagnóstico: é o que decide se os alvos de chegada existem (ADR-0012). |
 | `has_dep_actual` | bool | flag | sum | Whether an actual departure timestamp exists. | Se existe horário real de partida. |
 | `actual_time_suspect` | bool | flag | sum | ADR-0015: an actual timestamp a whole day or more away from the schedule (\|delay\| >= 1440 minutes), which in the raw files is a month typo, not an operation. Excluded from every delay target, counted per year; kept as a row, because the flight was still scheduled and still occupied its slot. | ADR-0015: horário real a um dia ou mais do previsto (\|atraso\| >= 1440 minutos), que nos arquivos brutos é erro de digitação de mês, não operação. Excluído de todo alvo de atraso, contado por ano; mantido como linha, porque o voo foi programado e ocupou o slot. |
+| `on_time_no_bav` | bool | flag | sum | ADR-0017 reading B: a realised flight of a pre-2010 year, operated by a carrier whose groups.csv class is FSC, LCC or regional, with an empty actual departure or arrival time. IAC 1504 issues the Boletim de Alteracao de Voo only when there is an alteration, so the empty field is the absence of a reported alteration and the delay is read as 0. Never a feature: it is a fact about the outcome. | ADR-0017 leitura B: voo realizado de ano anterior a 2010, operado por empresa cuja classe em groups.csv e FSC, LCC ou regional, com horario real de partida ou chegada vazio. A IAC 1504 so emite o Boletim de Alteracao de Voo quando ha alteracao, entao o campo vazio e a ausencia de alteracao reportada e o atraso e lido como 0. Nunca e feature: e um fato sobre o desfecho. |
 | `prev_arr_known_h1` | float32 | flag | recompute | Diagnostic: 1 when the inbound leg's ACTUAL arrival happened at least 60 minutes before this flight's scheduled departure, so prev_arr_delay_min would really be known at H-1. Reported per year rather than used to null the feature, because ADR-0009 defines the horizon. | Diagnóstico: 1 quando a chegada REAL da etapa anterior ocorreu ao menos 60 minutos antes da partida prevista deste voo, de modo que prev_arr_delay_min seria mesmo conhecido em H-1. Reportado por ano em vez de usado para anular a variável, porque a ADR-0009 define o horizonte. |
 | `late15_arr` | float32 | flag | sum | TARGET. 1 when the arrival delay exceeds 15 minutes. Null on a cancelled flight, on a realised flight with no actual arrival time (ADR-0012) and on a flight whose timestamps are suspect (ADR-0015), never zero. | ALVO. 1 quando o atraso de chegada passa de 15 minutos. Nulo em voo cancelado, em voo realizado sem horário real de chegada (ADR-0012) e em voo com horário suspeito (ADR-0015), nunca zero. |
 | `late30_arr` | float32 | flag | sum | TARGET. 1 when the arrival delay exceeds 30 minutes, ANAC's own second band. | ALVO. 1 quando o atraso de chegada passa de 30 minutos, a segunda faixa da própria ANAC. |

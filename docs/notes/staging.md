@@ -196,6 +196,25 @@ truncava o atraso em zero, ao contrário do que este repositório faz (ADR-0008)
 Quem quiser tratar vazio como pontual deve fazê-lo explicitamente, numa camada acima,
 e declarar a escolha; ela muda toda média de atraso de 2000–2009.
 
+**E é o que a ADR-0017 passou a fazer, fora do staging.** Um colegiado de três
+revisores (ADR-0010, pareceres em `docs/notes/colegiado-adr0012.md`) leu a IAC 1504 e
+concluiu que o campo vazio é a ausência de Boletim de Alteração de Vôo, isto é, "sem
+alteração reportada": a camada de previsão passa a ler atraso 0 nesse caso, com a
+marca `on_time_no_bav`, e só para empresas de classe FSC, LCC ou regional. O staging
+continua sem imputar nada — a coluna crua fica nula, e a leitura mora na camada que
+declara qual convenção usa.
+
+### 4.2 `actual_time_suspect`: erro de digitação de mês, não operação
+
+Os arquivos brutos trazem horários reais com o mês errado. O caso citado na ADR-0015 é
+o VSP 4374 de dezembro de 2003, cuja chegada real está datada de novembro: −43.170
+minutos. O staging não conserta e não descarta; marca. `actual_time_suspect` é
+verdadeiro quando o atraso de partida **ou** de chegada tem valor absoluto de um dia
+civil ou mais (|atraso| ≥ 1.440 minutos), e falso quando não há horário real nenhum —
+ausência não é horário suspeito. A camada de previsão exclui essas linhas dos alvos e
+conta quantas são por ano; a camada de análise nunca as vê num somatório de minutos,
+porque o corte de outlier da ADR-0015 é simétrico (|atraso| < 313,25).
+
 ## 5. Contagem por ano (staged)
 
 Medido em 2026-09-05, DuckDB 1.5.5, PyArrow
@@ -204,25 +223,40 @@ Medido em 2026-09-05, DuckDB 1.5.5, PyArrow
 
 | ano | layout | linhas | parquet (MB) | sem `flight_date` | ano derivado ≠ ano do arquivo |
 |---|---|---|---|---|---|
-| 2000 | legacy_12col | 883,313 | 16.9 | 36 | 306 |
-| 2001 | legacy_12col | 927,440 | 16.8 | 136 | 204 |
-| 2002 | legacy_12col | 918,079 | 16.5 | 504 | 580 |
+| 2000 | legacy_12col | 883,313 | 16.5 | 36 | 306 |
+| 2001 | legacy_12col | 927,440 | 17.0 | 136 | 204 |
+| 2002 | legacy_12col | 918,079 | 16.8 | 504 | 580 |
 | 2003 | legacy_12col | 801,739 | 14.1 | 284 | 370 |
-| 2004 | legacy_12col | 752,818 | 13.3 | 53 | 166 |
+| 2004 | legacy_12col | 752,818 | 13.1 | 53 | 166 |
 | 2005 | legacy_12col | 787,750 | 14.1 | 130 | 245 |
-| 2006 | legacy_12col | 832,069 | 15.0 | 101 | 224 |
-| 2007 | legacy_12col | 940,217 | 17.9 | 132 | 232 |
-| 2008 | legacy_12col | 894,597 | 16.6 | 235 | 345 |
-| 2009 | legacy_12col | 990,233 | 18.6 | 144 | 334 |
+| 2006 | legacy_12col | 832,069 | 14.9 | 101 | 224 |
+| 2007 | legacy_12col | 940,217 | 17.7 | 132 | 232 |
+| 2008 | legacy_12col | 894,597 | 16.5 | 235 | 345 |
+| 2009 | legacy_12col | 990,233 | 18.3 | 144 | 334 |
 | 2010 | wide_20col | 1,125,951 | 23.3 | 28 | 154 |
-| 2011 | wide_20col | 1,253,200 | 27.0 | 316 | 408 |
-| 2012 | wide_20col | 1,289,283 | 28.1 | 1 | 85 |
-| 2013 | wide_20col | 1,255,633 | 27.0 | 0 | 70 |
+| 2011 | wide_20col | 1,253,200 | 26.9 | 316 | 408 |
+| 2012 | wide_20col | 1,289,283 | 28.2 | 1 | 85 |
+| 2013 | wide_20col | 1,255,633 | 27.3 | 0 | 70 |
 
 Total: **13,652,322 etapas de voo** em 168 arquivos, 265 MB de parquet
 a partir de 2,17 GB de CSV. As duas últimas colunas medem sujeira de data na origem:
 3.723 linhas no total (0,03%) têm o ano derivado diferente do ano do arquivo, e 2.100
 delas não têm data nenhuma. Nenhuma linha é descartada por isso.
+
+A maior parte dessas 3.723 é fronteira de calendário — um arquivo de dezembro que
+carrega etapas programadas para 1º de janeiro, e vice-versa —, e o resto são erros
+de digitação de ano: 136 linhas datadas de 2099, 88 de 2020, 7 de 2088 e mais nove
+espalhadas entre 2018 e 2071. **Nenhuma das linhas com ano tipográfico está no
+universo de replicação**; as de fronteira estão: 494 linhas ±1 ano, mais 18 linhas
+datadas de janeiro de 2014 nos arquivos de 2013.
+
+Foi exatamente essa divergência que produziu as chaves duplicadas da ADR-0016. O
+consumidor não pode ler o diretório como se fosse o ano: `vra.features.build_fact`
+seleciona `WHERE year = <alvo>` sobre a árvore inteira
+(`vra.features.year_source_sql`), afirma a unicidade das chaves e reporta as linhas
+datadas fora da janela construída em `rows_outside_years`
+(`data/analysis/manifest.json`). As 18 linhas de 2014-01 ficam de fora do painel,
+que passa a ter exatamente 168 meses, 2000m1 a 2013m12.
 
 ## 6. Formato de saída
 
@@ -239,9 +273,10 @@ perdida: a fonte tem resolução de minuto.
 
 O particionamento é pelo **ano do arquivo de origem**, e a coluna `year` é derivada de
 `flight_date`. As duas quase sempre coincidem; `rows_year_mismatch` no manifesto conta
-as exceções. Por isso `stage.read_staged` lê com `hive_partitioning=false`: senão o
-nome do diretório `year=AAAA` criaria uma segunda coluna `year` em conflito com a
-derivada.
+as exceções, e a seção 5 mostra o que elas causaram. Por isso `stage.read_staged` lê com
+`hive_partitioning=false`: senão o nome do diretório `year=AAAA` criaria uma segunda
+coluna `year` em conflito com a derivada — e o descasamento ficaria zero por
+construção, sem deixar de existir.
 
 `data/staged/manifest.json` registra, por ano: linhas, arquivos de origem, layout,
 caminho, bytes, sha256, linhas sem data, linhas com ano divergente e o tempo gasto;

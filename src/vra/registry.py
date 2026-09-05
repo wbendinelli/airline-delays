@@ -397,6 +397,17 @@ STAGED: list[Column] = [
         aggregation="sum",
         public=True,
     ),
+    Column(
+        name="actual_time_suspect",
+        dtype="bool",
+        unit="flag",
+        definition_en="ADR-0015: the departure or arrival delay is a whole calendar day or more in absolute value (|delay| >= 1440 minutes), which in the raw files is a month typo rather than an operation. False when no actual time exists, because an absence is not a suspect timestamp.",
+        definition_pt="ADR-0015: o atraso de partida ou de chegada é de um dia civil ou mais em valor absoluto (|atraso| >= 1440 minutos), que nos arquivos brutos é erro de digitação de mês e não operação. Falso quando não há horário real, porque ausência não é horário suspeito.",
+        source=_DERIVED,
+        layer="staged",
+        aggregation="sum",
+        public=True,
+    ),
 ]
 
 STAGED_NAMES: tuple[str, ...] = tuple(column.name for column in STAGED)
@@ -1778,6 +1789,7 @@ ML_NAMES: tuple[str, ...] = (
     "has_arr_actual",
     "has_dep_actual",
     "actual_time_suspect",
+    "on_time_no_bav",
     "prev_arr_known_h1",
     "late15_arr",
     "late30_arr",
@@ -2198,6 +2210,13 @@ _ML_DOCS: dict[str, _Doc] = {
         "flag",
         "ADR-0015: an actual timestamp a whole day or more away from the schedule (|delay| >= 1440 minutes), which in the raw files is a month typo, not an operation. Excluded from every delay target, counted per year; kept as a row, because the flight was still scheduled and still occupied its slot.",
         "ADR-0015: horário real a um dia ou mais do previsto (|atraso| >= 1440 minutos), que nos arquivos brutos é erro de digitação de mês, não operação. Excluído de todo alvo de atraso, contado por ano; mantido como linha, porque o voo foi programado e ocupou o slot.",
+        "sum",
+    ),
+    "on_time_no_bav": _Doc(
+        "bool",
+        "flag",
+        "ADR-0017 reading B: a realised flight of a pre-2010 year, operated by a carrier whose groups.csv class is FSC, LCC or regional, with an empty actual departure or arrival time. IAC 1504 issues the Boletim de Alteracao de Voo only when there is an alteration, so the empty field is the absence of a reported alteration and the delay is read as 0. Never a feature: it is a fact about the outcome.",
+        "ADR-0017 leitura B: voo realizado de ano anterior a 2010, operado por empresa cuja classe em groups.csv e FSC, LCC ou regional, com horario real de partida ou chegada vazio. A IAC 1504 so emite o Boletim de Alteracao de Voo quando ha alteracao, entao o campo vazio e a ausencia de alteracao reportada e o atraso e lido como 0. Nunca e feature: e um fato sobre o desfecho.",
         "sum",
     ),
     "prev_arr_known_h1": _Doc(

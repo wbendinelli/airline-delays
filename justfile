@@ -57,11 +57,13 @@ replicate source="public":
         uv run python -m replication.run --source {{source}}; \
     fi
 
-# The flight-level modelling table: one DuckDB scan per staged year over
-# data/staged/, writing data/derived/ml/year=YYYY/part-0.parquet (about 33 s,
-# 10.2 M rows, 313 MB -- never in git, ADR-0004). `just ml` also trains the
+# The flight-level modelling table: one DuckDB pass per calendar year over
+# data/staged/, writing data/derived/ml/year=YYYY/part-0.parquet (about 25 s,
+# 10.2 M rows, 320 MB -- never in git, ADR-0004). `just ml` also trains the
 # rolling-origin folds and the fixed split and writes reports/prediction/;
-# that part takes about 23 minutes. `just ml-dataset` stops after the table.
+# that part takes about 39 minutes under the ADR-0017 reading, which gives an
+# arrival target to 8.7 M flights instead of 5.0 M. `just ml-dataset` stops
+# after the table.
 ml-dataset:
     uv run python -c "import sys; sys.path.insert(0, '.'); from ml.dataset_flights import build_dataset; build_dataset()"
 

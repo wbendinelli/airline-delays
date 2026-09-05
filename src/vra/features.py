@@ -26,6 +26,20 @@ uses.
 Order statistics (median, p90) cannot be summed and are not in the fact table:
 `build_fact` computes them straight from the flights at the route-month grain,
 under whichever convention the caller declares.
+
+**One calendar year per pass, not one directory per pass** (ADR-0016). The
+staged tree is partitioned by the year of the *source file*, and `flight_date`
+is the scheduled departure, so a December file carries a few legs scheduled for
+1 January and a handful of rows carry an outright typo: 3,723 rows over the
+series whose ``year`` differs from the directory they sit in
+(`docs/notes/staging.md` section 5). Grouping inside each directory and
+concatenating therefore emitted the same ``group x route x month`` cell twice —
+844 rows over 422 keys in the first public fact table, and, through the
+route-month context join, 866 duplicated rows over 433 keys in the panel. Each
+pass now selects ``WHERE year = <target>`` across the whole staged tree (parquet
+row-group statistics prune the partitions that cannot hold it), the concatenated
+tables are asserted unique on their keys, and rows dated outside the requested
+years are counted and reported rather than silently folded into a neighbour.
 """
 
 from __future__ import annotations
@@ -62,6 +76,18 @@ FACT_KEYS: tuple[str, ...] = (
     "class",
 )
 
+FACT_UNIQUE_KEY: tuple[str, ...] = ("group", "route", "ym")
+"""ADR-0016: the fact table's key, unique by construction and by test."""
+
+ROUTE_MONTH_KEY: tuple[str, ...] = ("route", "ym")
+"""ADR-0016: the key of the route-month context, the projection and the panel."""
+
+CITY_MONTH_KEY: tuple[str, ...] = ("node", "ym")
+"""ADR-0016: the key of the city-month projection."""
+
+AIRLINE_CITY_MONTH_KEY: tuple[str, ...] = ("group", "node", "ym")
+"""ADR-0016: the key of the airline-city-month projection."""
+
 HOURS: tuple[int, ...] = tuple(range(24))
 HOUR_COLUMNS: tuple[str, ...] = tuple(f"sched_dep_h{hour:02d}" for hour in HOURS)
 
@@ -81,12 +107,17 @@ def _delay_measures(side: str, threshold: float) -> dict[str, str]:
 
     Every one is restricted to realised flights: a cancelled flight has no
     delay, and counting it as on time would be an imputation.
+
+    The outlier rule is symmetric (ADR-0015): the counts of delayed flights are
+    untouched, and every **sum of minutes** is taken over
+    ``abs(delay) < threshold``, so a month typo cannot enter a sum from either
+    tail. ``{side}_outliers`` counts both tails for the same reason.
     """
     delay = f"{side}_delay_min"
     actual = f"actual_{'dep' if side == 'dep' else 'arr'}"
     scheduled = f"sched_{'dep' if side == 'dep' else 'arr'}"
     live = f"is_realized AND {delay} IS NOT NULL"
-    trimmed = f"{live} AND {delay} < {threshold}"
+    trimmed = f"{live} AND {delays_mod.within_threshold_sql(delay, threshold)}"
     out = {
         f"{side}_delay_obs": f"count(*) FILTER (WHERE {live})",
         f"{side}_missing_actual": (
@@ -97,7 +128,9 @@ def _delay_measures(side: str, threshold: float) -> dict[str, str]:
         f"{side}_delayed_gt30": f"count(*) FILTER (WHERE {live} AND {delay} > 30)",
         f"{side}_delayed_gt60": f"count(*) FILTER (WHERE {live} AND {delay} > 60)",
         f"{side}_early": f"count(*) FILTER (WHERE {live} AND {delay} < 0)",
-        f"{side}_outliers": f"count(*) FILTER (WHERE {live} AND {delay} >= {threshold})",
+        f"{side}_outliers": (
+            f"count(*) FILTER (WHERE {live} AND {delays_mod.is_outlier_sql(delay, threshold)})"
+        ),
         f"sum_{side}_delay_min": f"sum({delay}) FILTER (WHERE {trimmed})",
         f"sum_{side}_delay_pos_min": f"sum(greatest({delay}, 0)) FILTER (WHERE {trimmed})",
         f"sum_{side}_delay_p15_min": (
@@ -212,6 +245,8 @@ class BuildResult:
     years: tuple[int, ...]
     legacy_missing_actual_as_zero: bool
     missing_actual_by_year: pd.DataFrame
+    out_of_window: pd.DataFrame
+    """Staged rows dated outside `years`, by year — declared, never absorbed."""
 
 
 def _select_fact(source: str, threshold: float) -> str:
@@ -253,7 +288,8 @@ def _select_context(source: str, threshold: float, legacy: bool) -> str:
     arr = delays_mod.effective_delay_sql(
         "sched_arr", "actual_arr", legacy_missing_actual_as_zero=legacy
     )
-    live = f"universe_repl AND is_realized AND {{delay}} IS NOT NULL AND {{delay}} < {threshold}"
+    inside = delays_mod.within_threshold_sql("{delay}", threshold)
+    live = f"universe_repl AND is_realized AND {{delay}} IS NOT NULL AND {inside}"
     return f"""
 WITH rows_all AS (
     SELECT *, {dep} AS eff_dep, {arr} AS eff_arr
@@ -291,6 +327,66 @@ FROM sides GROUP BY node, year, ym, flight_date, hour
 """
 
 
+def year_source_sql(staged_dir: Path, year: int) -> str:
+    """The staged rows of one **calendar year**, wherever they were partitioned.
+
+    The directory name is the year of the *source file*; `year` is the year of
+    `flight_date`. They disagree on 3,723 rows, and reading the directory as if
+    it were the year is what produced the duplicated keys of ADR-0016. Parquet
+    row-group statistics on `year` prune the partitions that cannot hold the
+    target, so the filter costs a metadata read per partition rather than a
+    scan.
+    """
+    tree = f"read_parquet('{staged_dir}/year=*/*.parquet', hive_partitioning=false)"
+    return f"(SELECT * FROM {tree} WHERE year = {int(year)})"
+
+
+def out_of_window_rows(con: Any, staged_dir: Path, years: tuple[int, ...]) -> pd.DataFrame:
+    """Staged rows whose `year` is outside `years`, or null, one row per value.
+
+    Declared rather than absorbed: these rows exist, they are not in any
+    published table, and the count says how many. The typo years (2020, 2088,
+    2099) carry no flight of the replication universe; the boundary year does.
+    """
+    import pandas as pd
+
+    wanted = ", ".join(str(int(year)) for year in years)
+    tree = f"read_parquet('{staged_dir}/year=*/*.parquet', hive_partitioning=false)"
+    frame = con.execute(
+        f"""
+        SELECT year, count(*)::BIGINT AS rows,
+               count(*) FILTER (WHERE {universe_mod.UNIVERSE_REPL_SQL}
+                                AND route IS NOT NULL AND ym IS NOT NULL)::BIGINT AS universe_rows
+        FROM {tree}
+        WHERE year IS NULL OR year NOT IN ({wanted})
+        GROUP BY year ORDER BY year
+        """
+    ).df()
+    frame["year"] = frame["year"].astype("Int64")
+    return pd.DataFrame(frame)
+
+
+def assert_unique(frame: pd.DataFrame, keys: tuple[str, ...] | list[str], what: str) -> None:
+    """ADR-0016: fail loudly when a table is not unique on its declared key.
+
+    An assertion rather than a repair on purpose. A duplicate here always means
+    a grain was assembled from parts that did not partition the key, and
+    de-duplicating after the fact would hide which part was wrong — the
+    route-month medians of the first public panel were each computed over half
+    their flights, and summing the copies would not have fixed that.
+    """
+    keys = list(keys)
+    duplicated = frame.duplicated(subset=keys, keep=False)
+    count = int(duplicated.sum())
+    if not count:
+        return
+    sample = frame.loc[duplicated, keys].drop_duplicates().head(5).to_dict("records")
+    raise ValueError(
+        f"{what} is not unique on {keys}: {count} rows over "
+        f"{frame.loc[duplicated, keys].drop_duplicates().shape[0]} keys, e.g. {sample}"
+    )
+
+
 def build_fact(
     staged_dir: Path,
     out_dir: Path,
@@ -303,11 +399,13 @@ def build_fact(
     con: Any = None,
     verbose: bool = True,
 ) -> BuildResult:
-    """One pass per year over the staged flights; writes the fact and its context.
+    """One pass per calendar year over the staged flights; writes fact and context.
 
     Written year by year on purpose (rule 3 of the build brief): the machine has
     16 GB, and a single scan of all fourteen partitions with a wide GROUP BY is
-    the one shape that makes it swap.
+    the one shape that makes it swap. The unit of the pass is the **calendar
+    year of the flight**, not the staged directory — see `year_source_sql` and
+    ADR-0016.
     """
     import pandas as pd
 
@@ -328,7 +426,7 @@ def build_fact(
         )
         table.register(con)
         for year in years:
-            source = f"read_parquet('{staged_dir}/year={year}/*.parquet', hive_partitioning=false)"
+            source = year_source_sql(staged_dir, year)
             fact = con.execute(_select_fact(source, outlier_threshold_min)).df()
             context = con.execute(
                 _select_context(source, outlier_threshold_min, legacy_missing_actual_as_zero)
@@ -344,12 +442,16 @@ def build_fact(
                     f"{len(day_hour):>8,d} node-day-hours  ({time.time() - started:5.1f}s)",
                     flush=True,
                 )
+        outside = out_of_window_rows(con, staged_dir, tuple(years))
     finally:
         if owns_con:
             con.close()
     fact_all = _finalise_fact(pd.concat(fact_parts, ignore_index=True))
     context_all = pd.concat(context_parts, ignore_index=True)
     day_hour_all = pd.concat(day_hour_parts, ignore_index=True)
+    assert_unique(fact_all, FACT_UNIQUE_KEY, "fact_group_route_month")
+    assert_unique(context_all, ROUTE_MONTH_KEY, "route_month_context")
+    assert_unique(day_hour_all, ("node", "day", "hour"), "node_day_hour")
     write_table(fact_all, out_dir / "fact_group_route_month.parquet")
     write_table(context_all, derived_dir / "route_month_context.parquet")
     write_table(day_hour_all, derived_dir / "node_day_hour.parquet")
@@ -362,9 +464,26 @@ def build_fact(
         years=tuple(years),
         legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
         missing_actual_by_year=missing,
+        out_of_window=outside,
     )
     _write_manifest(out_dir, result, outlier_threshold_min)
     return result
+
+
+def out_of_window_records(frame: pd.DataFrame) -> list[dict[str, Any]]:
+    """`out_of_window` as JSON-safe records; the null year becomes `None`."""
+    import pandas as pd
+
+    if frame.empty:
+        return []
+    return [
+        {
+            "year": None if pd.isna(record["year"]) else int(record["year"]),
+            "rows": int(record["rows"]),
+            "universe_rows": int(record["universe_rows"]),
+        }
+        for record in frame.to_dict("records")
+    ]
 
 
 def _staged_years(staged_dir: Path) -> tuple[int, ...]:
@@ -483,6 +602,7 @@ def _write_manifest(out_dir: Path, result: BuildResult, threshold: float) -> Pat
         "node_day_hours": result.day_hour_rows,
         "seconds": round(result.seconds, 2),
         "missing_actual_by_year": result.missing_actual_by_year.to_dict("records"),
+        "rows_outside_years": out_of_window_records(result.out_of_window),
     }
     path.write_text(json.dumps(document, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return path
@@ -570,16 +690,24 @@ def aggregate(
     (ADR-0004). `n_flight_numbers` is dropped at every grain but the fact's own,
     because two groups can reuse a number and a distinct count does not add.
     """
+    assert_unique(fact, FACT_UNIQUE_KEY, "fact table handed to aggregate()")
     if grain == "route_month":
-        return _aggregate_route_month(
+        out = _aggregate_route_month(
             fact, legacy_missing_actual_as_zero=legacy_missing_actual_as_zero
         )
+        assert_unique(out, ROUTE_MONTH_KEY, "route_month projection")
+        return out
     if grain in {"city_month", "airline_city_month"}:
-        return _aggregate_city(
+        with_group = grain == "airline_city_month"
+        out = _aggregate_city(
             fact,
-            with_group=(grain == "airline_city_month"),
+            with_group=with_group,
             legacy_missing_actual_as_zero=legacy_missing_actual_as_zero,
         )
+        assert_unique(
+            out, AIRLINE_CITY_MONTH_KEY if with_group else CITY_MONTH_KEY, f"{grain} projection"
+        )
+        return out
     raise ValueError(f"unknown grain {grain!r}; expected one of {Grain.__args__}")  # type: ignore[attr-defined]
 
 
@@ -810,17 +938,25 @@ def add_hub(airline_city_month: pd.DataFrame) -> pd.DataFrame:
 
 
 __all__ = [
+    "AIRLINE_CITY_MONTH_KEY",
     "CANCEL_CAUSES",
+    "CITY_MONTH_KEY",
     "CONTEXT_MEASURES",
     "FACT_KEYS",
     "FACT_SUM_COLUMNS",
+    "FACT_UNIQUE_KEY",
     "HOUR_COLUMNS",
+    "ROUTE_MONTH_KEY",
     "BuildResult",
     "add_congestion",
     "add_hub",
     "aggregate",
+    "assert_unique",
     "build_fact",
     "delay_denominator",
     "fact_measures",
+    "out_of_window_records",
+    "out_of_window_rows",
     "write_table",
+    "year_source_sql",
 ]

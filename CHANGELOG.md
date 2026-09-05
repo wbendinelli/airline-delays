@@ -161,18 +161,92 @@ version numbers, mark progress.
   `reports/`, `docs/{notes,tutorial}/`, `replication/`, `ml/`, `scripts/`,
   `tests/`) described in `DECISIONS.md` and the architecture review.
 
+### Changed
+
+- **The prediction layer reads an empty actual time as "no alteration
+  reported"** (`DECISIONS.md` ADR-0017, panel of three reviewers under
+  ADR-0010, verdicts in `docs/notes/colegiado-adr0012.md`). IAC 1504 issues the
+  Boletim de Alteração de Vôo only "sempre que houver alguma alteração", and the
+  realised times are fields of that boletim, so an empty one on a realised flight
+  of the 2000-2009 layout is the absence of a reported alteration.
+  `ml/dataset_flights.py` therefore reads a delay of 0 and sets the new column
+  `on_time_no_bav`, but only for realised flights of years up to 2009 whose
+  carrier class in `groups.csv` is FSC, LCC or regional (`BAV_CLASSES`,
+  `BAV_LAST_LEGACY_YEAR`); for `other` and unlabelled carriers -- foreign
+  operators and the non-operating side of a code-share, whose null rate runs at
+  90-100% against 52-75% for the domestic majors -- the empty field stays
+  unknown and the flight keeps no delay target. The same reading is applied to
+  the inbound leg and to the lagged rates (`monthly_lags`, `flight_number_sql`),
+  so no feature measures a different quantity from the target it predicts.
+  Arrival targets go from 4,965,966 to 8,686,697 of 10,200,560 rows; the pre-2010
+  late rate falls from 75-94% to 18-41% and the 2009-to-2010 discontinuity
+  disappears. On the 2010-2013 folds, where the two readings see exactly the same
+  data, the rolling-origin day-ahead AUC rises from 0.638-0.711 to 0.715-0.724
+  and the 2010 Brier from 0.250 to 0.162: the gain is in the training data, not
+  the test set. `reports/prediction/results.md` prints both readings side by
+  side from the preserved `reports/prediction/rolling_reading_A.json`, and
+  `docs/declared-differences.md` gains the null actual-arrival rate by carrier
+  and year (`scripts/null_actual_by_carrier.py`, new). The replication panel is
+  unchanged: it still runs under the 2019 vintage's convention (ADR-0012), which
+  is what reproduces the benchmark.
+
 ### Fixed
 
-- `ml.dataset_flights.collapse_fact` enforces the ADR-0016 key invariant on its
-  input before joining it. `vra.features.build_fact` groups within each **file**
-  year and concatenates, so the 3,723 staged rows whose derived year differs
-  from the year of the file they came from (`docs/notes/staging.md` section 5)
-  emit the same `group x route x month` cell twice -- 844 rows over 422 keys in
-  the committed table, 0.5% of 166,203. Joined as a lag table, those cells
-  duplicated flights in the modelling table: 1,128 extra rows in 2001 alone,
-  measured before the collapse existed. The collapse sums the counts and takes
-  the minimum of `is_entry`/`is_exit`, and is a no-op once the fact table
-  satisfies ADR-0016 on its own.
+- **Duplicated route-month keys, fixed at the source** (`DECISIONS.md`
+  ADR-0016). `data/staged/` is partitioned by the year of the *source file*
+  while `year` and `ym` come from `flight_date`, so 3,723 rows sit in a
+  directory that is not their calendar year -- mostly a December file carrying
+  legs scheduled for 1 January, plus a few typed years (2099, 2020, 2088).
+  `vra.features.build_fact` grouped inside each directory and concatenated the
+  results, so a route-month present in two directories was emitted twice: 844
+  rows over 422 `(group, route, ym)` keys in the fact table and, through the
+  route-month context join, 866 rows over 433 `(route, ym)` keys in the panel,
+  the copies carrying equal flight counts and different `n_rows_all`,
+  `n_extra`, `sh_extra`, medians and p90s -- each copy's order statistics
+  computed over part of its flights. `build_fact` now selects each **calendar
+  year** across the whole staged tree (`features.year_source_sql`, parquet
+  row-group statistics prune the rest) and asserts uniqueness on the way out;
+  `features.aggregate` asserts the projection's own key; `panel.build_panel`
+  asserts both on the way in. Rows dated outside the built years are counted in
+  `data/analysis/manifest.json` (`rows_outside_years`) instead of being folded
+  into a neighbour. The panel is now 31,313 rows over exactly the 168 months
+  2000m1-2013m12 (was 31,760 over 169, the extra month being 18 flights dated
+  January 2014 in the December 2013 file), the fact table 165,763 cells (was
+  166,203), and the benchmark comparison runs over 24,551 comparable
+  route-months instead of 24,929 with every rate up by a fraction of a point
+  (`f` 0.901 to 0.902, `fl_odel` 0.854 to 0.857, `prwheather` 0.882 to 0.884).
+  New `tests/test_keys_unique.py` rebuilds from a deliberately mis-partitioned
+  staged tree and checks the committed tables under the `analysis` marker.
+
+- **The outlier threshold applies to the absolute value of the delay**
+  (`DECISIONS.md` ADR-0015). The one-sided cut inherited from the laboratory
+  scripts (`delay < 313.25`) trimmed the late tail and let every negative month
+  typo through: VSP 4374 in December 2003 has an actual arrival dated November,
+  -43,170 minutes, and one route-month reached the public panel with
+  `fsc_minsarr` of -4,772. Every sum, mean and share of minutes in
+  `vra/delays.py`, `features.py` and `panel.py` now tests
+  `abs(delay) < threshold`, on both tails; counts of delayed flights are
+  untouched, because `x > 15` is the same test whatever the tail rule.
+  `fsc_minsarr` in the regenerated panel runs from -239.90 to 226.27 (1st
+  percentile -4.97, 99th 38.45), inside the band by construction. Table 2 of the
+  public replication moves with it: the `MINS` regressand goes from a mean of
+  -1.3404 and a standard deviation of 125 to 6.8632 and 8.79, against a
+  published 7.16 and 8.29, and the correlation triangle's largest disagreement
+  falls from 0.642 to 0.122. Against the benchmark, `fsc_minsarr`'s
+  90th-percentile absolute difference falls from 2.11 to 1.68 minutes and
+  `all_minsarr`'s from 4.13 to 2.49.
+
+- **`actual_time_suspect` is written at staging** (ADR-0015), so that one
+  definition serves every consumer: true when the departure or arrival delay is
+  a whole calendar day or more in absolute value, false when there is no actual
+  time at all. `ml/dataset_flights.py` reads the column instead of recomputing
+  the rule, and `data/derived/ml/manifest.json` counts the excluded flights per
+  year (242 in 2000 to 990 in 2013).
+
+- `ml.dataset_flights.collapse_fact` is kept as the compatibility path for a
+  fact table built before ADR-0016 held. It enforces the key invariant on its
+  input before joining it; against a table built by today's `build_fact` it
+  returns the frame untouched.
 
 - `registry.DTYPE_ALIASES` accepts `category` and `dictionary` as physical forms
   of a declared `string`. The flight-level table dictionary-encodes every label

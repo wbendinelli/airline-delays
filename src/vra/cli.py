@@ -293,6 +293,15 @@ def features(
             if share is not None
             else f"  {row['year']}: n/a"
         )
+    outside = features_mod.out_of_window_records(result.out_of_window)
+    if outside:
+        typer.echo("staged rows dated outside the built years (ADR-0016, not in any table):")
+        for row in outside:
+            label = "no flight_date" if row["year"] is None else str(row["year"])
+            typer.echo(
+                f"  {label:>14}: {row['rows']:>6,d} rows, "
+                f"{row['universe_rows']:>5,d} in the replication universe"
+            )
     import pandas as pd
 
     fact = pd.read_parquet(analysis / "fact_group_route_month.parquet")

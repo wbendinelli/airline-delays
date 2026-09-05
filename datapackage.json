@@ -5005,6 +5005,15 @@
             "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
           },
           {
+            "name": "on_time_no_bav",
+            "type": "boolean",
+            "title": "flag",
+            "description": "ADR-0017 reading B: a realised flight of a pre-2010 year, operated by a carrier whose groups.csv class is FSC, LCC or regional, with an empty actual departure or arrival time. IAC 1504 issues the Boletim de Alteracao de Voo only when there is an alteration, so the empty field is the absence of a reported alteration and the delay is read as 0. Never a feature: it is a fact about the outcome.",
+            "x-definition-pt": "ADR-0017 leitura B: voo realizado de ano anterior a 2010, operado por empresa cuja classe em groups.csv e FSC, LCC ou regional, com horario real de partida ou chegada vazio. A IAC 1504 so emite o Boletim de Alteracao de Voo quando ha alteracao, entao o campo vazio e a ausencia de alteracao reportada e o atraso e lido como 0. Nunca e feature: e um fato sobre o desfecho.",
+            "x-aggregation": "sum",
+            "x-source": "derived in ml.dataset_flights from data/staged and the fact table"
+          },
+          {
             "name": "prev_arr_known_h1",
             "type": "number",
             "title": "flag",

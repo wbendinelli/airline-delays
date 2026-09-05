@@ -215,6 +215,15 @@ def build_panel(
     fact = pd.read_parquet(analysis_dir / "fact_group_route_month.parquet")
     context = pd.read_parquet(derived_dir / "route_month_context.parquet")
     day_hour = pd.read_parquet(derived_dir / "node_day_hour.parquet")
+    # ADR-0016, checked on the way in rather than only on the way out: a
+    # duplicated context row multiplies the panel row it joins onto, and the
+    # copies differ in exactly the columns the join brings — which is how 866
+    # duplicated route-months reached the first public panel with equal flight
+    # counts and different medians.
+    features_mod.assert_unique(fact, features_mod.FACT_UNIQUE_KEY, "committed fact table")
+    features_mod.assert_unique(
+        context, features_mod.ROUTE_MONTH_KEY, "committed route_month_context"
+    )
     if panel_nodes_only:
         nodes = set(keys_mod.PANEL_NODES)
         fact = fact[fact["origin_node"].isin(nodes) & fact["dest_node"].isin(nodes)]
@@ -292,6 +301,7 @@ def city_month(
     )
     city = city.merge(hubs, on=["ym", "node"], how="left")
     city = features_mod.add_congestion(city, day_hour)
+    features_mod.assert_unique(city, features_mod.CITY_MONTH_KEY, "city_month")
     return city
 
 
@@ -408,7 +418,9 @@ def assemble(
             hhi_mod.passenger_weighted_hhi(None), index=panel.index, dtype="float32"
         )
     panel["legacy_missing_actual_as_zero"] = np.int8(1 if legacy else 0)
-    return _finalise(panel, slice_prefixes=tuple(slices), slice_keep=keep)
+    out = _finalise(panel, slice_prefixes=tuple(slices), slice_keep=keep)
+    features_mod.assert_unique(out, features_mod.ROUTE_MONTH_KEY, "panel_route_month")
+    return out
 
 
 def _presence(fact: pd.DataFrame, keys: list[str]) -> pd.DataFrame:

@@ -11,12 +11,12 @@ replicate`) without rebuilding anything first.
 
 | File | Size | What it is |
 |---|---|---|
-| `fact_group_route_month.parquet` | ~8 MB | group x route x month, replication universe. The canonical table (ADR-0004); every other grain is an `aggregate()` projection of it. |
+| `fact_group_route_month.parquet` | ~8 MB | group x route x month, replication universe. The canonical table (ADR-0004); every other grain is an `aggregate()` projection of it. Unique on `(group, route, ym)` by construction and by test (ADR-0016). |
 | `panel_route_month.parquet` | ~10 MB | route x month, the 27 nodes of ADR-0001. The public deliverable: the article's columns plus the new feature set. |
 | `panel_route_month.csv.gz` | ~12 MB | The same panel in CSV, for readers without a parquet reader (ADR-0004). |
 | `city_month.parquet` | ~2 MB | node x month, departures and arrivals both counted, with the ADR-0007 congestion proxy. |
 | `airline_city_month.parquet` | ~4 MB | group x node x month, with the hub share, score and dummy. |
-| `manifest.json` | 4 KB | How the fact table was built: the git commit, years, tool versions, outlier threshold, the ADR-0012 convention, and the per-year count of realised flights with no actual time. |
+| `manifest.json` | 5 KB | How the fact table was built: the git commit, years, tool versions, outlier threshold, the ADR-0012 convention, the per-year count of realised flights with no actual time, and `rows_outside_years` — the staged rows dated outside the years built, which ADR-0016 counts rather than folds into a neighbouring year. |
 | `panel_manifest.json` | < 1 KB | The same for the panel: git commit, tool versions, row/column counts and the byte sizes of the two files it wrote. |
 | `taxas.csv` | 8 KB | Column-by-column agreement against the private benchmark, written by `replication/gabarito/compare.py`. Statistics only — no benchmark value is ever copied here. |
 

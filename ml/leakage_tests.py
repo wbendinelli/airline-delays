@@ -125,6 +125,9 @@ def check_lag_windows_closed(frame: pd.DataFrame, fact: pd.DataFrame) -> Check:
     import pandas as pd
 
     collapsed = ds.collapse_fact(fact)
+    # The same denominator `monthly_lags` uses (ADR-0017 reading B), so that a
+    # window that *is* closed cannot fail this check for using another rule.
+    collapsed = collapsed.assign(arr_delay_obs=ds.bav_denominator(collapsed, "arr"))
     rate = collapsed.groupby(["route", "ym"], observed=True)[
         ["arr_delay_obs", "arr_delayed_gt15"]
     ].sum()
@@ -219,18 +222,26 @@ def check_previous_leg_precedes_departure(frame: pd.DataFrame) -> Check:
 
 
 def check_targets_null_without_actual(frame: pd.DataFrame) -> Check:
-    """No target without a usable actual time: ADR-0012 and ADR-0015 together."""
+    """Every arrival target is accounted for: ADR-0015 and ADR-0017 together.
+
+    A target exists exactly where the flight was realised, its timestamps are
+    not suspect, and either an actual arrival was written or reading B applies
+    (`on_time_no_bav`). Everything else — a cancelled flight, a month typo, a
+    realised flight of an `other` carrier with no actual time — has none.
+    """
     has_target = frame["late15_arr"].notna()
-    should = frame["is_realized"] & frame["has_arr_actual"] & ~frame["actual_time_suspect"]
+    usable = frame["has_arr_actual"] | frame["on_time_no_bav"]
+    should = frame["is_realized"] & usable & ~frame["actual_time_suspect"]
     mismatch = int((has_target != should).sum())
-    missing = int((frame["is_realized"] & ~frame["has_arr_actual"]).sum())
+    missing = int((frame["is_realized"] & ~usable).sum())
+    imputed = int((frame["is_realized"] & ~frame["has_arr_actual"] & frame["on_time_no_bav"]).sum())
     suspect = int((frame["is_realized"] & frame["actual_time_suspect"]).sum())
     return Check(
         "targets_null_without_actual",
         mismatch == 0,
-        f"{missing:,d} realised flights with no actual arrival time (ADR-0012) and "
-        f"{suspect:,d} with a suspect timestamp (ADR-0015) are excluded from the "
-        f"arrival target; {mismatch} rows disagreeing",
+        f"{missing:,d} realised flights out of scope for reading B keep no arrival target "
+        f"(ADR-0017), {imputed:,d} are read as no alteration reported, and {suspect:,d} "
+        f"suspect timestamps are excluded (ADR-0015); {mismatch} rows disagreeing",
     )
 
 

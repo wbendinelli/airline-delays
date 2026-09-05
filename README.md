@@ -33,11 +33,12 @@ Measured on the full 2000-2013 series (`data/staged/manifest.json`,
 `data/analysis/manifest.json`, `data/analysis/panel_manifest.json`): staging
 produces 13,652,322 flight legs from 168 monthly files (265 MB of
 zstd-compressed parquet from 2.17 GB of raw CSV); the canonical fact table
-(`group x route x month`, the replication universe) holds 166,203 cells
+(`group x route x month`, the replication universe) holds 165,763 cells
 across 87 columns; the public replication panel (`route x month`, the 27
-nodes of `DECISIONS.md` ADR-0001) holds 31,760 rows across 228 columns, 310
-routes, 2000m1-2014m1; the city-month and airline-city-month projections
-hold 21,250 and 49,828 rows respectively.
+nodes of `DECISIONS.md` ADR-0001) holds 31,313 rows across 228 columns, 310
+routes and exactly the 168 months 2000m1-2013m12, unique on `(route, ym)`
+(`DECISIONS.md` ADR-0016); the city-month and airline-city-month projections
+hold 21,231 and 49,801 rows respectively.
 
 ## Quickstart
 
@@ -84,15 +85,17 @@ lacks pandas; see `justfile` for the exact command each one runs, and
 Measured wall time, one machine (16 GB RAM, 10 cores), full 2000-2013
 series: `fetch` about 17 minutes for 2.17 GB over 168 files
 (`data/raw/manifest.json`); `stage` about 8.4 seconds total across the 14
-years (`data/staged/manifest.json`); `features` about 11.1 seconds
+years (`data/staged/manifest.json`); `features` about 11.4 seconds
 (`data/analysis/manifest.json`); `panel` about 7.5 seconds
 (`data/analysis/panel_manifest.json`); `replicate` (public panel) about 0.3
 seconds (`reports/replication/public/tables.md`); `replicate private`
 about 38.1 seconds (`reports/replication/private/tables.md`); `ml`
-about 1,427 seconds end to end -- 33 seconds to build the
-10,200,578-row flight table and the rest to fit 24 models over the eight
+about 2,344 seconds end to end -- 25 seconds to build the
+10,200,560-row flight table and the rest to fit 24 models over the eight
 rolling-origin folds and the fixed split
-(`reports/prediction/results.md`).
+(`reports/prediction/results.md`). The prediction phase roughly doubled in
+cost when ADR-0017 gave 8.7 million flights an arrival target instead of
+5.0 million.
 
 **What does not reproduce from this repository alone.** The private
 benchmark (`proj18.dta`, the LABTAR/NECTAR laboratory bases, `vra.dta`) is
@@ -179,7 +182,7 @@ panel are *Analysis Data*, `src/`, `replication/` and `ml/` are *Command
 Files*, and `docs/` together with this README are the *Documentation*
 component. What TIER additionally asks for — a Data Appendix describing
 every variable — is `src/vra/registry.py`, together with the dictionary it
-generates (`docs/dictionary.md`: 581 columns across six layers — staged
+generates (`docs/dictionary.md`: 584 columns across six layers — staged
 flights, the fact table, city-month, airline-city-month, the replication
 panel and the flight-level modelling table).
 
@@ -194,20 +197,20 @@ far as the evidence goes, is in
 section summarises it.
 
 **Reconstruction (data layer).** Column by column against the private
-benchmark (`data/analysis/taxas.csv`, 24,929 comparable route-months):
-`f` (the article's flight count) agrees on 90.1% of route-months overall
+benchmark (`data/analysis/taxas.csv`, 24,551 comparable route-months):
+`f` (the article's flight count) agrees on 90.2% of route-months overall
 and 95.3% on the half of the series where the raw files have not changed
 since the benchmark's 2019 vintage — the earlier reconstruction from that
 same vintage reported 97.5%, so most of the shortfall is the raw files
 changing upstream, not a difference in definitions
 (`reports/reconciliation.md`). Departure- and arrival-delay-count
 agreement is asymmetric under the identical rule (realised flights more
-than 0 minutes late): this reconstruction measures 87.7% (stable vintage)
-for departures against 56.0% for arrivals (`data/analysis/taxas.csv`,
+than 0 minutes late): this reconstruction measures 87.9% (stable vintage)
+for departures against 56.3% for arrivals (`data/analysis/taxas.csv`,
 `fl_odel`/`fl_ddel`); the earlier reconstruction, reading the 2019 vintage
 directly, reported 92.4% and 59.8% for the same two columns — both
 readings show the same asymmetry, still unexplained (`DECISIONS.md`
-ADR-0002). `prwheather`, reproduced at 91.9% (stable vintage), folds in
+ADR-0002). `prwheather`, reproduced at 92.0% (stable vintage), folds in
 more than weather — its dominant code is `AR`,
 "aeroporto com restrições operacionais" (ADR-0005). `prcongested` is not
 yet reproduced; it needs ANAC's seasonal capacity declarations, not yet
@@ -217,8 +220,10 @@ node, rather than treating it as a separate "Campinas" airport the way the
 tariff base labels it, closes most of that gap (ADR-0001). The outlier
 threshold is a named parameter, not a fixed fact: the laboratory used
 313.25 minutes in one script and 117.10/111.75 minutes in another; this
-repository defaults to 313.25 minutes and ships a sensitivity table across
-thresholds instead of picking one silently (ADR-0008).
+repository defaults to 313.25 minutes, applies it to the **absolute value**
+of the delay so that a mistyped month cannot enter a sum of minutes from
+either tail (ADR-0015), and ships a sensitivity table across thresholds
+instead of picking one silently (ADR-0008).
 
 **Replication (Tables 2-7), against the private benchmark**
 (`reports/replication/private/tables.md`, `reports/replication/private/summary.json`).
@@ -241,16 +246,20 @@ with a number that does not mean the same thing.
 **The public panel cannot yet estimate the regression tables.** Built
 purely from public VRA data, `data/analysis/panel_route_month.parquet`
 loads and filters cleanly through the same code path
-(`reports/replication/public/tables.md`: 21,936 observations, 207 routes,
+(`reports/replication/public/tables.md`: 21,566 observations, 207 routes,
 under `just replicate`, no private directory needed), but Table 2 computes
 only 7 of its 13 descriptive variables — the other 6 (congested/
 uncongested flight counts, max city delay, codeshare, both HHIs) need
-columns this panel does not carry at all. Of the 7 it does compute, three
-match closely (weather, incidents, late-connection shares) and `fsc_oddsarr`
-averages -1.3844 against the published -1.38; two do not (`LCC presence
-city-pair` 0.7767 against 0.90 published, and the `MINS` regressand, whose
-mean and spread are far off and not yet explained on this source — a gap
-declared here, not hidden). Tables 3-7 cannot be estimated at all: they
+columns this panel does not carry at all. Of the 7 it does compute, six now
+land close to the published values: weather, incidents and late-connection
+shares; `fsc_oddsarr` averaging -1.3927 against the published -1.38; and the
+`MINS` regressand, 6.8632 against 7.16 with a standard deviation of 8.79
+against 8.29. `MINS` was the one that did not: before the symmetric outlier
+rule of ADR-0015 it averaged -1.3404 with a standard deviation of 125 and a
+minimum of -4,772 minutes, because the one-sided cut trimmed the late tail
+and let a month typo through the early one. One variable still does not
+match — `LCC presence city-pair`, 0.7761 against 0.90 published, the
+operation-against-ticket-sales difference declared below. Tables 3-7 cannot be estimated at all: they
 need `maxprdel`, `cshare`, `dailyflcong`/`dailyflncong` and the seven
 Hausman-type instruments, none reconstructible from a VRA-only source,
 plus `rthhi`/`maxcthhi` (present as columns, entirely null — the
@@ -262,16 +271,46 @@ estimating on a near-equivalent column.
 **Panel and feature layer**, benchmark comparison
 (`data/analysis/taxas.csv`, `replication/gabarito/compare.py`): the
 article's own FSC carrier set (excluding Avianca Brasil) reproduces
-`fsc_prdelarr` at 64.9% agreement on the stable-vintage half — matching
+`fsc_prdelarr` at 65.1% agreement on the stable-vintage half — matching
 the 65.1% the earlier reconstruction reported from the private raw data —
 while the class-based variant (`fscc_prdelarr`, which classes Avianca
-Brasil as FSC) reaches only 53.4%: a choice of carrier set, not a defect
+Brasil as FSC) reaches only 53.5%: a choice of carrier set, not a defect
 in the delay definitions (`DECISIONS.md` ADR-0013). `lcc`, `pres_glo`,
 `pres_azu` and `pres_tam`, read from VRA *operation*, agree with the
-benchmark's ticket-sales convention on 90.8%-93.7% of route-months
+benchmark's ticket-sales convention on 90.7%-93.6% of route-months
 (stable vintage) — a genuine source difference, not an error on either
 side; the city-level LCC dummies, which the article itself takes from
 operations rather than ticket sales, agree on 100% (`maxalccfu`).
+
+**Prediction: the pre-2010 target is a floor, not a measurement**
+(`DECISIONS.md` ADR-0017, `reports/prediction/results.md`). In the 2000-2009
+files an actual timestamp is a field of the "Boletim de Alteração de Vôo",
+which IAC 1504 requires only when there is an alteration, so an empty one on a
+realised flight means **no alteration was reported** — it is not evidence that
+the flight was measured on time, and it is not evidence that its outcome is
+unknown. A panel of three reviewers (ADR-0010, verdicts in
+`docs/notes/colegiado-adr0012.md`) adopted that reading for the prediction
+layer: delay 0, flagged `on_time_no_bav`, for realised flights of carriers whose
+class in `data/external/groups.csv` is FSC, LCC or regional; for `other` and
+unlabelled carriers — foreign operators and the non-operating side of a
+code-share — the empty field stays unknown and the flight keeps no delay
+target. The null rate is not one convention but many: over 2000-2009 it is
+72.9% for the 5.1 million realised flights in scope against 83.0% for the
+313,368 out of it, and the sceptical reviewer's 2005 cross-section over all
+flights, not only this universe, found 90-100% for foreign carriers and
+code-share legs (`docs/declared-differences.md` publishes the rate by carrier
+and year; `docs/notes/colegiado-adr0012.md` the reviewer's own measurement).
+A delay the carrier never reported therefore counts as on time, so the
+published pre-2010 late rate is a lower bound; the replication panel is
+untouched, because it has to reproduce a benchmark built under the 2019
+vintage's own convention (ADR-0012). The rolling-origin evaluation over
+2006-2013 gives a day-ahead AUC between 0.715 and 0.741 and an at-gate AUC
+between 0.757 and 0.824, against 0.60-0.67 for the previous month's route
+prevalence; on the 20-35% of flights with a linked inbound leg the at-gate
+horizon reaches 0.87-0.93. `reports/prediction/results.md` prints the same
+headline metrics under the superseded reading, which on the 2010-2013 folds —
+where the two readings see exactly the same data — scored 0.638-0.711 day-ahead
+against 0.715-0.724 here.
 
 ## Use and limits
 

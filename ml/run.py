@@ -14,8 +14,13 @@ Outputs, all under ``reports/prediction/``:
 ``importance.json``
     Permutation importance and total gain on the last rolling fold.
 ``dataset.json``
-    Per-year accounting: rows, the ADR-0012 exclusion, base rates, the share of
-    flights with a linked inbound leg.
+    Per-year accounting: rows, the ADR-0017 reading-B counts (flights read as
+    "no alteration reported" and flights left out of scope), the ADR-0015
+    suspect exclusion, base rates, and the share of flights with a linked
+    inbound leg whose arrival is readable.
+``rolling_reading_A.json``
+    The same headline run under the superseded reading A, kept so the
+    sensitivity block in ``results.md`` can print both. Not regenerated.
 ``leakage.json``
     `ml.leakage_tests` run against the real dataset, not only the fixture.
 ``results.md``
@@ -45,6 +50,17 @@ from ml import train_xgb as tx
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REPORT_DIR = REPO_ROOT / "reports" / "prediction"
+
+READING_A_NAME = "rolling_reading_A.json"
+"""The rolling-origin run made before ADR-0017, kept for the sensitivity block.
+
+Reading A treated an empty actual time as unknown, so a pre-2010 target existed
+only for the flights that had an *occurrence* and 75-94% of them were late. The
+file is a copy of that run's `rolling.json`, not a re-estimate: the models are
+not retrained under a superseded reading, and the block says which numbers are
+comparable (the 2010-2013 folds, where the two readings coincide) and which are
+not (2006-2009, where the population itself changes).
+"""
 
 MAIN_TARGET = "late15_arr"
 FIXED_TARGETS: tuple[str, ...] = ("late15_arr", "late30_arr", "late15_dep", "cancelled")
@@ -298,19 +314,30 @@ def _leakage(dataset_dir: Path, manifest: dict[str, Any]) -> dict[str, Any]:
     """
     import pandas as pd
 
+    from vra import features as features_mod
+    from vra import stage as stage_mod
+
     years = (int(manifest["by_year"][0]["year"]), int(manifest["by_year"][-1]["year"]))
     frame = ds.read_dataset(dataset_dir, years=years)
     fact = pd.read_parquet(ds.FACT_PATH)
-    staged = pd.concat(
-        [
-            pd.read_parquet(
-                ds.STAGED_DIR / f"year={year}" / "part-0.parquet",
-                columns=["origin_icao", "dest_icao", "sched_dep", "sched_arr"],
-            )
-            for year in years
-        ],
-        ignore_index=True,
-    )
+    # The staged rows of those *calendar years*, not of those directories
+    # (ADR-0016): the movement recount has to see exactly the rows the dataset
+    # saw, or a leg scheduled for 1 January and filed in the December file
+    # shows up as a disagreement the pipeline does not have.
+    con = stage_mod.connect()
+    try:
+        staged = pd.concat(
+            [
+                con.execute(
+                    "SELECT origin_icao, dest_icao, sched_dep, sched_arr FROM "
+                    + features_mod.year_source_sql(ds.STAGED_DIR, year)
+                ).df()
+                for year in years
+            ],
+            ignore_index=True,
+        )
+    finally:
+        con.close()
     checks = lk.run_all(frame, fact, staged)
     lk.assert_all(checks)
     return {"years": list(years), "rows": len(frame), "checks": lk.as_records(checks)}
@@ -422,35 +449,96 @@ def write_markdown(
                 f"| `{row['feature']}` | {_num(row['auc_drop'], 4)} | "
                 f"{_num(row['auc_drop_sd'], 4)} | {row['total_gain']:,.0f} |"
             )
+    lines += _reading_sensitivity(rolling, out_dir)
     lines += [
         "",
-        "## Dataset (ADR-0012 accounting)",
+        "## Dataset (ADR-0017 accounting)",
         "",
-        "`target rows` are the realised flights with an actual arrival time. The",
-        "rest are realised flights the legacy files left without one; under",
-        "`legacy_missing_actual_as_zero=False` they have no target and are",
-        "excluded, which is why the observed late rate before 2010 is a rate over",
-        "flights that had an occurrence. `suspect` is the ADR-0015 exclusion:",
-        "an actual timestamp a whole day or more from the schedule.",
+        "`target rows` are the realised flights whose arrival outcome is readable:",
+        "an actual arrival time, or — before 2010, for a carrier whose `groups.csv`",
+        "class is FSC, LCC or regional — an empty one, which under IAC 1504 means no",
+        "alteration was reported (`no alteration`, the `on_time_no_bav` flag).",
+        "`out of scope` are realised flights the rule does not cover: `other` and",
+        "unlabelled carriers, mostly foreign operators and the non-operating side of",
+        "a code-share, whose empty actual time stays unknown. `suspect` is the",
+        "ADR-0015 exclusion: an actual timestamp a whole day or more from the",
+        "schedule. `prev known` is the share of *linked* flights whose inbound leg's",
+        "arrival is readable — what the H-1 horizon actually has to work with.",
         "",
         (
-            "| year | flights | target rows | no actual time | suspect | late15 rate |"
-            " cancelled rate | linked |"
+            "| year | flights | realised | target rows | no alteration | share of realised |"
+            " out of scope | suspect | late15 rate | cancelled rate | linked | prev known |"
         ),
-        "|---|---|---|---|---|---|---|---|",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for row in manifest["by_year"]:
         lines.append(
-            f"| {row['year']} | {row['rows']:,d} | {row['target_rows']:,d} | "
+            f"| {row['year']} | {row['rows']:,d} | {row['realized']:,d} | "
+            f"{row['target_rows']:,d} | {row.get('on_time_no_bav', 0):,d} | "
+            f"{_num(row.get('on_time_no_bav_share'), 3)} | "
             f"{row['target_excluded_missing_actual']:,d} | "
             f"{row['target_excluded_suspect']:,d} | "
             f"{_num(row['late15_arr_rate'], 3)} | {_num(row['cancelled_rate'], 3)} | "
-            f"{_num(row['prev_leg_share'], 3)} |"
+            f"{_num(row['prev_leg_share'], 3)} | {_num(row.get('prev_arr_known_share'), 3)} |"
         )
     lines.append("")
     path = Path(out_dir) / "results.md"
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
+
+
+def _reading_sensitivity(rolling: dict[str, Any], out_dir: Path) -> list[str]:
+    """The headline metrics under reading A next to reading B (ADR-0017).
+
+    Reading A is read from the preserved `rolling_reading_A.json`; nothing is
+    retrained. The comparison is only *like for like* from 2010 on, where the
+    layout writes an actual time on every realised flight and the two readings
+    are the same data — which is exactly what makes the 2006-2009 rows worth
+    printing: the base rate falls from 88-94% to 18-30% because the population
+    changes, not because a model improved.
+    """
+    path = Path(out_dir) / READING_A_NAME
+    if not path.exists():
+        return []
+    previous = json.loads(path.read_text(encoding="utf-8"))
+    before = {entry["test_years"][0]: entry for entry in previous.get("folds", [])}
+    if not before:
+        return []
+    lines = [
+        "",
+        "## Sensitivity: reading A against reading B (ADR-0017)",
+        "",
+        "Reading A (superseded) treated an empty actual time on a realised flight as",
+        "*unknown*, so before 2010 a target existed only for the flights that had an",
+        "occurrence and 75-94% of them were late. Reading B reads the same empty field",
+        "as *no alteration reported*. The A columns are the previous run, kept in",
+        f"`reports/prediction/{READING_A_NAME}`; they are not re-estimated.",
+        "",
+        "From 2010 the two readings see the same data, so those rows are a like-for-like",
+        "comparison of the pipeline. Before 2010 they are not: the test population itself",
+        "differs, and the base rate says so.",
+        "",
+        (
+            "| test year | n test A | n test B | base A | base B | D-1 AUC A | D-1 AUC B |"
+            " H-1 AUC A | H-1 AUC B | D-1 Brier A | D-1 Brier B |"
+        ),
+        "|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for entry in rolling["folds"]:
+        year = entry["test_years"][0]
+        old = before.get(year)
+        if old is None:
+            continue
+        new_d1, new_h1 = entry["models"].get("D-1", {}), entry["models"].get("H-1", {})
+        old_d1, old_h1 = old["models"].get("D-1", {}), old["models"].get("H-1", {})
+        lines.append(
+            f"| {year} | {old['n_test']:,d} | {entry['n_test']:,d} | "
+            f"{_num(old['base_rate_test'], 3)} | {_num(entry['base_rate_test'], 3)} | "
+            f"{_num(old_d1.get('auc'))} | {_num(new_d1.get('auc'))} | "
+            f"{_num(old_h1.get('auc'))} | {_num(new_h1.get('auc'))} | "
+            f"{_num(old_d1.get('brier'))} | {_num(new_d1.get('brier'))} |"
+        )
+    return lines
 
 
 def _num(value: Any, digits: int = 4) -> str:

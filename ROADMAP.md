@@ -24,7 +24,9 @@ close yet.
    `group x route x month` fact table (`src/vra/hhi.py`, `congestion.py`,
    `hub.py`), aggregated on demand to any other grain (`aggregate()`,
    tested for additivity) and assembled into the replication panel
-   (`panel.py`). 166,203 fact cells, 31,760 panel rows across 310 routes
+   (`panel.py`). 165,763 fact cells and 31,313 panel rows across 310 routes
+   and exactly the 168 months 2000m1-2013m12, unique on their keys by
+   construction and by test (ADR-0016, `tests/test_keys_unique.py`)
    (`data/analysis/manifest.json`, `data/analysis/panel_manifest.json`).
 4. **Replication** (`just replicate`) — **done.** Tables 2-7 of
    Bendinelli, Bettini & Oliveira (2016) from public data only
@@ -35,22 +37,33 @@ close yet.
    (`reports/replication/private/summary.json`); the public panel
    estimates Table 2 only — the five regression tables need variables it
    does not carry yet (`docs/declared-differences.md`).
-5. **Prediction** (`just ml`) — **done.** `ml/dataset_flights.py` builds the
-   flight-level table (10,200,578 scheduled flights, 46 D-1 features plus 3
-   for H-1, five targets, one DuckDB scan per staged year, about 33 s);
-   `ml/split.py` holds the rolling origin 2006-2013 and the fixed
-   2002-2010 / 2011 / 2012-2013 split of ADR-0009; XGBoost `hist` with
-   early stopping on each fold's validation year, LightGBM optional. The
-   nine leakage checks of `ml/leakage_tests.py` run on the fixture in
-   `pytest` and on the real dataset in `just ml`. Headline numbers:
-   `reports/prediction/results.md`, `reports/prediction.typ` and
-   `docs/notes/prediction.md`. The dataset itself stays out of git
+5. **Prediction** (`just ml`) — **done, and rebuilt under ADR-0017.**
+   `ml/dataset_flights.py` builds the flight-level table (10,200,560
+   scheduled flights, 46 D-1 features plus 3 for H-1, five targets, one
+   DuckDB scan per calendar year, about 25 s); `ml/split.py` holds the
+   rolling origin 2006-2013 and the fixed 2002-2010 / 2011 / 2012-2013
+   split of ADR-0009; XGBoost `hist` with early stopping on each fold's
+   validation year, LightGBM optional. The nine leakage checks of
+   `ml/leakage_tests.py` run on the fixture in `pytest` and on the real
+   dataset in `just ml`. The delay targets follow reading B of ADR-0017 —
+   an empty actual time on a realised pre-2010 flight of an FSC, LCC or
+   regional carrier is "no alteration reported", delay 0, flagged
+   `on_time_no_bav`; `other` and unlabelled carriers keep no target — and
+   `reports/prediction/results.md` carries a sensitivity block with the
+   headline metrics under the superseded reading A next to it. Everything
+   is generated: `reports/prediction/*.json`,
+   `reports/prediction/results.md`, `reports/prediction.typ`,
+   `reports/build/prediction.pdf`, `docs/notes/prediction.md` and
+   `docs/notes/colegiado-adr0012.md`. The dataset itself stays out of git
    (ADR-0004) and is described in `datapackage.json`.
-6. **Reports** (`just report`) — **partial.** `reports/reconciliation.md`
-   and `reports/replication.typ` exist and are generated, never
-   hand-edited; a reconstruction report and a prediction report do not
-   exist yet. `just report` itself is still the placeholder recipe in
-   `justfile`.
+6. **Reports** (`just report`) — **partial.** Three of the four exist and
+   are generated, never hand-edited: `reports/reconciliation.md`,
+   `reports/replication.typ` (compiled to `reports/build/replication.pdf`)
+   and `reports/prediction.typ` (compiled to
+   `reports/build/prediction.pdf`). A reconstruction report does not exist
+   yet, and `just report` itself is still the placeholder recipe in
+   `justfile` — the two Typst sources are compiled by hand, per
+   `reports/README.md`.
 7. **Publication on Zenodo** (`just publish`) — **pending.** Deposit the
    raw snapshot and the prepared data, mint a DOI, update `CITATION.cff`
    and the README badges (today's DOI badge points at a placeholder,
@@ -78,26 +91,20 @@ close yet.
   `src/vra/hhi.passenger_weighted_hhi` already has the right signature and
   returns `None` until then).
 - **The `fl_ddel` asymmetry** (phase 3) — arrival-delay counts reproduce
-  the benchmark at 56.0% (stable vintage) against 87.7% for departures
+  the benchmark at 56.3% (stable vintage) against 87.9% for departures
   under the identical rule; declared in `DECISIONS.md` ADR-0002 and still
   unexplained.
-- **ADR-0016 not yet implemented in `features`** (phase 3) — the fact
-  table's `(group, route, ym)` key is decided to be unique
-  (`DECISIONS.md` ADR-0016) but `build_fact` still groups within each file
-  year and concatenates, so a staged row whose derived year differs from
-  the year of its source file (3,723 rows, 0.03%, `docs/notes/staging.md`
-  §5) produces the same cell twice: 844 rows over 422 keys in the
-  committed `data/analysis/fact_group_route_month.parquet`. Sums over the
-  table are unaffected; joins on the key are not, and the prediction layer
-  collapses its input before joining
-  (`ml.dataset_flights.collapse_fact`), which becomes a no-op once the
-  invariant holds upstream.
-- **ADR-0015 not yet implemented in `stage`** (phase 2/5) — `stage.py`
-  does not write the `actual_time_suspect` boolean the ADR describes, so
-  `ml/dataset_flights.py` computes the same rule itself (|departure or
-  arrival delay| >= 1,440 minutes) and excludes those 5,349 flights from
-  the targets, counted per year in `data/derived/ml/manifest.json`. When
-  staging adds the column the two definitions must be checked to agree.
+- **Code-share legs of the non-operating carrier** (phase 2/5, candidate
+  ADR-0018) — IAC 1504 art. 6.6 says only the operating carrier reports a
+  code-share leg, and the non-operator's leg has no effect on the
+  published indices. ADR-0017's scope amendment keeps those legs in the
+  universes but out of the delay targets; whether they should leave the
+  universes altogether is a separate audit that has not been done
+  (`docs/notes/colegiado-adr0012.md`).
+- **`prev_arr_known_h1` is low before 2010** (phase 5) — the H-1 horizon
+  is the ADR-0009 definition, not a clock: the inbound leg may land after
+  the one-hour cut. The share is measured per year in
+  `data/derived/ml/manifest.json` and reported, not repaired.
 - **KP fixture status** (phase 4) — `replication/kp.py`'s algebraic
   self-check (`tests/test_replication_kp.py`, the Wald-to-Cragg-Donald and
   LM-to-Anderson collapses) runs in CI on synthetic data and needs no

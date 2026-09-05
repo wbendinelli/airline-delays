@@ -2,9 +2,9 @@
  "sample": {
   "source": "public",
   "filter_regressand": "fsc_oddsarr",
-  "n_raw": 31760,
+  "n_raw": 31313,
   "routes_raw": 310,
-  "n_outside_window": 3844,
+  "n_outside_window": 3803,
   "window": [
    200201,
    201312
@@ -22,8 +22,8 @@
    "l1h2_maxcthhi",
    "lnh1_maxcthhi"
   ],
-  "n_after_missing_regressand": 21967,
-  "n_after_singleton_cut": 21936,
+  "n_after_missing_regressand": 21597,
+  "n_after_singleton_cut": 21566,
   "routes": 207,
   "months": 144,
   "singleton_cutoff": 5

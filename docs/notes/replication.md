@@ -26,11 +26,14 @@ Nenhum número desta nota é digitado à mão: todos vêm de
   próprio repositório a partir do VRA bruto da ANAC. Se o arquivo não existir,
   `PublicPanelNotBuilt` nomeia o caminho e o comando que o constrói
   (`just panel`), em vez de estourar dentro do pandas. Hoje o painel existe
-  (31.760 linhas, 310 rotas, 2000m1–2014m1): restrito à janela 2002m1–2013m12 do
-  artigo e passado pelos filtros dos do-files, dá **22.490 rota-mês em 211
-  rotas**, e a Tabela 2 sai em 9 das 13 variáveis (`fsc_oddsarr` com média
-  −1,3844 contra −1,38 publicado; o ADR-0013 corrigiu esta coluna para o
-  conjunto de empresas do artigo, e a variante por classe é `fscc_oddsarr`).
+  (31.313 linhas, 310 rotas, os 168 meses de 2000m1 a 2013m12): restrito à janela
+  2002m1–2013m12 do artigo e passado pelos filtros dos do-files, dá **21.566
+  rota-mês em 207 rotas**, e a Tabela 2 sai em 7 das 13 variáveis, seis delas
+  perto do publicado (`fsc_oddsarr` com média −1,3927 contra −1,38 publicado — o
+  ADR-0013 corrigiu esta coluna para o conjunto de empresas do artigo, e a
+  variante por classe é `fscc_oddsarr` — e a regressanda `MINS` com 6,8632 contra
+  7,16, que antes do corte simétrico do ADR-0015 saía em −1,3404 com desvio
+  padrão de 125).
   O que falta — `maxprdel`, `cshare`,
   `dailyflcong`, `dailyflncong`, os sete instrumentos tipo Hausman, e `rthhi`/
   `maxcthhi`, que existem como coluna mas estão inteiramente nulas — impede as

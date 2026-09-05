@@ -13,6 +13,7 @@
 #let calib = json("prediction/calibration.json")
 #let dataset = json("prediction/dataset.json")
 #let leakage = json("prediction/leakage.json")
+#let readingA = json("prediction/rolling_reading_A.json")
 #let meta = rolling.at("meta")
 
 #set document(
@@ -93,40 +94,63 @@ linha N, R, E e DI 0), realizado ou cancelado. O alvo de cancelamento existe em
 toda linha; os alvos de atraso existem só onde há horário real, e é aí que está
 a característica mais importante desta base.
 
-= O corte de 2010: o alvo antes e depois
+= O horário real vazio: "sem alteração reportada" (ADR-0017)
 
-Nos arquivos brutos de 2000 a 2009 o horário realizado só é preenchido quando
-houve ocorrência (`docs/notes/staging.md`, seção 4.1). Sob a ADR-0012 com
-`legacy_missing_actual_as_zero = False`, um voo realizado sem horário real
-#emph[não tem alvo] — não é imputado como pontual. A consequência é direta e
-domina a leitura de qualquer métrica anterior a 2010:
+Nos arquivos brutos de 2000 a 2009 o horário realizado é campo do Boletim de
+Alteração de Vôo, emitido pela IAC 1504 só "sempre que houver alguma alteração"
+(introdução e §3.1; horários e código de justificativa em §4.2 n, o, p). Campo
+vazio em voo realizado é, portanto, #emph[ausência de alteração reportada], e não
+desfecho desconhecido. Um colegiado de três revisores (ADR-0010, pareceres em
+`docs/notes/colegiado-adr0012.md`) adotou essa leitura; o atraso vale 0 e a linha
+recebe a marca `on_time_no_bav`.
+
+O escopo não é o arquivo inteiro. A taxa de nulo não é uma convenção só: de 2000
+a 2009 é de 72,9% nos 5,1 milhões de voos realizados dentro do escopo e de 83,0%
+nos 313.368 fora dele, e o revisor cético mediu 90–100% em estrangeiras e trechos
+de code-share num corte de 2005 sobre todos os voos (tabela por empresa e ano em
+`docs/declared-differences.md`). A IAC 1504 art. 6.6 diz que em code-share só a
+operadora presta a informação. A leitura vale, então, apenas para voos
+realizados de empresas de classe FSC, LCC ou regional em `groups.csv`; para
+`other` e não rotuladas o vazio continua desconhecido e o voo fica #emph[fora de
+escopo], sem alvo de atraso.
 
 #let ds_rows = dataset.by_year.map(r => (
   str(r.year),
   miles(r.rows),
   miles(r.target_rows),
+  miles(r.at("on_time_no_bav", default: 0)),
+  pct(r.at("on_time_no_bav_share", default: none)),
   miles(r.target_excluded_missing_actual),
   miles(r.target_excluded_suspect),
   pct(r.late15_arr_rate),
-  pct(r.cancelled_rate),
-  pct(r.prev_leg_share),
+  pct(r.at("prev_arr_known_share", default: none)),
 )).flatten()
 
 #table(
-  columns: 8,
-  align: (left, right, right, right, right, right, right, right),
-  [ano], [voos programados], [com alvo], [sem horário real (ADR-0012)],
-  [horário suspeito (ADR-0015)], [taxa > 15 min], [cancelamento], [etapa anterior],
+  columns: 9,
+  align: (left, right, right, right, right, right, right, right, right),
+  [ano], [voos programados], [com alvo], [sem alteração], [share dos realizados],
+  [fora de escopo (ADR-0017)], [horário suspeito (ADR-0015)], [taxa > 15 min],
+  [chegada anterior conhecida],
   ..ds_rows,
 )
 
-A coluna "taxa > 15 min" de 2000 a 2009 é uma taxa sobre voos #emph[que tiveram
-ocorrência]. De 2010 em diante é a taxa sobre praticamente toda a malha. Não são
-a mesma grandeza, e o modelo que atravessa 2009 → 2010 enfrenta uma troca de
-#emph[amostra], não de mundo. A regra da ADR-0015 é pequena ao lado dessa —
-5.249 voos em toda a série, contra 3.981.347 sem horário real — mas tira os
-piores rótulos: um atraso de 43.170 minutos é erro de digitação de mês, e treinar
-contra ele é treinar contra o cartório.
+A leitura B é um #emph[piso de pontualidade]: atraso não reportado conta como
+pontual, então a taxa anterior a 2010 é limite inferior. A alternativa não é
+neutra — a leitura A condiciona no desfecho, guardando só os voos que tiveram
+ocorrência, e produzia uma taxa-base de
+#pct(readingA.folds.at(0).base_rate_test) em 2006 contra
+#pct(readingA.folds.at(4).base_rate_test) em 2010, degrau que nasce na fronteira
+de layout e não na operação; sob a leitura B os mesmos dois folds ficam em
+#pct(rolling.folds.at(0).base_rate_test) e
+#pct(rolling.folds.at(4).base_rate_test). A comparação completa está na seção
+4.3. A quebra de 2010 continua sendo quebra de comparabilidade: de 2010 em
+diante praticamente todo voo realizado traz horário real, e antes disso não.
+
+A regra da ADR-0015 é pequena ao lado dessa — cerca de 5,2 mil voos em toda a
+série — mas tira os piores rótulos: um atraso de 43.170 minutos é erro de
+digitação de mês, e treinar contra ele é treinar contra o cartório. Desde esta
+fase a marca vem do próprio staging, na coluna `actual_time_suspect`.
 
 = Resultado principal: origem rolante
 
@@ -160,19 +184,16 @@ mês anterior não observou nada.
   ..roll_rows,
 )
 
-Quatro leituras. #emph[Primeiro], o horizonte H−1 ganha em todos os anos, e o
+Três leituras. #emph[Primeiro], o horizonte H−1 ganha em todos os anos, e o
 ganho é grande justamente onde a base é baixa — a informação da etapa anterior é
 o que a malha programada não tem. #emph[Segundo], as referências ingênuas não são
 espantalhos: a prevalência da rota no mês anterior já ordena os voos bem acima do
 acaso, e é contra ela, não contra 0,5, que o modelo precisa ser lido.
-#emph[Terceiro], os anos de teste anteriores a 2010 têm PR-AUC altíssima porque a
-base é altíssima: com 88 a 94% de positivos, acertar a classe positiva é fácil e
-o Brier é o número que distingue os modelos. #emph[Quarto], 2010 e 2011 são os
-piores folds do D−1 e não por acaso — são os primeiros anos de teste cuja amostra
-é a malha completa enquanto o treino ainda é quase todo amostra selecionada;
-quando 2010–2011 entram no treino, a AUC volta a 0,70. É essa degradação que uma
-origem rolante existe para tornar visível, e que o split fixo da seção seguinte
-resume num número só.
+#emph[Terceiro], sob a leitura B da ADR-0017 a taxa-base é da mesma ordem em toda
+a série, e o degrau de 2009 → 2010 que a leitura A produzia desapareceu: os folds
+passam a ser comparáveis entre si, o que é a condição para que a origem rolante
+signifique alguma coisa. O que sobra de variação entre folds é operação, não
+troca de amostra.
 
 == Só onde existe etapa anterior ligada
 
@@ -197,11 +218,44 @@ não a população.
   ..link_rows,
 )
 
-Aqui o horizonte aparece pelo que é: em 2013 a AUC sobe de 0,703 para 0,867 e o
-Brier cai de 0,138 para 0,086 sobre as mesmas 177.263 linhas. De 2010 a 2013 o
-ganho no subconjunto ligado é de 0,16 a 0,25 pontos de AUC — contra 0,04 a 0,10
-na tabela anterior, onde ele fica diluído pelos 71% a 80% de voos sem elo
+Aqui o horizonte aparece pelo que é: o ganho no subconjunto ligado é bem maior
+que na tabela anterior, onde ele fica diluído pelos 61% a 80% de voos sem elo
 identificável.
+
+== Sensibilidade: leitura A ao lado da leitura B
+
+A leitura A, superada pela ADR-0017, tratava horário real vazio como
+#emph[desconhecido]. As colunas "A" abaixo vêm da rodada anterior, preservada em
+`reports/prediction/rolling_reading_A.json`; nada foi reestimado sob a convenção
+superada. De 2010 em diante as duas leituras enxergam o mesmo dado, e só aí a
+comparação é de igual para igual — antes de 2010 muda a #emph[população de
+teste], e a taxa-base diz isso.
+
+#let a_by_year = (:)
+#for f in readingA.folds { a_by_year.insert(year_of(f), f) }
+#let sens_rows = rolling.folds.map(f => {
+  let y = year_of(f)
+  let a = a_by_year.at(y, default: none)
+  (
+    y,
+    if a == none { "—" } else { miles(a.n_test) },
+    miles(f.n_test),
+    if a == none { "—" } else { pct(a.base_rate_test) },
+    pct(f.base_rate_test),
+    if a == none { "—" } else { nf(mdl(a, "D-1", "auc"), d: 3) },
+    nf(mdl(f, "D-1", "auc"), d: 3),
+    if a == none { "—" } else { nf(mdl(a, "H-1", "auc"), d: 3) },
+    nf(mdl(f, "H-1", "auc"), d: 3),
+  )
+}).flatten()
+
+#table(
+  columns: 9,
+  align: (left, right, right, right, right, right, right, right, right),
+  [ano], [$n$ A], [$n$ B], [base A], [base B],
+  [AUC D−1 A], [AUC D−1 B], [AUC H−1 A], [AUC H−1 B],
+  ..sens_rows,
+)
 
 = Split fixo (ilustrativo)
 
@@ -341,10 +395,15 @@ para 0,82.
 
 = Limites declarados
 
-+ *A amostra do alvo muda em 2010.* Métricas de anos de teste anteriores a 2010
-  descrevem voos com ocorrência registrada; posteriores, praticamente toda a
-  malha. A tabela da seção 2 traz os dois números lado a lado exatamente para
-  que ninguém compare 2007 com 2013 sem ver isso.
++ *A leitura B é um piso, e o instrumento muda em 2010.* Antes de 2010 o alvo
+  vem do Boletim de Alteração de Vôo: atraso não reportado conta como pontual, e
+  a taxa publicada é limite inferior. De 2010 em diante quase todo voo realizado
+  traz horário real. A tabela da seção 2 traz a marca `on_time_no_bav` por ano
+  para que a diferença de instrumento fique visível, e a seção 4.3 traz as
+  métricas sob a leitura A ao lado.
++ *Empresas de classe `other` ficam sem alvo antes de 2010.* A leitura B não as
+  cobre (IAC 1504 art. 6.6, code-share), e a auditoria que decidiria se esses
+  trechos devem sair dos universos por completo é candidata a ADR-0018.
 + *H−1 é o horizonte da ADR-0009, não um relógio.* A etapa anterior pode pousar
   depois do corte de uma hora; a base carrega `prev_arr_known_h1` e o
   `manifest.json` reporta a fração por ano. A variável não é anulada, porque a

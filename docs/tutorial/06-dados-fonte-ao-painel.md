@@ -61,7 +61,7 @@ apenas **60,2%**, porque a safra de 2019 tratou horário real vazio como
 que mais muda a leitura de qualquer média de atraso 2000-2009.
 
 `data/analysis/taxas.csv`: o artigo `f` (voos programados) reproduz o
-gabarito em 90,1% das rota-meses no painel inteiro e **95,3%** na metade
+gabarito em 90,2% das rota-meses no painel inteiro e **95,3%** na metade
 da série cujos arquivos brutos não mudaram desde 2019 — a reconstrução
 anterior, lendo a mesma safra de 2019 diretamente, tinha relatado 97,5%.
 O mapa de nós (`DECISIONS.md` ADR-0001) sozinho muda a concordância de `f`
@@ -82,7 +82,7 @@ de chegada de 2002 sozinho, sem saber disso, que erro cometeria?
 ## Nota honesta
 
 Duas coisas continuam sem explicação, declaradas e não resolvidas: a
-concordância de `fl_ddel` (atraso de chegada) fica em 56,0% contra 87,7%
+concordância de `fl_ddel` (atraso de chegada) fica em 56,3% contra 87,9%
 de `fl_odel` (atraso de partida) sob a mesma regra exata — a assimetria é
 citada em `DECISIONS.md` ADR-0002 e permanece um mistério; e o painel
 final dos autores do artigo original nunca foi reconstruído do zero por

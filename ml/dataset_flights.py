@@ -1,15 +1,33 @@
-"""The flight-level modelling table: one DuckDB scan per staged year.
+"""The flight-level modelling table: one DuckDB scan per calendar year.
 
 One row per **scheduled** flight of the replication universe (ADR-0002: line
 types N/R/E, DI 0, realised *and* cancelled), written to
 ``data/derived/ml/year=YYYY/part-0.parquet``. Cancellation is a target defined
-on every row; the delay targets are defined only on a **realised** flight whose
-actual timestamp exists, which under ADR-0012
-(``legacy_missing_actual_as_zero=False``) is 55-80% fewer rows in 2000-2009 than
-in 2010-2013 -- and the survivors are the flights that had an *occurrence*, so
-their late rate runs at 75-94% against 16-25% from 2010 on. That exclusion is
-counted per year and reported: it is the single most important thing to know
-about this table.
+on every row.
+
+**Reading B for the delay targets (ADR-0017).** In the 2000-2009 layout an
+actual time is a field of the *Boletim de Alteração de Vôo*, which IAC 1504
+requires only "sempre que houver alguma alteração": an empty actual time on a
+realised flight is the absence of a reported alteration, not an unknown outcome.
+A panel of three reviewers read the instruction, the reconciliation and the
+benchmark rates and adopted that reading (`docs/notes/colegiado-adr0012.md`).
+So a realised flight of a **pre-2010** year, operated by a carrier whose
+`groups.csv` class is FSC, LCC or regional, with an empty actual time, gets a
+delay of 0 and carries the flag ``on_time_no_bav``.
+
+The scope is not the whole file. Over 2000-2009 the null actual-arrival rate is
+72.9% for the 5.1 M realised flights of carriers in scope and 83.0% for the
+313,368 out of it, and the sceptical reviewer of the panel measured 90-100% for
+foreign carriers and code-share legs in a 2005 cross-section over all flights.
+IAC 1504 §6.6 says only the operating carrier reports a code-share leg; for
+`other` and unlabelled carriers an empty actual time therefore stays **unknown**
+and the flight stays out of every delay target. ADR-0015's suspect-timestamp exclusion applies on top of both. Every one
+of these counts is reported per year in ``manifest.json`` and in
+``reports/prediction/results.md``.
+
+Reading B is a **floor on punctuality**: a delay that was never reported counts
+as on time, so the measured late rate is a lower bound before 2010. That
+direction is stated in `docs/declared-differences.md` and is not corrected for.
 
 Leakage rule, written before the first feature (ADR-0009):
 
@@ -38,13 +56,18 @@ Leakage rule, written before the first feature (ADR-0009):
    the three columns describing the *inbound* leg's outcome. Nothing in
    ``FEATURES_H1`` is about the flight itself.
 
-Cost: one scan per staged year. Each year is materialised once into a temp
+Cost: one pass per calendar year. Each year is materialised once into a temp
 table and every aggregate of that year (the airport day-hour movement counts,
 the flight-number monthly rates, the rotation link) is computed from it, so the
 parquet is read exactly once. The monthly rates that need earlier years come
 from the committed fact table (``data/analysis/fact_group_route_month.parquet``,
 ADR-0014) plus a three-month carry-over kept in memory between iterations, so
 no year is ever read twice.
+
+The unit of the pass is the flight's **calendar year**, selected across the
+whole staged tree, not the ``year=YYYY`` directory (ADR-0016 and
+`vra.features.year_source_sql`): the directory is the year of the source file,
+and a December file carries a few legs scheduled for 1 January.
 """
 
 from __future__ import annotations
@@ -58,6 +81,7 @@ from typing import TYPE_CHECKING, Any
 
 from vra import congestion as congestion_mod
 from vra import delays as delays_mod
+from vra import features as features_mod
 from vra import groups as groups_mod
 from vra import stage as stage_mod
 from vra import universe as universe_mod
@@ -83,16 +107,37 @@ HIGH_SEASON_MONTHS: tuple[int, ...] = (1, 7, 12)
 SHUTTLE_ROUTES: frozenset[str] = frozenset({"MRSP-MRRJ", "MRRJ-MRSP"})
 """The Rio-Sao Paulo shuttle, the densest pair in the series."""
 
-SUSPECT_DELAY_MIN = 1440.0
+SUSPECT_DELAY_MIN = delays_mod.SUSPECT_DELAY_MIN
 """A delay of a whole day or more marks the timestamp as suspect (ADR-0015).
 
 The raw files carry month typos in the actual times -- VSP 4374 in December 2003
 has an actual arrival dated November, giving -43,170 minutes. ADR-0015 says the
 prediction dataset excludes those flights **from the targets**, counted per
-year, and that is what `actual_time_suspect` does here: 5,349 flights over the
-whole series, 0.1% of the rows that have an arrival target. The feature columns
-are untouched -- a suspect timestamp is still a real scheduled flight and still
-occupies its slot in the day-hour movement count.
+year. The rule now lives in `vra.delays` and is written once, at staging, as
+the staged column `actual_time_suspect`; this module reads that column instead
+of recomputing it. The feature columns are untouched -- a suspect timestamp is
+still a real scheduled flight and still occupies its slot in the day-hour
+movement count.
+"""
+
+BAV_LAST_LEGACY_YEAR = 2009
+"""Last year of the layout in which an empty actual time means "no BAV" (ADR-0017).
+
+The 2010 layout writes an actual time on essentially every realised flight
+(0.0% missing against 59-80% before), so the reading applies to flights dated
+2009 or earlier and the residual nulls of 2010+ stay null. The boundary is the
+flight's own calendar year, not the source file's: 149 legs scheduled for
+January 2010 sit in the 2009 files and are treated as 2010, which is the
+conservative direction.
+"""
+
+BAV_CLASSES: tuple[str, ...] = ("FSC", "LCC", "regional")
+"""Carrier classes reading B applies to (ADR-0017, scope amendment).
+
+`other` and unlabelled carriers -- foreign operators and the non-operating side
+of a code-share -- keep the null and stay out of every delay target. IAC 1504
+§6.6: in code-share only the operating carrier reports, and the non-operator's
+leg has no effect on the indices.
 """
 
 H1_LEAD_MIN = 60.0
@@ -222,9 +267,15 @@ DIAGNOSTICS: tuple[str, ...] = (
     "has_arr_actual",
     "has_dep_actual",
     "actual_time_suspect",
+    "on_time_no_bav",
     "prev_arr_known_h1",
 )
-"""Carried for the per-year accounting and the leakage checks; never features."""
+"""Carried for the per-year accounting and the leakage checks; never features.
+
+`on_time_no_bav` in particular is a fact about the *outcome* -- whether an
+alteration was reported -- and handing it to a model would be leakage of the
+plainest kind. `ml.leakage_tests.check_targets_are_not_features` enforces that.
+"""
 
 DATASET_COLUMNS: tuple[str, ...] = (
     *KEY_COLUMNS,
@@ -284,6 +335,7 @@ DTYPES: dict[str, str] = {
     "has_arr_actual": "bool",
     "has_dep_actual": "bool",
     "actual_time_suspect": "bool",
+    "on_time_no_bav": "bool",
 }
 """Explicit dtypes; everything not listed is ``float32`` or ``category``."""
 
@@ -305,6 +357,46 @@ def _shift_ym(ym: Any, months: int) -> Any:
 
 def _rate(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
     return numerator.astype("float64") / denominator.astype("float64").where(denominator > 0)
+
+
+def bav_scope_sql(alias: str, class_expr: str) -> str:
+    """Rows reading B applies to: realised, pre-2010, carrier class in scope."""
+    classes = ", ".join(f"'{name}'" for name in BAV_CLASSES)
+    return (
+        f"({alias}.is_realized AND {alias}.year <= {BAV_LAST_LEGACY_YEAR} "
+        f"AND {class_expr} IN ({classes}))"
+    )
+
+
+def effective_delay_sql(alias: str, side: str, class_expr: str) -> str:
+    """The ADR-0017 delay of one side: the measured one, or 0 where no BAV exists.
+
+    Written once and used by the targets, by the inbound leg and by the
+    flight-number lag, so a rate can never be a rate of one reading while the
+    target it predicts is the other.
+    """
+    actual = "actual_arr" if side == "arr" else "actual_dep"
+    delay = f"{side}_delay_min"
+    scope = bav_scope_sql(alias, class_expr)
+    return (
+        f"CASE WHEN {alias}.{delay} IS NOT NULL THEN {alias}.{delay} "
+        f"WHEN {scope} AND {alias}.{actual} IS NULL THEN 0.0 END"
+    )
+
+
+def bav_denominator(fact: pd.DataFrame, side: str) -> pd.Series:
+    """Flights a lagged delay rate is divided by under reading B (ADR-0017).
+
+    The fact table is convention-free: it carries the strict observation count
+    and, separately, the realised flights the legacy files left without an
+    actual time. Reading B puts the second group back into the denominator —
+    but only for the cells in scope, which the fact table's own `class` and
+    `year` keys decide. The numerator never moves: a flight imputed at 0 minutes
+    is not more than 15 minutes late.
+    """
+    in_scope = (fact["year"] <= BAV_LAST_LEGACY_YEAR) & fact["class"].isin(BAV_CLASSES)
+    observed = fact[f"{side}_delay_obs"].astype("int64")
+    return observed + fact[f"{side}_missing_actual"].astype("int64").where(in_scope, 0)
 
 
 @dataclass(frozen=True)
@@ -331,17 +423,17 @@ FACT_CELL_KEYS: tuple[str, ...] = ("ym", "route", "origin_node", "dest_node", "g
 def collapse_fact(fact: pd.DataFrame) -> pd.DataFrame:
     """Make the fact table one row per ``group x route x month``.
 
-    ADR-0016 makes that key a tested invariant of the fact table, and where it
-    holds this function returns the frame untouched. It exists because the
-    invariant is newer than the table: `vra.features.build_fact` groups within
-    each **file** year and concatenates, so the 3,723 staged rows whose derived
-    year differs from the year of the file they came from
-    (`docs/notes/staging.md` section 5) emit the same cell twice -- 844 rows
-    over 422 keys in the table this phase was built against, 0.5% of 166,203.
-    Joining a lag table with two rows for one key duplicates every flight in
-    that cell: 1,128 extra rows in 2001 alone, measured before this existed.
-    Counts add; ``is_entry``/``is_exit`` take the minimum, because a cell that
-    is a continuation in one partition is a continuation.
+    ADR-0016 makes that key a tested invariant of the fact table, and
+    `vra.features.build_fact` now asserts it, so against a freshly built table
+    this function returns the frame untouched. It stays as the compatibility
+    path for an older committed fact table, where `build_fact` grouped within
+    each **file** year and concatenated: the 3,723 staged rows whose derived
+    year differs from the year of their source file (`docs/notes/staging.md`
+    section 5) emitted the same cell twice, 844 rows over 422 keys. Joining a
+    lag table with two rows for one key duplicates every flight in that cell:
+    1,128 extra rows in 2001 alone, measured before this existed. Counts add;
+    ``is_entry``/``is_exit`` take the minimum, because a cell that is a
+    continuation in one partition is a continuation.
     """
     duplicated = fact.duplicated(subset=list(FACT_CELL_KEYS), keep=False)
     if not bool(duplicated.any()):
@@ -358,13 +450,19 @@ def monthly_lags(fact: pd.DataFrame) -> LagTables:
     """Closed-window monthly rates from the committed fact table.
 
     The fact table is the canonical ``group x route x month`` aggregate
-    (ADR-0004) and carries counts only, so the ADR-0012 convention is chosen
-    here rather than inherited: the denominator is ``*_delay_obs``, flights
-    with a real timestamp, which is ``legacy_missing_actual_as_zero=False``.
+    (ADR-0004) and carries counts only, so the convention is chosen here rather
+    than inherited. It is ADR-0017's reading B, the same one the targets use:
+    the denominator is ``*_delay_obs`` plus, for a realised pre-2010 cell of a
+    carrier in scope, the flights that reported no alteration
+    (`bav_denominator`). A lagged rate on a different reading from the target it
+    predicts would be a feature measuring another quantity.
     """
     import pandas as pd
 
     fact = collapse_fact(fact)
+    fact = fact.assign(
+        arr_delay_obs=bav_denominator(fact, "arr"), dep_delay_obs=bav_denominator(fact, "dep")
+    )
     route = fact.groupby(["route", "ym"], observed=True)[
         ["flights", "arr_delay_obs", "arr_delayed_gt15"]
     ].sum()
@@ -540,7 +638,7 @@ _YEAR_COLUMNS = """
     flight_date, year, month, ym, airline, flight_number, line_type, di,
     origin_icao, dest_icao, origin_node, dest_node, route, status, cause_code,
     sched_dep, sched_arr, actual_dep, actual_arr, dep_delay_min, arr_delay_min,
-    sched_block_min, universe_repl, is_realized
+    sched_block_min, universe_repl, is_realized, actual_time_suspect
 """
 
 MOVEMENTS_SQL = """
@@ -581,14 +679,26 @@ is no day before -- so it is dropped, and the count is reported rather than
 absorbed into the row total.
 """
 
-FLIGHT_NUMBER_SQL = f"""
-SELECT airline, flight_number, ym,
-       count(*) FILTER (WHERE is_realized AND arr_delay_min IS NOT NULL)::INTEGER AS obs,
-       count(*) FILTER (WHERE is_realized AND arr_delay_min > {LATE_MIN})::INTEGER AS late
-FROM ml_year
-WHERE universe_repl AND airline IS NOT NULL AND flight_number IS NOT NULL AND ym IS NOT NULL
-GROUP BY airline, flight_number, ym
+
+def flight_number_sql() -> str:
+    """Monthly arrival-delay counts per flight number, under reading B.
+
+    Same effective delay as the target (`effective_delay_sql`), so
+    ``flight_no_late15_l3`` is the three closed months of exactly the quantity
+    the model is asked to predict.
+    """
+    label = groups_mod.label_sql("m.airline", "m.ym", alias="g")
+    effective = effective_delay_sql("m", "arr", groups_mod.resolved_class_sql())
+    return f"""
+SELECT m.airline AS airline, m.flight_number AS flight_number, m.ym AS ym,
+       count(*) FILTER (WHERE m.is_realized AND ({effective}) IS NOT NULL)::INTEGER AS obs,
+       count(*) FILTER (WHERE m.is_realized AND ({effective}) > {LATE_MIN})::INTEGER AS late
+FROM ml_year m {label}
+WHERE m.universe_repl AND m.airline IS NOT NULL
+  AND m.flight_number IS NOT NULL AND m.ym IS NOT NULL
+GROUP BY m.airline, m.flight_number, m.ym
 """
+
 
 P90_SQL = f"""
 SELECT icao,
@@ -613,15 +723,20 @@ def _flight_sql() -> str:
     label = groups_mod.label_sql("b.airline", "b.ym", alias="g")
     late = LATE_MIN
     late30 = LATE30_MIN
-    suspect = (
-        f"(abs(l.dep_delay_min) >= {SUSPECT_DELAY_MIN} "
-        f"OR abs(l.arr_delay_min) >= {SUSPECT_DELAY_MIN})"
+    classes = ", ".join(f"'{name}'" for name in BAV_CLASSES)
+    # ADR-0017, reading B, written once and applied to the flight and to its
+    # inbound leg alike: a realised pre-2010 flight of an FSC/LCC/regional
+    # carrier with no actual time reported no alteration, so its delay is 0.
+    # Outside that scope the null stays a null.
+    bav = (
+        f"(b.is_realized AND b.year <= {BAV_LAST_LEGACY_YEAR} "
+        f"AND {groups_mod.resolved_class_sql()} IN ({classes}))"
     )
     # A target exists only for a realised flight whose timestamps are usable:
-    # ADR-0012 removes the ones the legacy files never wrote, ADR-0015 the ones
-    # they wrote with a month typo. `cancelled` is a status, not a time, and is
-    # defined on every row either way.
-    no_target = f"(NOT l.is_realized OR coalesce({suspect}, FALSE))"
+    # ADR-0015 removes the ones written with a month typo, and ADR-0017 leaves
+    # `other` and unlabelled carriers without one where the actual time is
+    # absent. `cancelled` is a status, not a time, and is defined on every row.
+    no_target = "(NOT l.is_realized OR l.actual_time_suspect)"
     return f"""
 WITH base AS (
     SELECT * FROM ml_year
@@ -635,7 +750,14 @@ labelled AS (
            row_number() OVER () AS flight_id,
            CAST(b.sched_dep AS DATE) AS sched_date,
            {groups_mod.resolved_group_sql("b.airline")} AS grp,
-           {groups_mod.resolved_class_sql()} AS cls
+           {groups_mod.resolved_class_sql()} AS cls,
+           {bav} AND (b.actual_arr IS NULL OR b.actual_dep IS NULL) AS no_bav,
+           CASE WHEN b.arr_delay_min IS NOT NULL THEN b.arr_delay_min
+                WHEN {bav} AND b.actual_arr IS NULL THEN 0.0 END AS eff_arr_delay,
+           CASE WHEN b.dep_delay_min IS NOT NULL THEN b.dep_delay_min
+                WHEN {bav} AND b.actual_dep IS NULL THEN 0.0 END AS eff_dep_delay,
+           CASE WHEN b.actual_arr IS NOT NULL THEN b.actual_arr
+                WHEN {bav} THEN b.sched_arr END AS eff_actual_arr
     FROM base b {label}
 ),
 chain AS (
@@ -646,8 +768,8 @@ chain AS (
 ),
 prev AS (
     SELECT flight_id AS p_id, airline, flight_number, sched_date,
-           dest_icao AS icao, sched_arr AS p_sched_arr, actual_arr AS p_actual_arr,
-           arr_delay_min AS p_arr_delay, status AS p_status
+           dest_icao AS icao, sched_arr AS p_sched_arr, eff_actual_arr AS p_actual_arr,
+           eff_arr_delay AS p_arr_delay, status AS p_status
     FROM labelled WHERE sched_arr IS NOT NULL
 ),
 linked AS (
@@ -727,17 +849,18 @@ SELECT
     l.is_realized                                           AS is_realized,
     l.actual_arr IS NOT NULL                                AS has_arr_actual,
     l.actual_dep IS NOT NULL                                AS has_dep_actual,
-    coalesce({suspect}, FALSE)                              AS actual_time_suspect,
+    l.actual_time_suspect                                   AS actual_time_suspect,
+    coalesce(l.no_bav, FALSE)                               AS on_time_no_bav,
     CAST(CASE WHEN l.p_actual_arr IS NULL THEN NULL
               ELSE date_diff('second', l.p_actual_arr, l.sched_dep) / 60.0 >= {H1_LEAD_MIN}
          END AS FLOAT)                                      AS prev_arr_known_h1,
-    CAST(CASE WHEN {no_target} OR l.arr_delay_min IS NULL THEN NULL
-              ELSE l.arr_delay_min > {late} END AS FLOAT)   AS late15_arr,
-    CAST(CASE WHEN {no_target} OR l.arr_delay_min IS NULL THEN NULL
-              ELSE l.arr_delay_min > {late30} END AS FLOAT) AS late30_arr,
-    CAST(CASE WHEN {no_target} THEN NULL ELSE l.arr_delay_min END AS FLOAT) AS arr_delay_min,
-    CAST(CASE WHEN {no_target} OR l.dep_delay_min IS NULL THEN NULL
-              ELSE l.dep_delay_min > {late} END AS FLOAT)   AS late15_dep,
+    CAST(CASE WHEN {no_target} OR l.eff_arr_delay IS NULL THEN NULL
+              ELSE l.eff_arr_delay > {late} END AS FLOAT)   AS late15_arr,
+    CAST(CASE WHEN {no_target} OR l.eff_arr_delay IS NULL THEN NULL
+              ELSE l.eff_arr_delay > {late30} END AS FLOAT) AS late30_arr,
+    CAST(CASE WHEN {no_target} THEN NULL ELSE l.eff_arr_delay END AS FLOAT) AS arr_delay_min,
+    CAST(CASE WHEN {no_target} OR l.eff_dep_delay IS NULL THEN NULL
+              ELSE l.eff_dep_delay > {late} END AS FLOAT)   AS late15_dep,
     CAST(l.status = '{universe_mod.STATUS_CANCELLED}' AS TINYINT) AS cancelled
 FROM linked l
 LEFT JOIN cal_tbl  cal ON cal.day = l.sched_date
@@ -794,9 +917,13 @@ class YearSummary:
     target_rows: int
     target_excluded_missing_actual: int
     target_excluded_suspect: int
+    on_time_no_bav: int
+    on_time_no_bav_share: float | None
+    realized_no_arr_actual: int
     late15_arr_rate: float | None
     cancelled_rate: float | None
     prev_leg_share: float
+    prev_arr_known_share: float | None
     prev_arr_known_h1_share: float | None
 
     def as_dict(self) -> dict[str, Any]:
@@ -853,7 +980,7 @@ def build_dataset(
         for year in years:
             con.execute(
                 f"CREATE OR REPLACE TEMP TABLE ml_year AS SELECT {_YEAR_COLUMNS} "
-                f"FROM read_parquet('{staged_dir}/year={year}/*.parquet', hive_partitioning=false)"
+                f"FROM {features_mod.year_source_sql(staged_dir, year)}"
             )
             con.execute(MOVEMENTS_SQL)
             carry = _register_flight_number_lags(con, carry)
@@ -935,7 +1062,7 @@ def _register_flight_number_lags(con: Any, carry: pd.DataFrame | None) -> pd.Dat
     """
     import pandas as pd
 
-    current = con.execute(FLIGHT_NUMBER_SQL).df()
+    current = con.execute(flight_number_sql()).df()
     store = current if carry is None else pd.concat([carry, current], ignore_index=True)
     store = store.groupby(["airline", "flight_number", "ym"], as_index=False, observed=True).sum()
     shifted = [store.assign(ym=_shift_ym(store["ym"], lag)) for lag in (1, 2, 3)]
@@ -969,10 +1096,20 @@ def _finalise(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def _summarise(year: int, frame: pd.DataFrame, universe_rows: int, no_schedule: int) -> YearSummary:
+    """The per-year accounting ADR-0015 and ADR-0017 both need.
+
+    `target_excluded_missing_actual` is what reading B does **not** cover: a
+    realised flight with no actual arrival time whose carrier is `other` or
+    unlabelled, so the null stays a null. `on_time_no_bav` is what it does
+    cover.
+    """
     target = frame["late15_arr"].notna()
     realized = frame["is_realized"]
     suspect = frame["actual_time_suspect"]
-    known = frame.loc[frame["prev_leg"] == 1, "prev_arr_known_h1"]
+    no_bav = frame["on_time_no_bav"]
+    linked = frame["prev_leg"] == 1
+    known = frame.loc[linked, "prev_arr_known_h1"]
+    prev_known = frame.loc[linked, "prev_arr_delay_min"].notna()
     return YearSummary(
         year=int(year),
         rows=len(frame),
@@ -983,9 +1120,15 @@ def _summarise(year: int, frame: pd.DataFrame, universe_rows: int, no_schedule: 
         target_rows=int(target.sum()),
         target_excluded_missing_actual=int((realized & ~target & ~suspect).sum()),
         target_excluded_suspect=int((realized & suspect).sum()),
+        on_time_no_bav=int(no_bav.sum()),
+        on_time_no_bav_share=float((no_bav & realized).sum() / realized.sum())
+        if realized.any()
+        else None,
+        realized_no_arr_actual=int((realized & ~frame["has_arr_actual"]).sum()),
         late15_arr_rate=float(frame.loc[target, "late15_arr"].mean()) if target.any() else None,
         cancelled_rate=float(frame["cancelled"].mean()) if len(frame) else None,
-        prev_leg_share=float(frame["prev_leg"].mean()) if len(frame) else 0.0,
+        prev_leg_share=float(linked.mean()) if len(frame) else 0.0,
+        prev_arr_known_share=float(prev_known.mean()) if linked.any() else None,
         prev_arr_known_h1_share=float(known.mean()) if known.notna().any() else None,
     )
 
@@ -1023,7 +1166,9 @@ def _write_manifest(out_dir: Path, result: BuildResult, threshold: float) -> Pat
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "git_commit": stage_mod.git_commit(REPO_ROOT, short=True),
         "tool_versions": stage_mod.tool_versions(),
-        "legacy_missing_actual_as_zero": False,
+        "reading": "B (ADR-0017): empty actual time on a realised in-scope flight is no alteration",
+        "bav_last_legacy_year": BAV_LAST_LEGACY_YEAR,
+        "bav_classes": list(BAV_CLASSES),
         "outlier_threshold_min": threshold,
         "late_threshold_min": LATE_MIN,
         "suspect_delay_min": SUSPECT_DELAY_MIN,

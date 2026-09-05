@@ -89,13 +89,23 @@ existe hoje — só a flight-level já carrega a chave certa.
 
 ## 8. Previsão de atraso por voo
 
-**Em andamento, não uma proposta.** O desenho — universo, dois horizontes
+**Feita, não uma proposta.** O desenho — universo, dois horizontes
 (véspera e no portão), avaliação por origem rolante 2006-2013,
 `AUC`/`PR-AUC`/`Brier`/calibração, testes de vazamento — está fixado em
-`DECISIONS.md` ADR-0009 e `ml/README.md`. Os números finais chegam em
-<!-- PREDICTION: filled after phase 5 --> `reports/prediction/results.md`,
-que ainda não existe nesta sessão de documentação — este módulo aponta
-para o arquivo certo, não para um número.
+`DECISIONS.md` ADR-0009 e `ml/README.md`, e os números estão em
+`reports/prediction/results.md`: origem rolante nos oito anos de teste, AUC
+de véspera entre 0,715 e 0,741 e AUC de portão entre 0,757 e 0,824, contra
+0,61 a 0,67 da prevalência da rota no mês anterior; nos 20% a 35% de voos
+com etapa anterior ligada, o portão chega a 0,87–0,93. O alvo anterior a
+2010 segue a leitura B da ADR-0017 — horário real vazio em voo realizado de
+empresa FSC, LCC ou regional é "sem alteração reportada", atraso 0 — e é um
+**piso** de pontualidade, não uma medição; o mesmo arquivo traz as métricas
+sob a leitura superada ao lado.
+
+**O que falta.** Meteorologia (METAR do DECEA/REDEMET), capacidade
+declarada por aeroporto e a auditoria dos trechos de code-share da não
+operadora (candidata a ADR-0018) — as três estão listadas em
+`docs/notes/prediction.md`, seção 7.
 
 ## Exercício
 
@@ -108,8 +118,8 @@ sem escrevê-las de verdade, só nomeá-las.
 ## Nota honesta
 
 "A arquitetura já sustenta" não é o mesmo que "já está pronto" — das oito
-extensões acima, só duas (o limiar de 30 minutos e o atraso de LCC como
-resposta) já têm coluna medida e publicada hoje; a previsão está em
-andamento; as outras cinco precisam de uma fonte de dado ainda não
-coletada ou de uma função ainda não escrita. Nenhuma foi implementada
-neste módulo de documentação — descrever o caminho não é percorrê-lo.
+extensões acima, três já têm número publicado hoje (o limiar de 30 minutos,
+o atraso de LCC como resposta e a previsão por voo); as outras cinco
+precisam de uma fonte de dado ainda não coletada ou de uma função ainda não
+escrita. Nenhuma dessas cinco foi implementada neste módulo de documentação
+— descrever o caminho não é percorrê-lo.

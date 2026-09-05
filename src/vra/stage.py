@@ -27,6 +27,19 @@ Cleaning decisions, all counted and reported in ``docs/notes/staging.md``:
   actual departure when the schedule is missing (frequent for DI 7 and DI 9).
 * Timestamps that do not parse become null; the delay built on them is null
   too, never zero.
+* ``actual_time_suspect`` (ADR-0015) marks a row whose departure *or* arrival
+  delay is a whole calendar day or more in absolute value — a month typo in the
+  raw file, not an operation. Written here so that every consumer reads one
+  definition instead of recomputing the rule.
+
+**The partition is the flight's own year, not the source file's.** ``flight_date``
+comes from the scheduled departure, and a monthly file carries a handful of legs
+scheduled just outside its own month: 3,723 rows over the series, most of them
+across a 31 December / 1 January boundary, a few outright typos (``2099``,
+``2088``). ``vra.features.build_fact`` therefore selects each calendar year by
+its ``year`` column across the whole staged tree rather than trusting the
+directory name — reading a partition as if it were a year is what produced the
+duplicated route-months of ADR-0016.
 """
 
 from __future__ import annotations
@@ -282,6 +295,13 @@ def build_select(glob: str, layout: RawLayout, with_groups: bool = False) -> str
     def ts(col: str) -> str:
         return f"try_strptime(nullif(trim({col}), ''), '{fmt}')"
 
+    # ADR-0015, written at staging so that every consumer reads one definition
+    # rather than recomputing the rule on the delay columns it happens to hold.
+    suspect = delays_mod.suspect_time_sql(
+        delays_mod.signed_delay_sql("sched_dep", "actual_dep"),
+        delays_mod.signed_delay_sql("sched_arr", "actual_arr"),
+    )
+
     group_select = 'CAST(NULL AS VARCHAR) AS "group",\n    CAST(NULL AS VARCHAR) AS "class"'
     group_join = ""
     if with_groups:
@@ -359,7 +379,8 @@ SELECT
     {group_select},
     {universe_mod.UNIVERSE_REPL_SQL}                                        AS universe_repl,
     {universe_mod.UNIVERSE_ML_SQL}                                          AS universe_ml,
-    dated.status = '{universe_mod.STATUS_REALIZED}'                               AS is_realized
+    dated.status = '{universe_mod.STATUS_REALIZED}'                               AS is_realized,
+    {suspect}                                                               AS actual_time_suspect
 FROM dated{group_join}
 """
 
