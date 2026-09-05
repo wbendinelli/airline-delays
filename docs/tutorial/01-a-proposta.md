@@ -44,10 +44,10 @@ Nenhuma das três colunas tarifárias que a proposta previa (`yield`,
 repositório.
 
 ```bash
-grep -n '"yield"\|"fare"' src/vra/registry.py
+grep -n '"yield"\|"fare"' src/airline_delays/schema/columns.py
 ```
 
-**Número esperado.** Zero ocorrências — `src/vra/registry.py` não declara
+**Número esperado.** Zero ocorrências — `src/airline_delays/schema/columns.py` não declara
 nenhuma coluna de tarifa ou receita, porque o VRA (a fonte deste
 repositório) é um arquivo de **operação**, não de bilhetagem
 ([`docs/data-availability.md`](../data-availability.md), fonte 4: "ANAC
@@ -62,12 +62,12 @@ correspondente em
 [`13-propor-melhorias.md`](13-propor-melhorias.md) (seção "a pergunta
 original de preços"). Sem baixar nada, escreva em três frases: que chave
 (`route`, `ym`, `group`) uma tabela de tarifas por rota-mês-empresa
-precisaria ter para ser unida ao painel público
+precisaria ter para ser unida ao painel reconstruído
 (`data/analysis/panel_route_month.parquet`) sem reextrair nada? A resposta
 está na própria definição de `route` e `ym` no dicionário
 (`docs/dictionary.md`).
 
-## Nota honesta
+## Limites e próximos passos
 
 O que motivou a virada de preços para atrasos não está registrado em
 nenhum documento datado do acervo original — só a sequência de datas entre

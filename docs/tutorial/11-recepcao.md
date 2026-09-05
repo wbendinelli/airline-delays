@@ -39,7 +39,7 @@ alguma terceira coisa? Escreva sua hipótese antes de abrir
 [`github.com/wbendinelli/citation-audit`](https://github.com/wbendinelli/citation-audit)
 para conferir a taxonomia real que o projeto usa.
 
-## Nota honesta
+## Limites e próximos passos
 
 Este módulo descreve a recepção do **artigo original** (Bendinelli,
 Bettini & Oliveira, 2016) — não a deste repositório, que é novo e ainda

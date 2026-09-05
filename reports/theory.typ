@@ -3,8 +3,8 @@
 // Português (exceção deliberada ao inglês do repositório: CLAUDE.md, ADR-0006).
 // NENHUM número deste relatório é digitado à mão: tudo vem de
 // `reports/theory/model.json` e `reports/theory/figures.json`, escritos por
-// `uv run python -m theory.run` (`just theory`); as figuras são os SVG de
-// `reports/theory/figures/`, desenhados por `theory/figures.py` no estilo SAPIANS.
+// `airline-delays theory` (`just theory`); as figuras são os SVG de
+// `reports/theory/figures/`, desenhados por `src/airline_delays/theory/figures.py` no estilo SAPIANS.
 // O pacote de design é `reports/sapians/` (cópia MIT de sapians-latex, v0.1.0).
 //
 // Compilar:  typst compile --root . reports/theory.typ reports/build/theory.pdf
@@ -110,7 +110,7 @@ Note que o congestionamento eficiente não é zero: em $Q_S$ ainda há congestio
 
 *Duas rotas para o ótimo.* Pela quantidade: fixar em $Q_S$ o número de pousos e decolagens (os _slots_), e decidir quem os usa — por antiguidade (_grandfathering_), que protege quem já está e não gera receita, ou por leilão, que revela quanto cada empresa valoriza o slot e captura esse valor para financiar capacidade (a "captura de valor" de Cohen, Coughlin e Ott 2009). Pelo preço: uma tarifa por voo que suba a curva privada até ela cruzar o benefício em C. A tarifa correta é a distância vertical entre as duas curvas de custo em $Q_S$ — a tarifa pigouviana, #nf(f1.toll_pigou_at_QS, d: 0) na figura.
 
-#intuicao("Uma nota honesta sobre o segmento AD")[
+#intuicao("Uma nota sobre o segmento AD")[
   O texto da monografia diz que a tarifa é "AD (ou a diferença entre $P_S$ e $P_P$)", que na figura mede #nf(f1.toll_AD_equals_PS_minus_PP, d: 0). As duas coincidem só quando o custo privado é plano entre $Q_S$ e $Q_P$; com a curva privada inclinada, como o próprio texto a descreve, a tarifa que leva o mercado a C é a pigouviana, #nf(f1.toll_pigou_at_QS, d: 0). A figura imprime as duas para que a diferença fique visível (observação deste repositório).
 ]
 
@@ -169,7 +169,7 @@ Antes das equações, o jogo. Há duas empresas aéreas, $i in {1, 2}$, servindo
 
 #v(2mm)
 #tab((auto, 1fr, auto), (left, left, left),
-  [símbolo], [o que é], [nome em `theory/model.py`],
+  [símbolo], [o que é], [nome em `src/airline_delays/theory/model.py`],
   [$f_1, f_2, F$], [voos da empresa 1, da 2, e o total $F = f_1 + f_2$], [`f1`, `f2`, `F`],
   [$p$], [preço total que o passageiro paga (demanda horizontal no caso-base)], [`p`],
   [$s$], [assentos por voo, todos vendidos], [`s`],
@@ -376,7 +376,7 @@ O artigo constrói explicitamente sobre o de 2016 — a separação entre concen
 
 == 20. Objeto teórico, regressor, sinal publicado
 
-O artigo de 2016 não estima o jogo; estima a sua consequência observável. Cada objeto do modelo tem um regressor, e cada regressor um sinal esperado e um sinal publicado. A tabela junta os três, com os coeficientes lidos de `replication/published.json` através de `model.json` (`bridge`): a coluna (2) da Tabela 3, o 2SGMM com as dummies de LCC, e a coluna (2) da Tabela 6, o OLS correspondente.
+O artigo de 2016 não estima o jogo; estima a sua consequência observável. Cada objeto do modelo tem um regressor, e cada regressor um sinal esperado e um sinal publicado. A tabela junta os três, com os coeficientes lidos de `src/airline_delays/estimation/published.json` através de `model.json` (`bridge`): a coluna (2) da Tabela 3, o 2SGMM com as dummies de LCC, e a coluna (2) da Tabela 6, o OLS correspondente.
 
 #let rotulos = (:)
 #for row in m.bridge.rows { rotulos.insert(row.variable, row.theory_object_pt) }
@@ -397,7 +397,7 @@ O artigo de 2016 não estima o jogo; estima a sua consequência observável. Cad
 
 #fig("fig11", [Os quatro regressores de estrutura de mercado: OLS (cinza) contra 2SGMM (colorido), coeficientes publicados. Nada é reestimado aqui.], w: 84%)
 
-*Como ler.* A concentração da rota (`rthhi`) é o poder de mercado $d' < 0$ da seção 17, e o artigo a lê como canal de concorrência e qualidade; a concentração do aeroporto (`maxcthhi`) é a internalização da seção 14, a parcela própria do dano marginal — e o seu sinal negativo no 2SGMM é a Proposição 1 vista nos dados. As duas concentrações são instrumentadas porque, no jogo, a reação da seguidora torna volumes, concentração e atraso determinados _em conjunto_ — é a razão econômica da instrumentação, e a inversão de sinal do OLS para o 2SGMM nas duas variáveis é o achado central do artigo (`replication/table6.py`). As dummies de LCC (`lcc`, `maxalccfu`) são a Pressuposição 3 tornada regressor: negativas, como a monografia esperava para as suas próprias dummies de Gol e Azul.
+*Como ler.* A concentração da rota (`rthhi`) é o poder de mercado $d' < 0$ da seção 17, e o artigo a lê como canal de concorrência e qualidade; a concentração do aeroporto (`maxcthhi`) é a internalização da seção 14, a parcela própria do dano marginal — e o seu sinal negativo no 2SGMM é a Proposição 1 vista nos dados. As duas concentrações são instrumentadas porque, no jogo, a reação da seguidora torna volumes, concentração e atraso determinados _em conjunto_ — é a razão econômica da instrumentação, e a inversão de sinal do OLS para o 2SGMM nas duas variáveis é o achado central do artigo (`src/airline_delays/estimation/table6.py`). As dummies de LCC (`lcc`, `maxalccfu`) são a Pressuposição 3 tornada regressor: negativas, como a monografia esperava para as suas próprias dummies de Gol e Azul.
 
 == 21. O que 2013 estimou e o que 2016 estimou
 
@@ -424,4 +424,4 @@ uv run pytest tests/test_theory.py -q
 typst compile --root . reports/theory.typ reports/build/theory.pdf
 ```
 
-O primeiro comando roda `theory/run.py`: verifica as identidades, resolve os exemplos, desenha as onze figuras no estilo SAPIANS e escreve `reports/theory/model.json`, `figures.json` e `results.md` — sem data nem commit, de modo que uma segunda execução não muda nada. O segundo roda os testes, incluindo o que falha quando o relatório commitado está defasado. O terceiro compila este documento com o pacote de design vendorizado em `reports/sapians/` (cópia MIT de `sapians-latex` v0.1.0); a fonte Inter é usada quando instalada, com Helvetica Neue ou Arial como reserva.
+O primeiro comando roda `src/airline_delays/theory/run.py`: verifica as identidades, resolve os exemplos, desenha as onze figuras no estilo SAPIANS e escreve `reports/theory/model.json`, `figures.json` e `results.md` — sem data nem commit, de modo que uma segunda execução não muda nada. O segundo roda os testes, incluindo o que falha quando o relatório commitado está defasado. O terceiro compila este documento com o pacote de design vendorizado em `reports/sapians/` (cópia MIT de `sapians-latex` v0.1.0); a fonte Inter é usada quando instalada, com Helvetica Neue ou Arial como reserva.

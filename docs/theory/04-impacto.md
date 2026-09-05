@@ -67,7 +67,7 @@ substituiu.
   no artigo e nunca publicada (M9), continua sendo a extensão 1 de
   [`../tutorial/13-propor-melhorias.md`](../tutorial/13-propor-melhorias.md).
 - **O HHI ponderado por passageiros** (`rthhi`, `maxcthhi`), nulo no
-  painel público, é a extensão 2 do mesmo módulo; sem ele, a ponte do
+  painel reconstruído, é a extensão 2 do mesmo módulo; sem ele, a ponte do
   capítulo 03 compara a construção da monografia (voos planejados) com a
   do artigo (passageiros) sem poder igualá-las.
 - **A pergunta da monografia** — a dummy da Azul no seu próprio aeroporto,
@@ -81,14 +81,14 @@ repositório, que é novo e não tem citações. Os números vêm de um projeto
 irmão e de uma classificação feita por leitura de passagens; a taxonomia e
 os critérios são dele (`citation-audit`, arquivo `METHOD.md` daquele
 repositório), não deste. Nada aqui é reproduzível por um comando deste
-repositório — M11 diz o mesmo, e é por isso que a nota honesta de M11
-vale também para esta página.
+repositório — M11 diz o mesmo, e é por isso que a seção "Limites e
+próximos passos" de M11 vale também para esta página.
 
 ## 5. Como conferir
 
 Não há comando a rodar aqui. Os números da seção 1 conferem-se contra o
 repositório de auditoria de citações linkado acima; os do capítulo 02
 contra `reports/theory/model.json` (`just theory`); os do capítulo 03
-contra `replication/published.json` e `reports/replication/private/summary.json`.
+contra `src/airline_delays/estimation/published.json` e `reports/replication/summary.json`.
 
 Referências completas em [bibliografia.md](bibliografia.md).

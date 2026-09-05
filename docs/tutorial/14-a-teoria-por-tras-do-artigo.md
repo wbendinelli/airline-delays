@@ -16,8 +16,8 @@ baixo custo na internalização das externalidades do congestionamento*
 Moraes e Alessandro Vinícius Marques de Oliveira) tem nove seções: a
 economia do congestionamento, uma revisão da literatura da internalização,
 um modelo de líder de Stackelberg segundo Brueckner e Van Dender (2008), e
-uma estimação em painel sobre uma base de laboratório. O seu resumo fecha
-assim:
+uma estimação em painel sobre a base de regressão da própria monografia
+(documento externo). O seu resumo fecha assim:
 
 > "a entrada da Gol, apesar do seu efeito ambíguo, ceteris paribus, não foi
 > suficiente para fazer com que seus rivais internalizassem os custos do
@@ -50,16 +50,17 @@ DOI e nunca redistribuído, como o de 2016.
 
 - [`../theory/README.md`](../theory/README.md) — a ordem de leitura dos
   quatro capítulos e da bibliografia.
-- `theory/model.py` — o modelo em `sympy`: equações (1)–(12), o declive de
+- `src/airline_delays/theory/model.py` — o modelo em `sympy`: equações (1)–(12), o declive de
   reação do seguidor e os seus limites, as tarifas da Proposição 1, os
   pontos de referência, a demanda inelástica; `IDENTITIES` e
   `ASSUMPTIONS`.
-- `theory/equilibrium.py`, `theory/figures.py`, `theory/bridge.py` — os
-  exemplos numéricos, as cinco figuras redesenhadas, a ponte com os sinais
-  publicados do artigo.
+- `src/airline_delays/theory/equilibrium.py`, `src/airline_delays/theory/figures.py`,
+  `src/airline_delays/theory/bridge.py` — os exemplos numéricos, as onze
+  figuras (as cinco da monografia redesenhadas e seis sobre o jogo e a ponte),
+  a ponte com os sinais publicados do artigo.
 - `reports/theory/model.json`, `reports/theory/figures.json`,
-  `reports/theory/results.md` e os cinco SVG em `reports/theory/figures/`
-  — tudo o que os capítulos citam, escrito por `theory/run.py`.
+  `reports/theory/results.md` e os onze SVG em `reports/theory/figures/`
+  — tudo o que os capítulos citam, escrito por `src/airline_delays/theory/run.py`.
 - `tests/test_theory.py` — cada identidade, os exemplos contra as formas
   fechadas, as figuras contra as suas curvas, e o relatório commitado contra
   o que o código produz hoje.
@@ -82,21 +83,21 @@ relatório não tem data nem commit, é função pura do código. O segundo
 comando passa inteiro, incluindo
 `test_leader_toll_at_symmetric_optimum_is_three_quarters_of_mcd_under_linear_cost`,
 que fixa a fração 3/4, e o teste de *staleness*, que falharia se alguém
-editasse `theory/` sem rodar `just theory`.
+editasse `src/airline_delays/theory/` sem rodar `just theory`.
 
 ## Exercício
 
 Derive à mão, das condições (7) e (9) do capítulo 02, a relação
 $f_1 = f_2/(1-\lambda)$ — e conclua por que o líder voa pelo menos o dobro
-do seguidor. Depois abra `theory/families.py`, troque localmente o custo
-quadrático (`QuadraticCost`) por um mais curvo (por exemplo `q = 4.0`), rode
-`uv run python -m theory.run --outdir /tmp/teoria` e leia em
+do seguidor. Depois abra `src/airline_delays/theory/families.py`, troque
+localmente o custo quadrático (`QuadraticCost`) por um mais curvo (por exemplo
+`q = 4.0`), rode `uv run airline-delays theory --outdir /tmp/teoria` e leia em
 `/tmp/teoria/model.json` os valores de `lambda_star` e `T1_star_over_MCD`
 do exemplo quadrático. Para que lado a tarifa do líder se move quando o
 custo marginal do congestionamento cresce mais depressa, e por quê? Não
 commite a mudança: o teste de *staleness* existe para isso.
 
-## Nota honesta
+## Limites e próximos passos
 
 A Proposição 1 é de Brueckner e Van Dender (2008); a monografia a reenuncia,
 e este repositório a deriva e a afina — o líder paga exatamente três

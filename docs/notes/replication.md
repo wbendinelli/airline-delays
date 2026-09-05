@@ -4,60 +4,46 @@ Nota de pesquisa em português (exceção deliberada ao inglês do repositório 
 `CLAUDE.md`, `DECISIONS.md` ADR-0006). Descreve **como** cada tabela publicada de
 Bendinelli, Bettini e Oliveira (2016, *Transportation Research Part A* 85, 39–52,
 [`10.1016/j.tra.2016.01.001`](https://doi.org/10.1016/j.tra.2016.01.001)) é
-montada aqui, **o que bate**, **o que não bate** e **por quê**.
+montada aqui, **o que bate** e **o que fica registrado ao lado**.
 
 Nenhum número desta nota é digitado à mão: todos vêm de
-`reports/replication/private/{results,summary,sensitivity}.json` e de
-`reports/replication/private/tables.md` (a execução pública escreve em `reports/replication/public/`), escritos por
-`uv run python -m replication.run`. A lista formal de divergências está em
-[`docs/declared-differences.md`](../declared-differences.md); o relatório em PDF
-é [`reports/replication.typ`](../../reports/replication.typ).
+`reports/replication/{results,summary,sensitivity}.json` e de
+`reports/replication/tables.md`, escritos por `airline-delays estimate`, ou de
+`reports/summary.json`. O relatório em PDF é
+[`reports/replication.typ`](../../reports/replication.typ).
 
-## 1. Duas fontes, um caminho de código
+## 1. Uma fonte, um caminho de código
 
-`replication/common.py` expõe um interruptor, `Source`:
+A entrada da estimação é o painel de estimação do artigo — o painel sobre o
+qual os autores estimaram as Tabelas 2–7, publicado neste repositório em
+`data/analysis/article_panel_route_month.parquet` (ADR-0020): 24.589
+rota-meses × 52 colunas, 209 rotas, 144 meses de 2002m1 a 2013m12, curado uma
+vez a partir da base final dos autores (dezembro de 2015) por
+`airline-delays article-panel`. O manifesto
+`data/analysis/article_panel_manifest.json` registra o sha256 da base de origem
+e dos dois arquivos publicados, e a contagem de nulos por coluna.
 
-* **`private`** — o painel final dos autores, alcançado *só* pela variável de
-  ambiente `AIRLINE_DELAYS_PRIVATE_DIR`. Nada dele é copiado para o repositório,
-  nada dele é versionado (`SECURITY.md`, gancho `no-private-data`). É o
-  **gabarito**: é a base de onde saíram as tabelas publicadas, então uma
-  diferença contra ela é uma diferença da *nossa* econometria, não dos dados.
-* **`public`** — `data/analysis/panel_route_month.parquet`, reconstruído pelo
-  próprio repositório a partir do VRA bruto da ANAC. Se o arquivo não existir,
-  `PublicPanelNotBuilt` nomeia o caminho e o comando que o constrói
-  (`just panel`), em vez de estourar dentro do pandas. Hoje o painel existe
-  (31.313 linhas, 310 rotas, os 168 meses de 2000m1 a 2013m12): restrito à janela
-  2002m1–2013m12 do artigo e passado pelos filtros dos do-files, dá **21.566
-  rota-mês em 207 rotas**, e a Tabela 2 sai em 7 das 13 variáveis, seis delas
-  perto do publicado (`fsc_oddsarr` com média −1,3927 contra −1,38 publicado — o
-  ADR-0013 corrigiu esta coluna para o conjunto de empresas do artigo, e a
-  variante por classe é `fscc_oddsarr` — e a regressanda `MINS` com 6,8632 contra
-  7,16, que antes do corte simétrico do ADR-0015 saía em −1,3404 com desvio
-  padrão de 125).
-  O que falta — `maxprdel`, `cshare`,
-  `dailyflcong`, `dailyflncong`, os sete instrumentos tipo Hausman, e `rthhi`/
-  `maxcthhi`, que existem como coluna mas estão inteiramente nulas — impede as
-  cinco tabelas de regressão, e é **reportado por escrito**, nunca substituído
-  por coluna parecida (o painel traz `rthhi_flights` e `maxcthhi_flights`, que
-  são outra definição). Ver
-  [`docs/declared-differences.md`](../declared-differences.md).
+Sobre ele, `airline-delays estimate` aplica os filtros dos do-files na ordem em
+que aparecem (`reports/summary.json`, bloco `estimation.sample`):
 
-O contrato do painel público é `replication.common.REQUIRED_COLUMNS`: os nomes de
-variável do próprio artigo, porque este módulo é uma porta de uma especificação
-em Stata e são esses nomes que identificam cada regressor nas tabelas
-publicadas. Um painel incompleto **carrega no `attrs` a lista exata do que
-falta**, e `PublicPanelIncomplete` a nomeia no instante em que uma coluna do
-modelo precisa daquilo — de modo que a execução pública estima o que dá e
-declara por escrito o que não dá. Quando o painel completar, nada aqui muda:
-basta o arquivo estar no caminho padrão, ou `AIRLINE_DELAYS_PANEL` apontar para
-um. Um painel que escreve uma coluna com
-**outro nome** é aceito (`route` no lugar de `od`; as regiões saem dos códigos de
-nó via `data/external/nodes.csv`); um painel que traz algo *parecido* com uma
-variável publicada, não — a coluna conta como ausente.
-`tests/test_replication_public.py` roda a Tabela 2 e a coluna 1 da Tabela 3 de
-ponta a ponta sobre um painel sintético construído para esse contrato — filtros,
-dummies, poda de colinearidade, 2SGMM com kernel HAC, J de Hansen e
-Kleibergen–Paap — e verifica, no painel real, que o que falta é nomeado.
+| Passo | O que faz | Observações | Rotas |
+|---|---|---|---|
+| painel publicado | 2002m1–2013m12, todas as rotas | 24.589 | 209 |
+| `drop if fsc_oddsarr==.` | remove a rota-mês sem o regressando das colunas (1) e (2) | 20.655 | — |
+| `findsingletons k ; drop if _count_k<=5` | remove a rota com cinco ou menos observações | 20.630 | 190 |
+
+O contrato do painel é `REQUIRED_COLUMNS`, em
+`src/airline_delays/estimation/specification.py`: os nomes de variável do próprio
+artigo, porque este módulo é uma porta de uma especificação em Stata e são
+esses nomes que identificam cada regressor nas tabelas publicadas. A opção
+`--panel` aceita outro painel de rota-mês que traga esse contrato; um painel
+que não traga uma coluna é recusado por `PanelIncomplete`
+(`src/airline_delays/estimation/loader.py`), que nomeia o que falta. Uma coluna
+que mede algo *parecido* com uma variável publicada não é substituta: nenhum
+apelido é mapeado. `tests/test_estimation.py` roda os filtros, a Tabela 2 e a
+coluna (1) da Tabela 3 sobre um painel sintético construído para esse
+contrato, e confere, no painel publicado, que os filtros devolvem a amostra de
+estimação.
 
 ## 2. A amostra, na ordem exata dos do-files
 
@@ -68,8 +54,8 @@ projbase 18 ; drop fe_* ; drop sz_* ; drop if fsc_oddsarr==. ;
 findsingletons k ; drop if _count_k<=5 ; panelset ; effects k ; dummymonthreg
 ```
 
-Reproduzido em `common.build_sample()`. Dois detalhes que parecem redundância e
-não são:
+Reproduzido em `build_sample()` (`src/airline_delays/estimation/sample.py`).
+Dois detalhes que parecem redundância e não são:
 
 1. **O filtro morde pelo regressando das colunas 1–2, não pelo da coluna.**
    `fsc_minsarr` e `fsc_minsp15arr` nunca são *missing*; quem corta é
@@ -83,13 +69,12 @@ não são:
    identicamente nulas.
 
 As dummies de tempo (`t_1..t_144`) e as 60 sazonais região×mês (`sz_*`) são
-**reconstruídas** a partir de `ym`, `o_region` e `d_region` em
-`common.add_dummies()`, em vez de lidas do painel — é o que faz o caminho
-público e o privado serem o mesmo código. A regra é
-`sz_{regiao}_m_{mes} = 1` se o mês é `mes` **e** a rota toca a região; cada linha
-acende uma ou duas dummies. Conferido contra as 60 colunas `sz_*` e as 144
-colunas `t_*` gravadas no painel privado: **concordância exata nas 24.589
-linhas**.
+**reconstruídas** a partir de `ym`, `o_region` e `d_region` em `add_dummies()`
+(`src/airline_delays/estimation/loader.py`), em vez de lidas do painel. A regra
+é `sz_{regiao}_m_{mes} = 1` se o mês é `mes` **e** a rota toca a região; cada
+linha acende uma ou duas dummies. A base dos autores trazia as 1.052 dummies
+geradas; a curadoria não as publicou porque o código as reproduz linha a linha
+(`data/analysis/article_panel_manifest.json`, `columns_excluded`).
 
 ## 3. As decisões de estimação, e a evidência de cada uma
 
@@ -97,10 +82,14 @@ linhas**.
 |---|---|---|
 | Kernel | Bartlett, `bandwidth=4` | `linearmodels` pesa a defasagem *j* por `1 − j/(bw+1)`; o `ivreg2` com `bw(5)` pesa por `1 − j/5`, j = 0..4. **4 aqui é 5 lá.** E `bw(5)` é o `T^(1/3)` com `T = 144` que o artigo declara. |
 | Correção de amostra finita | `debiased=True` | O `ivreg2` sem `small` divide por N; com `small`, por N−K, e só então imprime uma *F statistic* — que aparece nas tabelas publicadas. |
-| Dummies sazonais | **entram** | O `dummymonthreg` as cria e o `gregcontrols` não as menciona (§4.6 da especificação); o `.ado` que decidiria não foi entregue. O artigo fala em *seasonality controls*, e incluí-las aproxima mensuravelmente os coeficientes. A escolha é declarada e medida nos dois sentidos (§6). |
+| Dummies sazonais | **entram** | O `dummymonthreg` as cria e o `gregcontrols` não as menciona (§4.6 da especificação); o `.ado` que decidiria não foi entregue. O artigo fala em *seasonality controls*, e incluí-las aproxima mensuravelmente os coeficientes. A escolha é declarada e medida nos dois sentidos (§7). |
 | Efeitos fixos | explícitos | O do-file não usa `partial()` nem `xtivreg2`. Entram 189 dummies de rota (uma omitida contra a constante) e `t_2..t_144`; a colinearidade exata cai por QR revelador de posto. |
 | Endógenas | só `rthhi` e `maxcthhi` | As dummies de LCC são **exógenas**. Isso contradiz a introdução do artigo, que fala em instrumentar *"all of the market structure variables"*, mas o código é inequívoco — e é o que reproduz os graus de liberdade publicados do J. |
 | Instrumentos | duas listas | 5 instrumentos no bloco ODDS (J com 3 g.l.), 3 no bloco MINS (J com 1 g.l.). **Não unificar.** Invertendo os pares (J, p-valor) publicados, os graus de liberdade implícitos batem exatamente com as listas dos do-files — é a evidência mais forte de que os do-files entregues são os que geraram as tabelas. |
+
+As constantes vivem em `src/airline_delays/estimation/specification.py`:
+`INSTRUMENTS_ODDS`, `INSTRUMENTS_MINS`, `ENDOG`, `HAC_BANDWIDTH`, `DEBIASED`,
+`WITH_SEASONALITY`, `SINGLETON_CUTOFF`.
 
 ## 4. Tabela por tabela
 
@@ -110,7 +99,7 @@ linhas**.
   −9,8000/131,9118 contra −9,80/131,91). **É isso que prova a identificação de
   cada variável do código com a coluna do artigo**, em vez de supô-la. O
   triângulo de correlações fecha com diferença absoluta mediana de 0,002 e máxima
-  de 0,012 em 91 células.
+  de 0,012 em 91 células (`reports/replication/tables.md`).
 * **Tabela 3 (2SGMM, 6 colunas).** O modelo de base: três regressandos (ODDS,
   MINS, MINS > 15) × duas especificações (sem e com as dummies de LCC).
 * **Tabela 4 (robustez, 7 colunas, todas ODDS).** O mapa de omissões vem do
@@ -122,9 +111,10 @@ linhas**.
   voo.
 * **Tabela 5 (LIML).** Mesma amostra, mesmos regressores, estimador diferente.
   O `linearmodels.iv.IVLIML` expõe Sargan, não o J de Hansen; aqui o J vem de
-  `common.hansen_j()`, que avalia a matriz de ponderação ótima HAC nos resíduos
-  do LIML — que é o que o `ivreg2` imprime para qualquer estimador robusto, e é
-  por isso que o J publicado da Tabela 5 é quase igual ao da Tabela 3.
+  `hansen_j()` (`src/airline_delays/estimation/estimators.py`), que avalia a
+  matriz de ponderação ótima HAC nos resíduos do LIML — que é o que o `ivreg2`
+  imprime para qualquer estimador robusto, e é por isso que o J publicado da
+  Tabela 5 é quase igual ao da Tabela 3.
 * **Tabela 6 (OLS).** A demonstração do próprio artigo de que ignorar a
   endogeneidade **inverte o sinal dos dois HHIs**. Replica sem exceção: em ODDS
   o `rthhi` sai negativo no OLS e positivo no 2SGMM, e o `maxcthhi` faz o
@@ -143,8 +133,9 @@ Olea–Pflueger para **uma** endógena; o `ivmodels` tem um teste de posto de
 Cragg–Donald e o LM de Kleibergen (2002) **para β**, que é teste de parâmetro,
 não de posto. Fora do Python: `ranktest` (Stata) e `ivreg2r` (R).
 
-`replication/kp.py` a escreve a partir do artigo. Com `Ỹ` e `Z̃` as endógenas e
-os instrumentos excluídos depois de parcializar os regressores incluídos:
+`src/airline_delays/estimation/kp.py` a escreve a partir do artigo. Com `Ỹ` e
+`Z̃` as endógenas e os instrumentos excluídos depois de parcializar os
+regressores incluídos:
 
 ```
 Π̂    = (Z̃′Z̃)⁻¹ Z̃′Ỹ
@@ -176,91 +167,104 @@ fechada:
 
 com λ a menor correlação canônica ao quadrado. As duas identidades valem **até a
 precisão de máquina**, para vários formatos de problema, contra
-`replication.kp.cragg_donald()` — que passa por QR de cada bloco e uma SVD das
-projeções e **não compartilha código** com `kp_rk` (raiz quadrada simétrica,
+`cragg_donald()` do mesmo módulo — que passa por QR de cada bloco e uma SVD das
+projeções e **não compartilha código** com `kp_rk()` (raiz quadrada simétrica,
 produto de Kronecker, pseudo-inversa). Se a normalização de `Θ̂` estivesse
-errada, nenhuma das duas fecharia. Está em `tests/test_replication_kp.py`.
+errada, nenhuma das duas fecharia. Está em `tests/test_estimation_kp.py`.
 
-Contra os valores publicados: nas colunas ODDS a implementação acerta o nível
-(+3,3% a +6,4% no rk LM) e a estrutura interna — a razão Wald/LM implícita no
-publicado reaparece na réplica. Nas colunas MINS a distância é maior (+18,7% a
-+31,0%), porque com 3 instrumentos e 2 endógenas o sistema é quase exatamente
-identificado e a estatística fica muito sensível ao N.
+Contra os valores publicados (`reports/replication/tables.md`, linha "KP
+statistic (rk LM)"): nas colunas ODDS a implementação acerta o nível (+3,3% a
++6,4%) e a estrutura interna — a razão Wald/LM implícita no publicado reaparece
+na réplica. Nas colunas MINS a distância é maior (+18,7% a +31,0%), porque com 3
+instrumentos e 2 endógenas o sistema é quase exatamente identificado e a
+estatística fica muito sensível ao N.
 
-## 6. O que bate, o que não bate
+## 6. O que bate
 
-**Bate.** 306 coeficientes comparados nas cinco tabelas de regressão: **302
-sinais iguais**, 259 (85%) a menos de meio erro-padrão publicado, maior desvio
-isolado 0,94 erro-padrão. Nas 24 colunas que reportam J de Hansen, **nenhuma
-muda de veredito** a 5%: as mesmas 22 não rejeitam ortogonalidade e as mesmas 2
-rejeitam. A inversão de sinal dos HHIs entre OLS e 2SGMM — o argumento central do
-artigo — é uma afirmação sobre 12 comparações (2 termos HHI x 6 colunas): a
-inversão de fato ocorre em **4** delas, as colunas (1) e (2), regressando
-`ODDS`, e as 4 replicam. Nas outras 8 (`MINS`, `MINS > 15`) OLS e 2SGMM já
-saem com o **mesmo** sinal na tabela publicada, e só a magnitude muda; a
-réplica concorda com o artigo sobre *haver ou não* inversão em **12 de 12**
-(calculado por `replication/run.py` no campo `hhi_sign_inversions` de
-`reports/replication/private/summary.json`).
+O placar de `reports/summary.json` (bloco `estimation`), calculado por
+`airline-delays estimate` a partir de `reports/replication/results.json`:
 
-**Não bate**, e está declarado em
-[`docs/declared-differences.md`](../declared-differences.md): o N (+5,31% nas
-chegadas, +5,35% nas partidas, sistematicamente, sem que nenhum filtro visível
-nos do-files produza os números publicados); o J, que muda de tamanho sem mudar
-de conclusão; o R² e o RMSE das colunas MINS, em que a réplica ajusta **melhor**
-que o publicado; e a *F statistic*, que não é reproduzida de propósito — o F do
-`ivreg2` é o Wald conjunto de ~340 regressores sob convenção própria, e preencher
-a célula seria comparar coisas diferentes.
+| Medida | Valor | Chave |
+|---|---|---|
+| coeficientes comparados nas cinco tabelas de regressão | 306 | `totals.coefficients` |
+| com o mesmo sinal do publicado | 302 | `totals.sign_agreement` |
+| a menos de meio erro-padrão publicado | 259 (84,6%) | `totals.within_half_se`, `totals.within_half_se_pct` |
+| maior desvio isolado, em erros-padrão publicados | 0,94 | `totals.max_difference_in_se` |
+| comparações da inversão de sinal dos HHI (OLS × 2SGMM) | 12 | `hhi.n_comparisons` |
+| inversões publicadas; reproduzidas | 4; 4 | `hhi.n_inverted_published`, `hhi.n_inversion_replicates` |
+| concordância sobre haver ou não inversão | 12 de 12 | `hhi.n_pattern_agrees` |
+| razão mediana dos erros-padrão, Tabela 3 | 0,946 | `tables.table3.median_se_ratio` |
 
-Os erros-padrão saem sistematicamente **menores** (razão mediana 0,94 na
-Tabela 3; 51 de 60 abaixo do publicado), o que é exatamente o que uma amostra
-5,3% maior produz.
+A inversão de sinal dos HHIs entre OLS e 2SGMM — o argumento central do
+artigo — ocorre nas colunas (1) e (2), regressando `ODDS`, e as 4 replicam.
+Nas outras 8 (`MINS`, `MINS > 15`) OLS e 2SGMM já saem com o **mesmo** sinal
+na tabela publicada, e só a magnitude muda (`reports/replication/tables.md`,
+"HHI sign inversion"). Nas 24 colunas que reportam J de Hansen, nenhuma muda de
+veredito a 5%: as mesmas 22 não rejeitam ortogonalidade e as mesmas 2 rejeitam
+(`reports/replication/results.json`, campo `j_p` de cada coluna). Os
+erros-padrão reestimados saem sistematicamente abaixo dos publicados: na
+Tabela 3, 51 dos 60 (`results.json`, `replicated_se` contra `published_se`).
 
-## 7. Sensibilidade (ADR-0008)
+**Nota sobre a amostra.** As tabelas publicadas reportam N entre 19.408 e
+19.590 (`estimation.n_obs_published_range`); a reestimação sobre o painel
+publicado, com os filtros da seção 2, dá N entre 20.447 e 20.630
+(`estimation.n_obs_replicated_range`), 5,3% a mais
+(`estimation.n_obs_excess_pct`). Os dois valores ficam registrados lado a lado
+em cada coluna de `reports/replication/tables.md` e em
+`reports/replication/summary.json` (`n_obs`); nenhum filtro é reconstruído
+para aproximá-los (ADR-0020).
 
-Dois eixos, e eles não são simétricos.
+**Estatísticas não comparáveis.** A *F statistic* das tabelas publicadas é o
+Wald conjunto do `ivreg2` sobre cerca de 340 regressores, sob convenção
+própria; o análogo do `linearmodels` não mede a mesma coisa, e a célula fica
+vazia de propósito. O J de Hansen, o R² ajustado e o RMSE de cada coluna estão
+em `reports/replication/tables.md`, publicado e reestimado lado a lado.
 
-* **Dummies sazonais** — puro interruptor de especificação, sempre disponível.
-  Move `rthhi` na coluna 1 da Tabela 3 de 0,8843 (com) para 0,8661 (sem);
-  `maxcthhi`, de −1,4551 para −1,4078. **Não muda nenhum sinal nem nenhuma
-  conclusão.**
-* **Limiar de *outlier*** — 313,25 min (padrão da ADR-0008), 117,10 min e sem
-  corte. O limiar se aplica ao atraso **no nível do voo**, antes de agregar, de
-  modo que variá-lo exige que a fonte ofereça o regressando reconstruído. O
-  painel privado é entregue já agregado, sob uma regra que seus autores nunca
-  documentaram: nessa fonte as duas linhas alternativas aparecem como
-  **indisponíveis**, com o motivo escrito, e não como aproximação. Quando o
-  painel público trouxer as variantes sufixadas
-  (`replication.common.regressand_column`, p.ex. `fsc_oddsarr__out11710`), as
-  linhas se preenchem sozinhas.
+## 7. Sensibilidade
 
-Declarar a indisponibilidade é o comportamento correto aqui: a alternativa seria
-inventar um limiar sobre dados já agregados, que é exatamente o tipo de ajuste
-que `CLAUDE.md` proíbe.
+Um eixo: as 60 dummies sazonais região×mês, interruptor puro de especificação
+(`reports/replication/sensitivity.json`). Nas colunas (1) e (2) da Tabela 3,
+`rthhi` vai de 0,8843 para 0,8661 e de 0,9028 para 0,8876 sem elas;
+`maxcthhi`, de −1,4551 para −1,4078 e de −1,4839 para −1,4371. Nenhum sinal
+muda.
 
-## 8. O que não foi tentado
+O limiar de *outlier* do atraso (ADR-0008) não varia aqui: ele age no nível do
+voo, antes de agregar, e o painel de estimação do artigo chega agregado. Esse
+parâmetro é do pipeline de reconstrução (`docs/notes/features.md`).
 
-* **Reconstruir o painel final dos autores.** Não existe script entre os brutos e
-  a base final; 14 arquivos intermediários não foram entregues.
-* **Reconstruir os instrumentos tipo Hausman.** Falta a matriz de distâncias
-  entre as 27 cidades, a regra de "cidade próxima" e a fórmula dos pesos.
+## 8. Escopo
+
+* **Os instrumentos são colunas do painel publicado.** Os sete instrumentos
+  do tipo Hausman (`h1_maxcthhi`, `h2_maxcthhi`, `h3_maxcthhi`,
+  `lnh1_maxcthhi`, `l1h1_maxcthhi`, `l1h2_maxcthhi`, `h2_rthhi`) são a
+  construção espacial dos autores e entram na estimação como estão;
+  `src/airline_delays/schema/columns.py` documenta cada um na camada
+  `article_panel`.
 * **`_tab7.do`.** Troca `maxcthhi` por um HHI de cidade ponderado por
-  passageiros e não corresponde a tabela publicada alguma.
+  passageiros e não corresponde a tabela publicada alguma; não é reestimado.
+* **A equação (22) da monografia de 2013** responde a outra pergunta, em outra
+  unidade, e não é reestimada (`docs/notes/monografia-2013.md`).
 
 ## Como rodar
 
 ```bash
-# modo privado (exige a variável de ambiente; nunca escreva o caminho no código)
-AIRLINE_DELAYS_PRIVATE_DIR=... uv run python -m replication.run --source private
-
-# modo público (quando o painel existir)
-uv run python -m replication.run --source public
+# tudo: as seis tabelas, o placar e a grade de sensibilidade (menos de um minuto)
+uv run airline-delays estimate
 
 # uma tabela só
-uv run python -m replication.run --source private --tables table2,table3
+uv run airline-delays estimate --tables table2,table3
 
-# reextrair os números publicados do texto do artigo
-uv run python -m replication.published --source-text /caminho/para/airline.txt
+# outro painel que traga o contrato REQUIRED_COLUMNS, escrevendo fora de reports/
+uv run airline-delays estimate --panel /caminho/para/outro_painel.parquet --outdir /tmp/saida
 
-# relatório em PDF
-typst compile reports/replication.typ reports/build/replication.pdf
+# refazer summary.json e tables.md a partir de results.json, sem reestimar
+uv run airline-delays estimate --rescore
+
+# relatório em PDF (também `just report`)
+typst compile --root . reports/replication.typ reports/build/replication.pdf
 ```
+
+`just estimate` é a mesma coisa que o primeiro comando. Os números publicados
+são reextraídos do texto do artigo por
+`src/airline_delays/estimation/published.py` (`--source-text`), que escreve
+`src/airline_delays/estimation/published.json`.

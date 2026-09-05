@@ -2,18 +2,19 @@
 
 Nota de pesquisa, em português (ADR-0006: código e nomes de coluna em inglês, notas
 e relatórios em português). Descreve o que os arquivos brutos da ANAC realmente são,
-ano a ano, e o que `src/vra/stage.py` faz com cada campo. Todos os números foram
-medidos nos arquivos baixados, não estimados; a contagem exata por ano está em
-`data/staged/manifest.json`.
+ano a ano, e o que `src/airline_delays/staging/build.py` faz com cada campo. Todos os
+números foram medidos nos arquivos baixados, não estimados; a contagem exata por ano
+está em `data/staged/manifest.json`.
 
 Fonte: `https://siros.anac.gov.br/siros/registros/diversos/vra/{ano}/`, listagem de
-diretório IIS. A listagem é a autoridade sobre quais arquivos existem — `vra fetch`
-lê o índice e só cai nos padrões de nome conhecidos se o índice não abrir.
+diretório IIS. A listagem é a autoridade sobre quais arquivos existem —
+`airline-delays fetch` lê o índice e só cai nos padrões de nome conhecidos se o
+índice não abrir.
 
 ## 1. Dois layouts, não um
 
-Medido com `vra layouts` (que roda `vra.io.inspect_file` no primeiro arquivo de
-cada ano). **Não são 12 nem 17 colunas em toda a série: são 12 até 2009 e 20 de
+Medido com `airline-delays layouts` (que roda `inspect_file()`, de
+`src/airline_delays/ingest/layouts.py`, no primeiro arquivo de cada ano). **Não são 12 nem 17 colunas em toda a série: são 12 até 2009 e 20 de
 2010 em diante.**
 
 | Anos | Nome interno | Colunas | Separador | Encoding | Fim de linha | Aspas | Justificativa |
@@ -34,7 +35,8 @@ Chegada Prevista,Chegada Real,Situação Voo,Código Justificativa
 ```
 
 O erro de digitação "Aeródromoo" está no arquivo da ANAC e é preservado em
-`vra.io.LAYOUT_LEGACY.columns` — renomear aqui esconderia o que o arquivo é.
+`LAYOUT_LEGACY.columns` (`src/airline_delays/ingest/layouts.py`) — renomear aqui
+esconderia o que o arquivo é.
 O campo do DI chama-se "Código Autorização (DI)", não "Código DI".
 
 ### 1.2 Layout novo (2010–2013), cabeçalho literal
@@ -53,8 +55,8 @@ São **20** campos, não os 19 que a página de metadados da ANAC lista: há uma
 **A ordem das colunas muda entre os dois layouts.** No layout novo o aeroporto de
 destino fica *entre* os horários de partida e os de chegada. Uma leitura posicional
 com a ordem antiga colocaria um horário dentro de `dest_icao` sem erro nenhum — por
-isso `tests/test_stage.py::TestWideLayout::test_the_column_order_of_this_layout_is_respected`
-exige que mais de 99% dos códigos ICAO tenham quatro letras.
+isso `TestWideLayout::test_the_column_order_of_this_layout_is_respected`, em
+`tests/test_staging.py`, exige que mais de 99% dos códigos ICAO tenham quatro letras.
 
 ### 1.3 Quirks medidos
 
@@ -66,8 +68,8 @@ exige que mais de 99% dos códigos ICAO tenham quatro letras.
 * **Sem separador sobrando no fim da linha.** O histograma de contagem de campos por
   linha tem um único valor em cada layout (12 e 20).
 * **Fim de linha muda com o layout**: CRLF em 2000–2009, LF em 2010–2013. Medido com
-  `vra layouts`, não presumido — a primeira versão desta nota declarava CRLF para os
-  dois e estava errada.
+  `airline-delays layouts`, não presumido — a primeira versão desta nota declarava
+  CRLF para os dois e estava errada.
 * **Datas** em `DD/MM/AAAA HH:MM` nos dois layouts, horário de Brasília, sem segundos
   e sem fuso.
 * **Ano errado na origem.** Existem carimbos com o ano digitado errado (por exemplo
@@ -114,7 +116,7 @@ Colunas derivadas: `flight_date` (data da partida prevista, com fallback na part
 real), `year`, `month`, `ym`, `origin_node`, `dest_node`, `route` (ADR-0001),
 `dep_delay_min`, `arr_delay_min` (ADR-0008), `sched_block_min`, `actual_block_min`,
 `dep_hour`, `arr_hour`, `dow`, `universe_repl`, `universe_ml`, `is_realized`
-(ADR-0002). Definição de cada uma em `src/vra/registry.py`.
+(ADR-0002). Definição de cada uma em `src/airline_delays/schema/columns.py`.
 
 ## 3. Justificativa: código em 2000–2009, texto em 2010–2013
 
@@ -125,8 +127,8 @@ ou o literal `N/A` quando o voo foi realizado sem ocorrência. De 2010 em diante
 mesmo campo traz a **descrição por extenso**: `CONEXÃO DE AERONAVE`,
 `AEROPORTO COM RESTRIÇÕES OPERACIONAIS`, `ATRASOS NÃO ESPECÍFICOS, OUTROS`.
 
-`stage.py` remapeia o texto para o código com a tabela do anexo 2 da IAC 1504
-(`IAC1504_CODES`, 49 códigos transcritos do PDF da ANAC). A comparação é feita sobre
+`src/airline_delays/staging/clean.py` remapeia o texto para o código com a tabela do
+anexo 2 da IAC 1504 (`IAC1504_CODES`, 49 códigos transcritos do PDF da ANAC). A comparação é feita sobre
 uma chave normalizada — acentos removidos, tudo em maiúsculas, qualquer sequência de
 pontuação ou espaço colapsada em um espaço — porque a pontuação do arquivo difere da
 do PDF (vírgula onde o PDF tem travessão, por exemplo). A normalização existe em
@@ -180,21 +182,11 @@ médias e proporções de atraso calculadas sobre `dep_delay_min`/`arr_delay_min
 é fortemente enviesada para atraso. Em 2002 a mediana do atraso de chegada nessa
 amostra é de 35 minutos.
 
-**O gabarito privado responde qual leitura ele adotou.** A reconciliação contra o
-`vra.dta` de 2019 (`reports/reconciliation.md`, seção 5) mediu, numa amostra
-determinística de 184.522 voos casados: em **72.381** deles o staged não tem partida
-real e o `.dta` tem; dessas, **72.375 (99,99%)** trazem no `.dta` exatamente o horário
-previsto. Idem para a chegada (72.388 e 72.382). Ou seja, a safra de 2019 **tratou o
-campo vazio como "operou no horário previsto"**, e é isso — não perda de campo na
-extração de hoje — que explica a concordância de apenas 60% em `actual_dep` e
-`actual_arr` na tabela coluna a coluna.
-
-Consistente com isso, o `delarrive` do `.dta` é `max(chegreal − chegprog, 0)` em
-99,94% das 10.774.607 linhas comparáveis, sem nenhum valor negativo: a safra de 2019
-truncava o atraso em zero, ao contrário do que este repositório faz (ADR-0008).
-
-Quem quiser tratar vazio como pontual deve fazê-lo explicitamente, numa camada acima,
-e declarar a escolha; ela muda toda média de atraso de 2000–2009.
+O painel de estimação do artigo adota a leitura "vazio = pontual" (ADR-0012); o
+staging mantém o nulo. Quem quiser tratar vazio como pontual deve fazê-lo
+explicitamente, numa camada acima, e declarar a escolha; ela muda toda média de
+atraso de 2000–2009. É o que o painel reconstruído faz, com o parâmetro
+`empty_actual_means_on_time` (`docs/notes/features.md`, seção 2).
 
 **E é o que a ADR-0017 passou a fazer, fora do staging.** Um colegiado de três
 revisores (ADR-0010, pareceres em `docs/notes/colegiado-adr0012.md`) leu a IAC 1504 e
@@ -251,9 +243,9 @@ universo de replicação**; as de fronteira estão: 494 linhas ±1 ano, mais 18 
 datadas de janeiro de 2014 nos arquivos de 2013.
 
 Foi exatamente essa divergência que produziu as chaves duplicadas da ADR-0016. O
-consumidor não pode ler o diretório como se fosse o ano: `vra.features.build_fact`
-seleciona `WHERE year = <alvo>` sobre a árvore inteira
-(`vra.features.year_source_sql`), afirma a unicidade das chaves e reporta as linhas
+consumidor não pode ler o diretório como se fosse o ano: `build_fact()`
+(`src/airline_delays/fact/build.py`) seleciona `WHERE year = <alvo>` sobre a árvore
+inteira (`year_source_sql()`), afirma a unicidade das chaves e reporta as linhas
 datadas fora da janela construída em `rows_outside_years`
 (`data/analysis/manifest.json`). As 18 linhas de 2014-01 ficam de fora do painel,
 que passa a ter exatamente 168 meses, 2000m1 a 2013m12.
@@ -268,13 +260,14 @@ semana; `int16` para ano e tempos de bloco; `int32` para `ym` e número do voo;
 Uma ressalva de formato: o registro declara `timestamp[s]` e o DuckDB carrega
 `TIMESTAMP_S`, mas o Parquet **não tem unidade de segundo** — as menores unidades do
 formato são milissegundos e microssegundos —, então o arquivo grava
-`timestamp[us]`. `registry.dtype_matches` aceita as duas, e nenhuma precisão é
-perdida: a fonte tem resolução de minuto.
+`timestamp[us]`. `dtype_matches()` (`src/airline_delays/schema/columns.py`) aceita as
+duas, e nenhuma precisão é perdida: a fonte tem resolução de minuto.
 
 O particionamento é pelo **ano do arquivo de origem**, e a coluna `year` é derivada de
 `flight_date`. As duas quase sempre coincidem; `rows_year_mismatch` no manifesto conta
-as exceções, e a seção 5 mostra o que elas causaram. Por isso `stage.read_staged` lê com
-`hive_partitioning=false`: senão o nome do diretório `year=AAAA` criaria uma segunda
+as exceções, e a seção 5 mostra o que elas causaram. Por isso `read_staged()`
+(`src/airline_delays/staging/build.py`) lê com `hive_partitioning=false`: senão o nome
+do diretório `year=AAAA` criaria uma segunda
 coluna `year` em conflito com a derivada — e o descasamento ficaria zero por
 construção, sem deixar de existir.
 
@@ -285,12 +278,12 @@ e, no cabeçalho, `git_commit` e as versões de Python, DuckDB e PyArrow.
 ## 7. Como reproduzir
 
 ```bash
-uv run vra fetch                 # 168 arquivos, ~1,2 GB, sequencial e educado
-uv run vra layouts               # mede o layout do primeiro arquivo de cada ano
-uv run vra stage                 # um ano por vez
-uv run vra fixture               # regenera tests/fixtures a partir do real
-AIRLINE_DELAYS_PRIVATE_DIR=... uv run vra verify   # opcional, gabarito privado
+uv run airline-delays fetch      # 168 arquivos, 2,17 GB, sequencial e educado (~17 min)
+uv run airline-delays layouts    # mede o layout do primeiro arquivo de cada ano
+uv run airline-delays stage      # um ano por vez
+uv run airline-delays fixture    # regenera tests/fixtures a partir do real
 ```
 
-`vra fetch` é idempotente: um arquivo já em disco cujo sha256 bate com
+`just fetch` e `just stage` embrulham o primeiro e o terceiro comandos.
+`airline-delays fetch` é idempotente: um arquivo já em disco cujo sha256 bate com
 `data/raw/manifest.json` é pulado.

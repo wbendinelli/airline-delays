@@ -10,16 +10,15 @@ este trabalho; esta nota documenta a evidência por trás de cada linha, não
 repete a decisão em si.
 
 Fontes de partida, todas lidas na íntegra antes de qualquer tabela ser
-escrita: `DECISIONS.md`, `fontes-vra-anac.md` (nota de pesquisa privada, não
-redistribuída),
-o texto da IAC 1504 (`IAC1504.txt`, 30/abr/2000), e dois relatórios do
-acervo (`bases.md` e `avaliacao-vra-como-fonte.md`) para a lista de códigos
-de empresas aéreas. Convenção de grau: **A** = fonte primária lida
+escrita: `DECISIONS.md`, `fontes-vra-anac.md` (nota de pesquisa do autor,
+documento externo), o texto da IAC 1504 (`IAC1504.txt`, 30/abr/2000), e as
+notas de pesquisa do autor (documento externo) para a lista de códigos de
+empresas aéreas. Convenção de grau: **A** = fonte primária lida
 diretamente nesta sessão (lei, texto da IAC, PDF baixado e convertido,
 dataset baixado); **B** = resumo de busca, página não aberta, fonte
 convergente mas não verificada, ou convenção de preenchimento (mês
 desconhecido, dia fixado em 1º). Todas as tabelas têm `source`, `url`,
-`retrieved_at` e `confidence` em cada linha; `just refs` (ver
+`retrieved_at` e `confidence` em cada linha; `just reference` (ver
 `data/external/README.md`) valida a presença de `source`/`url`/`confidence`.
 
 ## 1. Geografia -- `airports_br.csv`, `nodes.csv`, `distances_km.csv` (ADR-0001)
@@ -86,31 +85,27 @@ documento, não um cadastro de aeroportos. O script
 **Como foi construída.** As datas e grupos dos 19 códigos citados
 explicitamente no ADR-0003 (grupo Varig: VRG/VLO/VRN/NES/RSL; GLO; WEB;
 AZU; TIB; TTL; PTN; TAM/BLC/SUL; TBA/ITB; VSP; ONE; PTB) seguem a regra do
-laboratório, tal como registrada em `fontes-vra-anac.md` e nos scripts
-`reconstruir_vra_08_amostra3.py`/`reconstruir_vra_13_validar.py`
-(função `grupo_from()`), que já testam essas trocas de grupo diretamente
-contra a coluna `airline` do VRA bruto. A transição TTL -> TRIP -> AZUL foi
-resolvida por transitividade, porque o próprio `grupo_from()` reatribui o
+laboratório, tal como registrada em `fontes-vra-anac.md` e nas notas de
+pesquisa do autor (documento externo), que já testam essas trocas de grupo
+diretamente contra a coluna `airline` do VRA bruto. A transição TTL -> TRIP
+-> AZUL foi resolvida por transitividade, porque a mesma regra reatribui o
 grupo "TI2" (que já inclui TTL a partir de 2007m11) para "AZ2" a partir de
 2012m5 -- ou seja, TTL segue TIB para dentro do grupo Azul, mesmo o
 enunciado da tarefa não dizendo isso explicitamente para TTL.
 
 Os outros 21 códigos (`ABJ, ABZ, AMG, AVI, BRB, LEG, MEL, MSQ, NHG, NRA,
-PAM, PEP, PLY, RIO, RLE, SBA, SLX, TIM, TSD, TVJ, VCR`) vêm da interseção
-de duas listas do acervo, ambas derivadas independentemente: (i) a lista
-`BR` de `reconstruir_vra_08_amostra3.py`, um filtro `air.isin(BR)` escrito
-para testar universo de voos contra a coluna real `airline` de uma amostra
-de 12 rotas x 3 anos extraída do VRA; (ii) as ~45 variáveis `pres_*` de
-`proj18.dta`, listadas em `bases.json` (o inventário completo, referenciado
-por `bases.md`, mas com o conteúdo de fato só em `bases.json` -- a tarefa
-dizia "bases.md lista as empresas pres_*", o que é impreciso, o arquivo com
-a lista completa é `bases.json`). Das ~45 variáveis `pres_*`, eliminei as
+PAM, PEP, PLY, RIO, RLE, SBA, SLX, TIM, TSD, TVJ, VCR`) vêm das notas de
+pesquisa do autor (documento externo): a interseção de duas listas derivadas
+independentemente -- (i) um filtro de códigos de empresa escrito para testar
+universo de voos contra a coluna real `airline` de uma amostra de 12 rotas x
+3 anos extraída do VRA; (ii) as cerca de 45 variáveis de presença por
+empresa da base final dos autores do artigo. Das cerca de 45, eliminei as
 que claramente não são códigos de empresa crus (`bdg, csrgta, duotagl,
 maj, mglo, mtam, ogl, smareg, yazu, ygl, yglo, yone, yweb` -- artefatos
-derivados/agregados do laboratório, como as divisões "jovem"/"madura" de
-Gol e Azul) e mantive as que aparecem também na lista `BR` ou são
-claramente códigos de 3 letras adicionais (`AVI`, `LEG`, que a lista `BR`
-exclui por não serem empresas brasileiras).
+derivados/agregados, como as divisões "jovem"/"madura" de Gol e Azul) e
+mantive as que aparecem também na primeira lista ou são claramente códigos
+de 3 letras adicionais (`AVI`, `LEG`, que a primeira lista exclui por não
+serem empresas brasileiras).
 
 **Verificado (A/B).** Nenhuma linha de `groups.csv` é grau A puro: mesmo as
 datas mais concretas (Gol 2001-01, Azul 2008-12) vêm de eventos com grau B
@@ -122,7 +117,8 @@ explicando que a data legal mais próxima (autorização ANAC, aprovação CADE)
 está em `events.csv` e não necessariamente coincide com o mês usado na
 regra de grupo. Os 21 códigos "other" são grau B: o código em si está bem
 evidenciado (aparece em filtros diretos contra a coluna `airline` do VRA
-real, em dois scripts independentes do acervo), mas a identidade da
+real, em duas listas independentes das notas de pesquisa do autor), mas a
+identidade da
 empresa por trás de cada sigla e a data exata de entrada/saída no VRA não
 foram verificadas nesta sessão -- deliberadamente não inventei nomes de
 empresa para siglas que não reconheço com segurança (ex.: `RLE`, `TVJ`,
@@ -145,14 +141,15 @@ programaticamente ao gerar o arquivo, não só por inspeção). 50 linhas para
 40 códigos distintos.
 
 **Em aberto.** (i) A lista de 21 códigos "other" **não é** uma varredura
-completa do VRA bruto 2000-2013 -- é a união de duas amostras do
-laboratório (12 rotas/3 anos e o painel de 209 rotas-capitais 2002-2013).
+completa do VRA bruto 2000-2013 -- é a união de duas amostras (12 rotas/3
+anos e o painel de 209 rotas-capitais 2002-2013).
 Qualquer código que apareça no VRA fora dessas amostras (rotas
 não-capitais, anos 2000-2001 fora do painel de 209 rotas) não está nesta
 tabela e cairia como `other` só se o pipeline de dados tratar ausência de
 match como default `other` (como o `especificacao.md`/`especificação` da
-tarefa já prevê). Recomendo reconciliar esta lista contra a saída real do
-`scripts/fetch.py`/`src/vra/groups.py` assim que existir uma varredura
+tarefa já prevê). Recomendo reconciliar esta lista contra a saída real de
+`src/airline_delays/staging/build.py` e
+`src/airline_delays/definitions/carriers.py` assim que existir uma varredura
 completa. (ii) Identidade real de `ABJ, ABZ, AMG, AVI, BRB, LEG, MEL, MSQ,
 NHG, NRA, PAM, PEP, PLY, RIO, RLE, SBA, SLX, TIM, TSD, TVJ, VCR` não foi
 pesquisada (nem por WebSearch) -- são provavelmente companhias regionais,

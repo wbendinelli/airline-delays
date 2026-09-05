@@ -7,11 +7,11 @@ congestionamento* (USP/ESALQ, Piracicaba, 2013; orientadores Márcia Azanha
 Ferraz Dias de Moraes e Alessandro Vinícius Marques de Oliveira; depósito no
 Zenodo em curso: `[DOI-MONOGRAFIA]`), mais os parágrafos sobre baixo custo
 da seção 4.5. Não é paráfrase: a voz é didática e as figuras, redesenhadas
-por `theory/figures.py`. Nada aqui é estimado — todo número em prosa é
+por `src/airline_delays/theory/figures.py`. Nada aqui é estimado — todo número em prosa é
 coordenada de `reports/theory/figures.json` ou número externo citado pela
 monografia. Ordem de leitura: este é o capítulo 1 de 4; o capítulo 2
 (`docs/theory/02-o-jogo-do-congestionamento.md`) deriva o jogo de
-Stackelberg da seção 4, com a álgebra em `theory/model.py` e
+Stackelberg da seção 4, com a álgebra em `src/airline_delays/theory/model.py` e
 `reports/theory/model.json`; o capítulo 3 chega ao artigo de 2016
 (*Transportation Research Part A* 85, 39–52) e o capítulo 4, à sua recepção.
 
@@ -43,7 +43,7 @@ externo), nenhum recalculado aqui.
 
 ![Figura 1 — O nível eficiente de congestionamento](../../reports/theory/figures/fig1_nivel_eficiente.svg)
 
-Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
+Redesenhada por `src/airline_delays/theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -98,7 +98,7 @@ realizado, $\mathrm{BMgR}$, mais alto.
 
 ![Figura 2 — Benefício marginal em condições de incerteza](../../reports/theory/figures/fig2_incerteza.svg)
 
-Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
+Redesenhada por `src/airline_delays/theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -147,7 +147,7 @@ congestionamento.
 
 ![Figura 3 — Custo marginal social e privado antes e depois de uma expansão](../../reports/theory/figures/fig3_expansao.svg)
 
-Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
+Redesenhada por `src/airline_delays/theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -175,7 +175,7 @@ conta do planejador local.
 
 ![Figura 4 — Expansão do aeroporto levando em conta as externalidades de rede](../../reports/theory/figures/fig4_externalidade_de_rede.svg)
 
-Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
+Redesenhada por `src/airline_delays/theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -189,7 +189,7 @@ sinal trocado.
 
 ![Figura 5 — Congestionamento e externalidades de rede](../../reports/theory/figures/fig5_congestionamento_e_rede.svg)
 
-Redesenhada por `theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
+Redesenhada por `src/airline_delays/theory/figures.py` no estilo SAPIANS (título com o achado, subtítulo com os parâmetros) a partir de curvas paramétricas;
 adaptada de Cohen e Coughlin (2003) / Cohen, Coughlin e Ott (2009), não
 copiada. Coordenadas em `reports/theory/figures.json`.
 
@@ -375,6 +375,6 @@ just theory
 O comando reescreve os cinco SVG e o `reports/theory/figures.json` de forma
 determinística e offline, e uma segunda execução sobre a árvore inalterada
 não muda nada. Para ver $Q_S$ se deslocar, altere uma inclinação em
-`theory/figures.py` localmente, sem versionar a alteração.
+`src/airline_delays/theory/figures.py` localmente, sem versionar a alteração.
 
 Referências completas em [bibliografia.md](bibliografia.md).

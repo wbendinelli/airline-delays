@@ -9,9 +9,9 @@ depois. Aqui fica a passagem: como aquela teoria vira a econometria do
 artigo que este repositório replica — Bendinelli, Bettini e Oliveira
 (2016, *Transportation Research Part A* 85, 39–52, DOI
 10.1016/j.tra.2016.01.001). A regra de proveniência vale linha a linha:
-**todo número de 2016** vem de `replication/published.json`, lido através
-de `reports/theory/model.json` (objeto `bridge`), ou de
-`reports/replication/private/summary.json`; **todo número de 2013** é
+**todo número de 2016** vem de `src/airline_delays/estimation/published.json`,
+lido através de `reports/theory/model.json` (objeto `bridge`), ou de
+`reports/replication/summary.json`; **todo número de 2013** é
 externo, transcrito da monografia; e **nada é reestimado aqui**. O artigo
 é a culminação, não uma segunda rodada da monografia: as estimativas de
 2013 aparecem como citação, jamais como resultado deste repositório.
@@ -19,8 +19,8 @@ externo, transcrito da monografia; e **nada é reestimado aqui**. O artigo
 A monografia é *Efeitos da entrada de uma empresa aérea de baixo custo na
 internalização das externalidades do congestionamento* (USP/ESALQ,
 Piracicaba, 2013); daqui em diante, "a monografia". Ela não está neste
-repositório e sua base é a base de laboratório da monografia (fonte 12 de
-`docs/data-availability.md`), não redistribuída.
+repositório, e a sua base de regressão é um arquivo externo que não integra
+este repositório (`docs/notes/monografia-2013.md`).
 
 ## 1. A pergunta, a hipótese e os sinais esperados
 
@@ -107,11 +107,11 @@ juntas:
    rota-mês, em duas escalas — `ODDS`, o log-odds da proporção de
    chegadas atrasadas, e `MINS`, minutos por voo. As colunas (1) e (2) da
    Tabela 3 são `ODDS`; as (3) a (6), `MINS` — os três regressandos de
-   chegada listados em `replication/common.py` como
-   `ARRIVAL_REGRESSANDS`: `fsc_oddsarr`, `fsc_minsarr`, `fsc_minsp15arr`.
+   chegada listados em `src/airline_delays/estimation/specification.py`
+   como `ARRIVAL_REGRESSANDS`: `fsc_oddsarr`, `fsc_minsarr`, `fsc_minsp15arr`.
 2. **Os efeitos fixos viram dummies explícitas de rota e de tempo**, mais
-   60 sazonais região × mês. `replication/common.py` as reconstrói:
-   `SEASONALITY` é o produto de cinco regiões por doze meses, e
+   60 sazonais região × mês. `src/airline_delays/estimation/loader.py` as
+   reconstrói: `SEASONALITY` é o produto de cinco regiões por doze meses, e
    `TIME_DUMMIES` cobre `N_PERIODS = 144` meses entre `FIRST_YM = 200201`
    e `LAST_YM = 201312`.
 3. **Os erros passam a ser HAC**, com largura de banda derivada de
@@ -127,13 +127,14 @@ mercado de cada uma **respondem** ao mesmo congestionamento que se quer
 explicar. Concentração e atraso são determinados no mesmo equilíbrio. Um
 efeito fixo de rota não resolve isso: ele tira o que é constante na rota,
 não a simultaneidade dentro dela. Daí os instrumentos: em 2016 `rthhi` e
-`maxcthhi` são as duas endógenas (`ENDOG` em `replication/common.py`) e a
-identificação é do tipo Hausman — a concentração de **outras** cidades,
-próximas e defasada, como fonte de variação que não passa pelo atraso
-desta rota-mês. A matriz de distância entre as 27 cidades, a regra de
-"cidade próxima" e a fórmula dos pesos não foram entregues, e os
-instrumentos são tomados do painel como estão
-(`docs/declared-differences.md`, "Not attempted").
+`maxcthhi` são as duas endógenas (`ENDOG` em
+`src/airline_delays/estimation/specification.py`) e a identificação é do
+tipo Hausman — a concentração de **outras** cidades, próximas e defasada,
+como fonte de variação que não passa pelo atraso desta rota-mês. Os
+instrumentos são colunas do painel de estimação do artigo, publicado aqui
+(ADR-0020): a construção espacial é dos autores, documentada coluna a
+coluna em `src/airline_delays/schema/columns.py`, e a estimação os toma
+como estão.
 
 Que essa quarta mudança seja a última a chegar está documentado: em março
 de 2015 o desenho ainda era OLS com efeitos fixos, e a instrumentação era
@@ -142,10 +143,10 @@ uma promessa explícita para "futuramente"
 com HAC, dois blocos de instrumentos e a estatística de Kleibergen e Paap
 (2006) escrita do zero para testá-la — está em
 [M7](../tutorial/07-especificacao-e-estimacao.md) e em
-`replication/kp.py`.
+`src/airline_delays/estimation/kp.py`.
 
 Os dois blocos de instrumentos ficam lado a lado em
-`replication/common.py`: `INSTRUMENTS_ODDS` tem cinco excluídos
+`src/airline_delays/estimation/specification.py`: `INSTRUMENTS_ODDS` tem cinco excluídos
 (`h3_maxcthhi`, `lnh1_maxcthhi`, `l1h1_maxcthhi`, `l1h2_maxcthhi`,
 `h2_rthhi`) e o $J$ com 3 graus de liberdade; `INSTRUMENTS_MINS` tem três
 (`h1_maxcthhi`, `h2_maxcthhi`, `h3_maxcthhi`) e o $J$ com 1. O artigo
@@ -181,7 +182,7 @@ externa: monografia, Tabela 5, coluna 5.
 | **A reação do seguidor** — $\partial f_2/\partial f_1 = -\lambda$ | não tratada em 2013 | nenhuma variável: é a endogeneidade | 2SGMM, $N$ = 19.419, KP LM 139,2305, $J$ = 3,2199 ($p$ = 0,3589) | OLS, $N$ = 19.590, sem instrumento | a reação vira desenho de identificação, não regressor |
 | **Pedágios, slots e leilões** | nenhum regressor | nenhum regressor | — | — | aqui viram `data/external/slots.csv` e `data/external/capacity.csv`; a capacidade horária declarada segue não coletada (ADR-0007) |
 
-As estatísticas da última linha são de `replication/published.json`:
+As estatísticas da última linha são de `src/airline_delays/estimation/published.json`:
 `table3.columns.2.stats.n_obs`, `.kp_lm`, `.j_stat` e `.j_p`, e
 `table6.columns.2.stats.n_obs`. A coluna (1) da mesma tabela, sem as
 binárias de LCC, tem o mesmo $N$ = 19.419, KP LM 154,2698 e $J$ = 3,1132
@@ -209,13 +210,13 @@ atraso é o canal concorrência–qualidade; concentração no aeroporto
 associada a *menos* atraso é internalização — a Proposição 1 do capítulo
 02 medida, com a parcela própria do dano marginal no lugar do pedágio que
 ninguém cobra. A inversão não é anedota de uma célula: o campo
-`hhi_sign_inversions` de `reports/replication/private/summary.json`
+`hhi_sign_inversions` de `reports/replication/summary.json`
 compara as duas variáveis nas seis colunas de cada tabela,
 `n_comparisons` = 12, e encontra `n_inverted_published` = 4 e
 `n_inverted_replicated` = 4, nas colunas `ODDS` (1) e (2), com
 `n_pattern_agrees` = 12 — a réplica reproduz o padrão em todas as doze
 comparações. É a mesma demonstração que o docstring de
-`replication/table6.py` descreve como a afirmação mais afiada do artigo e
+`src/airline_delays/estimation/table6.py` descreve como a afirmação mais afiada do artigo e
 a mais barata de conferir.
 
 **(b) LCC.** A tradução mais visível é a das binárias. Em 2013 são duas
@@ -259,19 +260,19 @@ essa a coluna "camada".
 |---|---|---|---|
 | `prdeltot` | `arr_delayed_gt30` e `dep_delayed_gt30` | fact, city, airline_city, panel | mesma unidade de contagem; **duas ressalvas**: aqui é "> 30", a Resolução ANAC 218 conta "≥ 30"; e a monografia não diz se `prdeltot` é partida, chegada ou uma média das duas |
 | `prdeltot` (regressando do artigo) | `fsc_prdelarr30m` | panel | existe, no conjunto FSC do artigo |
-| `hhi` | `rthhi_flights` (a mesma construção de `hhi_flights`, sobre voos planejados) | panel (`hhi_flights` também em city) | substituto declarado: o `rthhi` do artigo é sobre passageiros e fica **nulo** no painel público (ADR-0004; `src/vra/hhi.py`) |
+| `hhi` | `rthhi_flights` (a mesma construção de `hhi_flights`, sobre voos planejados) | panel (`hhi_flights` também em city) | substituto declarado: o `rthhi` do artigo é sobre passageiros e fica **nulo** no painel reconstruído (ADR-0004; `src/airline_delays/definitions/concentration.py`) |
 | `cr2` | ausente | — | calculável a partir dos voos por grupo da tabela de fatos; nenhuma coluna o declara hoje |
 | `fltime` | `sched_block_mean_min` | panel | existe |
 | `asize` | ausente | — | assentos por aeronave vêm do HOTRAN, não do VRA |
 | `amovtot` | `movements` da cidade-mês | city | existe, mas só no universo de replicação (ADR-0002) |
-| `prconex` | ausente (fonte 13 de `docs/data-availability.md`, não reproduzida) | — | `src/vra/hub.py` oferece um substituto **estrutural**, não comportamental |
+| `prconex` | ausente (fonte 13 de `docs/data-availability.md`, não reproduzida) | — | `src/airline_delays/definitions/hubs.py` oferece um substituto **estrutural**, não comportamental |
 | `wind`, `precip`, `ceiling` | ausentes (fonte 9, METAR, não integrada) | — | nada no painel os aproxima |
-| `dummy_gol` | `pres_glo`, restrito a 2001m1–2005m12 | panel | reconstruível; o gabarito lê presença de venda de bilhete, aqui é operação |
+| `dummy_gol` | `pres_glo`, restrito a 2001m1–2005m12 | panel | reconstruível; o artigo lê presença pela base tarifária (fonte 4 de `docs/data-availability.md`), aqui é operação |
 | `dummy_azul` | `pres_azu`, mais a condição de ponta em SBKP | panel; `origin_icao`/`dest_icao` só em staged e ml | **não reconstruível no painel**: exige o grão par-de-aeroportos, e ADR-0001 dobra SBKP dentro do nó MRSP |
-| $a_j$, $b_h$, $c_t$ | dummies de rota e de tempo do artigo | — | `replication/common.py` (`TIME_DUMMIES`, `SEASONALITY`) |
+| $a_j$, $b_h$, $c_t$ | dummies de rota e de tempo do artigo | — | `src/airline_delays/estimation/loader.py` (`TIME_DUMMIES`, `SEASONALITY`) |
 | pesos por voos planejados | `f` | panel (e `flights` em fact) | existe |
 
-Uma verificação que roda agora, sem dado privado:
+Uma verificação que roda agora, sem nenhum pré-requisito:
 
 ```bash
 grep -n -E '^\| `(arr_delayed_gt30|rthhi_flights|sched_block_mean_min)`' docs/dictionary.md
@@ -286,19 +287,24 @@ aparecem uma vez cada; a mais fácil de todas aparece quatro vezes, porque
 
 ## 5. O que reproduz
 
-Contra o gabarito privado, as cinco tabelas de regressão do artigo somam
-**306** coeficientes comparados — a soma do campo `n_coefficients` das
-cinco entradas de `reports/replication/private/summary.json` (60, 66, 60,
-60 e 60). Somando `sign_agreement` (60, 65, 59, 59, 59) dá **302** sinais
-iguais; somando `within_half_se` (53, 51, 53, 51, 51) dá **259**, ou 85%,
-dentro de meio erro-padrão publicado. O que não fecha é o tamanho da
-amostra: $N$ é cerca de **5,3%** maior em toda coluna (5,31% nas de
-chegada, 5,35% nas de partida — `docs/declared-differences.md`, item 1),
-sem que nenhum filtro visível no material entregue produza os números
-publicados. Nenhum veredito muda com isso, inclusive o do $J$ de Hansen.
-A leitura completa, coluna a coluna, é
-[M8](../tutorial/08-o-que-reproduz.md), sobre
-`reports/replication/private/tables.md`.
+Sobre o painel de estimação do artigo, publicado neste repositório
+(ADR-0020), `airline-delays estimate` reestima as cinco tabelas de
+regressão e compara cada coeficiente com o publicado. O placar está em
+`reports/summary.json`, bloco `estimation`: **306** coeficientes
+comparados (`totals.coefficients` — a soma do `n_coefficients` das cinco
+tabelas em `reports/replication/summary.json`: 60, 66, 60, 60 e 60),
+**302** com o mesmo sinal (`totals.sign_agreement`), **259** dentro de meio
+erro-padrão publicado (`totals.within_half_se`), maior desvio isolado de
+0,94 erro-padrão (`totals.max_difference_in_se`). A inversão de sinal dos
+HHIs entre OLS e 2SGMM é uma afirmação sobre 12 comparações: as 4
+inversões publicadas se reproduzem, e réplica e artigo concordam sobre
+haver ou não inversão em 12 de 12 (`hhi`). Nota sobre a amostra, em uma
+frase: as tabelas publicadas reportam $N$ entre 19.408 e 19.590 e a
+reestimação dá $N$ entre 20.447 e 20.630
+(`estimation.n_obs_published_range`, `estimation.n_obs_replicated_range`),
+registrados lado a lado em cada coluna. A leitura completa, tabela a
+tabela, é [M8](../tutorial/08-o-que-reproduz.md), sobre
+`reports/replication/tables.md`.
 
 ## 6. A crítica de 2018 e a pergunta de preços fechada
 
@@ -347,10 +353,9 @@ está em `docs/tutorial/13-propor-melhorias.md`.
 
 - **Nada de 2013 foi reestimado.** Todos os coeficientes da monografia
   neste capítulo são transcrições de um documento externo. Reconstruir
-  aquela base não é tentado e não está previsto — é a mesma política da
-  seção "Not attempted" de `docs/declared-differences.md`, que já declara
-  não reconstruir o painel do gabarito nem os instrumentos do tipo
-  Hausman.
+  aquela base não é tentado e não está previsto: a econometria de
+  referência é a do artigo, cujo painel de estimação está publicado aqui
+  (`docs/notes/replication.md`, seção 8).
 - **Os rótulos de linha da Tabela 5 foram recuperados**, não lidos da
   tabela: a extração de texto entrega as células sem os nomes das
   variáveis, e a ordem das linhas foi recuperada dos objetos de equação
@@ -372,19 +377,17 @@ está em `docs/tutorial/13-propor-melhorias.md`.
 
 ## 8. Como reproduzir
 
-O que roda sem dado privado:
+As Tabelas 2–7 rodam sobre o painel de estimação do artigo, commitado em
+`data/analysis/article_panel_route_month.parquet`, em menos de um minuto
+(`reports/summary.json`, `estimation.seconds`):
 
 ```bash
-just replicate
+just estimate
 ```
 
-Sobre o painel público rota-mês, esse comando monta a amostra pelos
-mesmos filtros dos do-files e imprime a Tabela 2 descritiva. Ele **não**
-estima as tabelas de regressão: faltam `maxprdel`, `cshare`,
-`dailyflcong` e `dailyflncong`, e faltam os sete instrumentos do tipo
-Hausman, que não são reconstrutíveis a partir do material entregue
-(`docs/declared-differences.md`, seção "The public panel cannot yet
-estimate the regression tables").
+O comando aplica os filtros dos do-files, estima as seis tabelas, compara
+com os valores publicados de `src/airline_delays/estimation/published.json`
+e reescreve `reports/replication/` — o placar da seção 5 vem daí.
 
 A tabela-ponte da seção 3 é regenerada por:
 
@@ -396,14 +399,7 @@ que reescreve `reports/theory/model.json`, incluindo `bridge.rows` e as
 células publicadas de cada coluna das Tabelas 3 e 6.
 
 A verificação de dicionário da seção 4 roda com o `grep` ali mesmo, sem
-nenhum pré-requisito.
-
-O que **não** roda: o confronto contra o gabarito
-(`reports/replication/private/tables.md`,
-`reports/replication/private/summary.json`) exige
-`AIRLINE_DELAYS_PRIVATE_DIR` apontando para a base de laboratório da
-monografia (fonte 12 de `docs/data-availability.md`), que não é
-redistribuída. Os arquivos gerados na última execução privada estão
-versionados e podem ser lidos sem rodar nada.
+nenhum pré-requisito. Os três comandos são offline: nenhum dado além do que
+está versionado é necessário.
 
 Referências completas em [bibliografia.md](bibliografia.md).

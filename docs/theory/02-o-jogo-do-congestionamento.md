@@ -9,7 +9,7 @@ segue Brueckner e Van Dender (2008, *Journal of Urban Economics* 64,
 afirmação: **[BVD]**, Brueckner e Van Dender (2008) reenunciados;
 **[monografia]**, o que a monografia afirma; **[aqui]**, o que esta
 derivação acrescenta. Toda identidade é conferida por `tests/test_theory.py`
-contra `theory/model.py`, e todo número sai de `reports/theory/model.json`,
+contra `src/airline_delays/theory/model.py`, e todo número sai de `reports/theory/model.json`,
 com a chave nomeada na mesma frase. O capítulo termina em Guo, Jiang e Wan
 (2018), onde a formulação foi levada aos preços.
 
@@ -42,7 +42,7 @@ A equação (5) junta os dois custos, que entram na função-lucro da mesma
 forma; os sinais de $c'$ e $c''$ vêm de $t$ e $g$ e são o pressuposto A3,
 base das cotas sobre $\lambda$.
 
-| símbolo | nome em `theory/model.py` | o que é |
+| símbolo | nome em `src/airline_delays/theory/model.py` | o que é |
 |---|---|---|
 | $f_1$, $f_2$ | `f1`, `f2` | voos do líder e do seguidor |
 | $F$ | `F` | tráfego total, $f_1 + f_2$ |
@@ -451,7 +451,7 @@ artigo, no capítulo 04 ([04-impacto.md](04-impacto.md)).
 
 A Figura 8 acompanha λ* e a tarifa da líder ao longo da curvatura do custo (`reports/theory/figures.json`, `fig8`).
 
-A álgebra é simbólica; os números saem de `theory/equilibrium.py`. O
+A álgebra é simbólica; os números saem de `src/airline_delays/theory/equilibrium.py`. O
 seguidor vem de busca de raiz em intervalo delimitado: para um $f_1$ dado, o
 intervalo é dobrado até (7) trocar de sinal e a raiz sai de `brentq` com
 tolerância $10^{-12}$. O líder é resolvido **por cima** disso: para cada
@@ -482,7 +482,7 @@ Há ainda dois testes de outra natureza: o primeiro resolve o caso quadrático
 de novo com `sympy.nsolve` e compara com `brentq`, porque dois métodos
 independentes devem coincidir; o segundo reconstrói
 `reports/theory/model.json` em memória e falha se a cópia versionada
-divergir — uma edição em `theory/` sem regerar o relatório deixa a suíte
+divergir — uma edição em `src/airline_delays/theory/` sem regerar o relatório deixa a suíte
 vermelha, que é o correto. `meta.n_identities` registra 29 identidades
 verificadas, cada uma com sua origem na lista `identities`, e todas valem.
 
@@ -514,7 +514,7 @@ financiamento de capacidade e sem variável de preço** — o modelo cobra
 tarifas e não pergunta o que se faz com a receita, e o preço é dado, nunca
 escolha estratégica; ausências que a própria monografia declara em sua seção
 final. **Nada aqui é estimado, e sympy prova álgebra, não economia** — os
-parâmetros são estilizados, escolhidos em `theory/families.py` para que o
+parâmetros são estilizados, escolhidos em `src/airline_delays/theory/families.py` para que o
 caso linear tenha equilíbrios inteiros; a econometria de referência é a do
 artigo de 2016. Uma identidade "valer" significa que a afirmação decorre dos
 pressupostos em `assumptions`, e nada diz sobre se as empresas se comportam
@@ -528,7 +528,7 @@ just theory
 uv run pytest tests/test_theory.py -q
 ```
 
-O primeiro comando roda `theory/run.py`, é offline e determinístico, leva
+O primeiro comando roda `src/airline_delays/theory/run.py`, é offline e determinístico, leva
 cerca de um segundo e reescreve `reports/theory/model.json`,
 `reports/theory/results.md` e as figuras, imprimindo as 29 identidades e o
 resultado de cada uma. O segundo roda a suíte de teoria inteira, que deve

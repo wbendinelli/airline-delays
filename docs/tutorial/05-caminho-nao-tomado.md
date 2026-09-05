@@ -49,36 +49,33 @@ aqui, não incluído — ver M12 para as razões de consentimento e licença.
 
 ## A mesma ambiguidade, resolvida aqui por nomeação
 
-O painel público deste repositório não escolhe entre 15 e 30 minutos —
+O painel reconstruído deste repositório não escolhe entre 15 e 30 minutos —
 publica os dois, sob nomes que dizem o que cada um é:
 
 ```bash
-grep -n "prdelarr1530\|prdelarr30m" src/vra/registry.py
+grep -n "prdelarr1530\|prdelarr30m" src/airline_delays/schema/columns.py
 ```
 
 **Número esperado.** Duas entradas: `prdelarr1530` (chegadas entre 15 e 30
 minutos de atraso) e `prdelarr30m` (chegadas com mais de 30 minutos) — os
 dois são sufixos de um só molde, aplicados a cada família de empresa
 (`fsc_`, `fscc_`, `all_`, `lccfu_`, `lccclass_`; `docs/dictionary.md` lista
-cada coluna gerada). `data/analysis/taxas.csv` traz a taxa de concordância
-contra o gabarito privado para as duas variantes do conjunto FSC do
-artigo: `fsc_prdelarr1530` (58,5% na base inteira, 61,8% na safra
-estável) e `fsc_prdelarr30m` (59,7% e 63,7%). A ambiguidade do projeto
-irmão — texto contra código — não se repete aqui porque as duas leituras
-têm nomes diferentes desde o início, para cada conjunto de empresas.
+cada coluna gerada). A ambiguidade do projeto irmão — texto contra código —
+não se repete aqui porque as duas leituras têm nomes diferentes desde o
+início, para cada conjunto de empresas.
 
 ## Exercício
 
 Leia a entrada "ANAC tariff microdata" de
 [`docs/data-availability.md`](../data-availability.md) de novo (M1 já
 apontou para ela). O projeto irmão retomou a pergunta de preços com dados
-de laboratório, que não são públicos. Escreva, em três frases, o que
+que não são públicos. Escreva, em três frases, o que
 mudaria no desenho se alguém tentasse retomar essa mesma pergunta hoje,
 usando só a fonte pública listada ali — e por que a chave `route`/`ym` do
-painel público (`data/analysis/panel_route_month.parquet`) já deixaria
+painel reconstruído (`data/analysis/panel_route_month.parquet`) já deixaria
 essa tentativa mais fácil do que reconstruir tudo do zero.
 
-## Nota honesta
+## Limites e próximos passos
 
 Nada do projeto irmão foi reconstruído neste repositório — nem a base, nem
 o código, nem os resultados. A avaliação comparativa que precedeu este

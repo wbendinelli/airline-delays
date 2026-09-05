@@ -9,7 +9,8 @@ elas não estão.
 
 A cronologia, lida diretamente dos metadados internos e do texto
 publicado: o artigo foi recebido em 2015-10-02, revisto em 2015-12-05,
-**aceito em 2016-01-05**; a base final (`proj18.dta`) foi fechada em
+**aceito em 2016-01-05**; a base final de estimação — hoje publicada como
+`data/analysis/article_panel_route_month.parquet` — foi fechada em
 2015-12-03, dois dias antes do reenvio da versão revisada. A defesa da
 dissertação aconteceu em **2016-02-22** — depois de o artigo já ter sido
 aceito — e o registro formal na biblioteca do ITA é de 2016-03-17. Ou
@@ -68,11 +69,11 @@ Sem abrir nenhum arquivo além do que já foi citado acima, escreva de
 memória o título da dissertação e o do artigo, lado a lado, e circule a
 palavra que muda. Depois pense: por que "concorrência" e "non-price
 spillover effects" descrevem o mesmo achado de dois jeitos tão diferentes?
-(Pista: releia a frase do resumo do artigo sobre "spillover" citada em
-`avaliacao-8-criterios.md`, C5.7, ou pergunte a si mesmo o que "spillover"
+(Pista: releia a frase do resumo do artigo sobre "spillover" citada na
+*avaliação em oito critérios*, C5.7, ou pergunte a si mesmo o que "spillover"
 significaria em português numa única palavra.)
 
-## Nota honesta
+## Limites e próximos passos
 
 Nenhum documento do acervo original registra o que aconteceu nos seis
 meses entre a montagem das bases e a submissão — nem uma versão
