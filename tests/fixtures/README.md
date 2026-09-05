@@ -4,7 +4,7 @@ Deterministic, small slices of repository data, committed so the test suite
 never needs the network, `data/raw/`, or `AIRLINE_DELAYS_PRIVATE_DIR`.
 
 Three files, all cut from the real series by `scripts/make_fixture.py`
-(`uv run vra fixture`), committed once and never regenerated at test time:
+(`uv run airline-delays fixture`), committed once and never regenerated at test time:
 
 - `vra_raw_sample_2002.csv` — up to 3,000 rows of the legacy 12-column
   layout (comma, latin-1, CRLF endings preserved byte for byte; the

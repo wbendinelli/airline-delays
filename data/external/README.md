@@ -17,7 +17,7 @@ README's "Data availability" section, not a separate claim -- plus a
 - **B** -- the fact rests on a search-engine summary, an unopened page, a
   convergent-but-unverified secondary source, or a placeholder convention
   (e.g. "month unknown, day set to the 1st"). Treat as not independently
-  confirmed. `just refs` validates that every row has `source`, `url` and
+  confirmed. `just reference` validates that every row has `source`, `url` and
   `confidence`.
 
 Full methodology, what is verified vs. open, and outstanding items are in
