@@ -6,7 +6,7 @@
   "title": "airline-delays: Brazil's scheduled domestic flights 2000-2013, from ANAC's raw records to a published article's tables, its theory, and a flight-level delay predictor",
   "description": "Research compendium of Bendinelli, Bettini & Oliveira (2016, Transportation Research Part A 85, 39-52). Data: the article's estimation panel (24,589 route-months x 52 columns, curated from the authors' final base of December 2015) and the open reconstruction of ANAC's Voo Regular Ativo flight-leg records (2000-2013) into a fact table, a route-month panel and two city projections, with Frictionless Data Package metadata and a bilingual data dictionary. Code: ingestion, staging, the fact table and panel, the re-estimation of Tables 2-7, the congestion model derived symbolically, and the flight-level delay predictor. Code under MIT; curated data and text under CC BY 4.0; VRA-derived tables attributed to ANAC.",
   "homepage": "https://github.com/wbendinelli/airline-delays",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "created": "2026-09-05T19:23:09+00:00",
   "keywords": [
     "airline delays",

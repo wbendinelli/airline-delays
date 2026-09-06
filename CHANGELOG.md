@@ -9,6 +9,10 @@ dates mark progress until then.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.1.0] - 2026-09-05
+
 The study (`DECISIONS.md` ADR-0022): `docs/` reorganised as the final work
 that joins the economics of airport congestion, the game-theory model and the
 article.
