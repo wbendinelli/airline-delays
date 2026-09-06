@@ -232,7 +232,7 @@ with their PDFs in `reports/`. Sibling repositories:
   author  = {Bendinelli, William Eduardo},
   year    = {2026},
   url     = {https://github.com/wbendinelli/airline-delays},
-  version = {1.0.0}
+  version = {1.1.0}
 }
 ```
 
