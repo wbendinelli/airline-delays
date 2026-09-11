@@ -23,7 +23,7 @@ unchanged tree rewrites identical bytes.
 `uv run airline-delays report --only study`.
 
 `sapians/` is the SAPIANS design package for Typst (`@local/sapians:0.1.0`),
-vendored from `sapians-latex` (MIT) so that the reports compile from a clean
+vendored from `sapians-design` (MIT) so that the reports compile from a clean
 clone with `--root .`. The Inter font is used when installed, with Helvetica
 Neue or Arial as the fallback the package declares. The figures under
 `reports/theory/figures/` are drawn by `src/airline_delays/theory/figures.py`

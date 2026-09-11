@@ -1,6 +1,6 @@
 """The SAPIANS scientific figure style, vendored for the theory layer.
 
-Source: ``sapians-latex`` (https://github.com/wbendinelli/sapians-latex, MIT),
+Source: ``sapians-design`` (https://github.com/wbendinelli/sapians-design, MIT),
 ``packages/python/sapians.mplstyle`` and ``sapians_plots/theme.py`` of its
 v0.2.0 package, reduced to what this repository draws. The rules it encodes
 come from the SAPIANS design system (Urban Institute and DeepMind
@@ -106,7 +106,7 @@ RC: dict[str, Any] = {
 }
 
 
-FONT_DIRS = ("~/Library/Fonts", "~/.local/share/fonts", "~/Documents/sapians-latex/assets/fonts")
+FONT_DIRS = ("~/Library/Fonts", "~/.local/share/fonts", "~/Documents/sapians-design/assets/fonts")
 
 
 def register_inter() -> bool:
