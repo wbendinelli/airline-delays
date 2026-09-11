@@ -925,7 +925,7 @@ def draw_all(outdir: Path) -> dict[str, Any]:
     outdir = Path(outdir)
     (outdir / "figures").mkdir(parents=True, exist_ok=True)
     payload: dict[str, Any] = {
-        "style": "SAPIANS scientific figure style (sapians-latex, MIT), see src/airline_delays/theory/sapians_style.py",
+        "style": "SAPIANS scientific figure style (sapians-design, MIT), see src/airline_delays/theory/sapians_style.py",
         "source": "Figures 1-5 redrawn from piecewise-linear curves after Cohen and Coughlin (2003) and Cohen, Coughlin and Ott (2009); nothing copied. Figures 6-11 from theory/equilibrium.py and theory/bridge.py. Stylised, not calibrated.",
         "figures": {},
     }
