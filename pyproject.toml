@@ -9,7 +9,7 @@ authors = [
   { name = "William Eduardo Bendinelli", email = "wbendinelli@gmail.com" },
 ]
 dependencies = [
-  "pandas>=2.2,<3",
+  "pandas>=2.2,<4",
   "pyarrow>=17",
   "duckdb>=1.1",
   "numpy>=2",
