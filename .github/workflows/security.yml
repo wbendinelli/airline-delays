@@ -17,7 +17,7 @@ permissions:
 jobs:
   gitleaks:
     name: Secret scan (gitleaks)
-    uses: wbendinelli/.github/.github/workflows/security.yml@v0.8.0
+    uses: wbendinelli/.github/.github/workflows/security.yml@v0.8.1
     permissions:
       contents: read
     with:
